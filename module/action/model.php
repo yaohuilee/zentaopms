@@ -314,6 +314,7 @@ class actionModel extends model
         {
             $fieldListVar = $this->config->action->multipleObjectFields[$objectType][$history->field];
             $fieldList    = isset($this->lang->{$objectType}->{$fieldListVar}) ? $this->lang->{$objectType}->{$fieldListVar} : array();
+            if($fieldListVar == 'users') $fieldList = $users;
             if(!empty($history->old))
             {
                 $history->oldValue = '';
