@@ -13706,6 +13706,7 @@ class upgradeModel extends model
         if(empty($PIData)) return true;
 
         $kanbanCellGroup = $this->dao->select('id,kanban,cards')->from(TABLE_KANBANCELL)->where('kanban')->in(array_values($PIData))->andWhere('type')->eq('risk')->fetchGroup('kanban', 'id');
+        if(empty($kanbanCellGroup)) return true;
 
         foreach($PIData as $PIID => $kanbanID)
         {
@@ -13722,6 +13723,7 @@ class upgradeModel extends model
             if(empty($riskIdList)) continue;
 
             $this->dao->update(TABLE_RISK)->set('PI')->eq($PIID)->where('id')->in($riskIdList)->exec();
+            if(dao::isError()) return false;
         }
         return true;
     }
