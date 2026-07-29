@@ -1593,7 +1593,7 @@ class actionModel extends model
             if(in_array($this->config->edition, array('max', 'ipd')) && $action->objectType == 'risk')
             {
                 $riskPI = $this->dao->select('PI')->from(TABLE_RISK)->where('id')->eq($action->objectID)->fetch('PI');
-                $vars  .= '&from=pi';
+                if(!empty($riskPI)) $vars .= '&from=pi';
             }
 
             if(!$riskPI && in_array($this->config->edition, array('max', 'ipd')) && strpos($this->config->action->assetType, ",{$action->objectType},") !== false && empty($action->project) && empty($action->product) && empty($action->execution))
