@@ -133,7 +133,7 @@ class story extends control
         if(!isset($params['needNotReview'])) $extra .= ',needNotReview={needNotReview}';
         if(in_array($this->config->edition, array('max', 'ipd'))) $extra .= ",source={source},sourceNote={sourceNote}";
         $this->view->needNotReview = $params['needNotReview'] ?? !$this->view->forceReview;
-        $this->view->loadUrl       = $this->createLink($storyType, $this->app->rawMethod, "productID={product}&branch={branch}&moduleID=$moduleID&story=$storyID&objectID=$objectID&bugID=$bugID&planID=$planID&todoID=$todoID&extra=$extra&storyType=$storyType");
+        $this->view->loadUrl       = $this->createLink($this->app->rawModule, $this->app->rawMethod, "productID={product}&branch={branch}&moduleID=$moduleID&story=$storyID&objectID=$objectID&bugID=$bugID&planID=$planID&todoID=$todoID&extra=$extra&storyType=$storyType");
 
         $this->display();
     }
