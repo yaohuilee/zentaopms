@@ -505,3 +505,82 @@ window.loadMergeBtn = function(mergeType)
     $.cookie.set('mergeType', mergeType, {expires:config.cookieLife, path:config.webRoot});
     loadCurrentPage('#mr-detail');
 }
+
+/**
+ * Toggle fullscreen for files tab and recalculate content heights.
+ *
+ * @access public
+ * @return void
+ */
+window.toggleFilesFullscreen = function()
+{
+    var $target   = $('#files-tab');
+    var wasInFull = $target.hasClass('is-in-fullscreen');
+
+    $target.fullscreen();
+
+    /* Reset height caches so getIframeHeight/getSidebarHeight recalculate. */
+    iframeHeight  = 0;
+    sidebarHeight = 0;
+
+    setTimeout(function()
+    {
+        if(!wasInFull)
+        {
+            /* Entering fullscreen: cache fullscreen-height values. */
+            iframeHeight  = $(window).height() - 110;
+            sidebarHeight = $(window).height() - 100;
+        }
+
+        updateFilesContentHeight();
+    }, 300);
+};
+
+/**
+ * Update iframe and sidebar heights to match current viewport.
+ *
+ * @access public
+ * @return void
+ */
+window.updateFilesContentHeight = function()
+{
+    var height     = getIframeHeight();
+    var treeHeight = getSidebarHeight();
+    var isFS       = $('#files-tab').hasClass('is-in-fullscreen');
+
+    $('#files-tab iframe.repo-iframe').each(function()
+    {
+        $(this).attr('height', height);
+    });
+
+    $('#monacoTree').css('height', (treeHeight - (isFS ? 88 : 8)) + 'px');
+};
+
+/* Watch for ZUI fullscreen exit (close button / ESC) and recalculate heights. */
+$(function()
+{
+    var $target = $('#files-tab');
+    if(!$target.length) return;
+
+    var observer = new MutationObserver(function(mutations)
+    {
+        mutations.forEach(function(mutation)
+        {
+            if(mutation.type === 'attributes' && mutation.attributeName === 'class')
+            {
+                if(!$target.hasClass('is-in-fullscreen'))
+                {
+                    /* Fullscreen exited via ZUI close button or ESC. */
+                    iframeHeight  = 0;
+                    sidebarHeight = 0;
+                    setTimeout(function()
+                    {
+                        updateFilesContentHeight();
+                    }, 300);
+                }
+            }
+        });
+    });
+
+    observer.observe($target[0], {attributes: true, attributeFilter: ['class']});
+});
