@@ -2650,7 +2650,6 @@ class repo extends control
         $this->view->allRepo    = $isAllRepo;
         $this->view->repoPairs  = $repoPairs;
         $this->view->repos      = $this->repo->getList($objectID);
-        $this->view->repoGroup  = $this->repo->getRepoGroup($this->app->tab);
         $this->view->orderBy    = $orderBy;
         $this->view->repoID     = $repoID;
         $this->view->objectID   = $objectID;
@@ -2736,9 +2735,9 @@ class repo extends control
         if($objectID != 0)
         {
             $repoGroup = $this->repo->getRepoGroup('project', $objectID,  $this->config->repo->notSyncSCM);
-            if($repoGroup)
+            if($repoGroup && !empty($repoGroup['product']))
             {
-                foreach($repoGroup as $groups)
+                foreach($repoGroup['product'] as $groups)
                 {
                     if(empty($groups['items'])) continue;
                     foreach ($groups['items'] as $groupItem) $repoPairs[$groupItem['id']] = $groupItem['text'];
@@ -2802,6 +2801,7 @@ class repo extends control
     public function createTag(int $objectID, int $repoID = 0)
     {
         $repoGroup = $this->repo->getRepoGroup('project', $objectID);
+        $repoGroup = zget($repoGroup, 'product', array());
         $repoPairs = [];
         if($repoGroup)
         {
