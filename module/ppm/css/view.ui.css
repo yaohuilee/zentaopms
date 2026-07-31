@@ -87,3 +87,8 @@ code {padding: 2px 4px; font-size: 90%; color: #37474f; background-color: #f3f5f
 .is-sidebar-resizing .repo-iframe {pointer-events: none;}
 #mr-view menu.nav {border-bottom: 1px solid #ddd}
 #mr-view .nav-item>a.active {border-bottom-color: var(--color-primary-500) !important; border-bottom-width: 2px; margin-bottom: -1px;}
+
+#files-tab.is-in-fullscreen {display: flex; flex-direction: column; background: var(--zt-page-bg);}
+#files-tab.is-in-fullscreen #diff-sidebar-left {flex: 1; min-height: 0; display: flex; gap: 1rem; justify-content: space-between; flex-direction: row-reverse; margin-top: 10px;}
+#files-tab.is-in-fullscreen #fileTabs {flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0;}
+#files-tab.is-in-fullscreen #monacoTabs {flex: 1; min-height: 0;}

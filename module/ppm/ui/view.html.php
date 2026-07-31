@@ -39,12 +39,6 @@ jsVar('sseURL', "{$config->devops->gitfoxURL}:{$config->devops->gitfoxPort}/api/
 
 h:css("#monacoTree .text-clip {overflow: visible;}");
 
-$dropMenus = array();
-if(common::hasPriv('repo', 'download')) $dropMenus[] = array('text' => $this->lang->repo->downloadDiff, 'icon' => 'download', 'url' => $this->repo->createLink('download', "repoID={$ppm->repoID}&path=$currentEntry&fromRevision=$oldRevision&toRevision=$newRevision&type=path"), 'target' => '_self');
-
-$dropMenus[] = array('text' => $this->lang->repo->viewDiffList['inline'], 'icon' => 'snap-house', 'id' => 'inline', 'class' => 'inline-appose');
-$dropMenus[] = array('text' => $this->lang->repo->viewDiffList['appose'], 'icon' => 'col-archive', 'id' => 'appose', 'class' => 'inline-appose');
-
 $encoding      = empty($encoding) ? '' : $encoding;
 $checkMessage  = zget($checkResult, 'message', '');
 $conflictFiles = zget($checkResult, 'conflictFiles', array());
@@ -186,7 +180,7 @@ div
                         )
                     )
                 ),
-                div(setClass('tab-content'), $domBox),
+                div(setID("$type-tab"), setClass('tab-content'), $domBox),
             )
         ),
         center

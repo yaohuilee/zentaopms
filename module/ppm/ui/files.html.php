@@ -9,6 +9,11 @@ declare(strict_types=1);
  * @link        https://www.zentao.net
  */
 namespace zin;
+$dropMenus = array();
+if(common::hasPriv('repo', 'download')) $dropMenus[] = array('text' => $this->lang->repo->downloadDiff, 'icon' => 'download', 'url' => $this->repo->createLink('download', "repoID={$ppm->repoID}&path=$currentEntry&fromRevision=$oldRevision&toRevision=$newRevision&type=path"), 'target' => '_self');
+
+$dropMenus[] = array('text' => $this->lang->repo->viewDiffList['inline'], 'icon' => 'snap-house', 'id' => 'inline', 'class' => 'inline-appose');
+$dropMenus[] = array('text' => $this->lang->repo->viewDiffList['appose'], 'icon' => 'col-archive', 'id' => 'appose', 'class' => 'inline-appose');
 
 $domBox = empty($diffs) ? p(setClass('detail-content'), $lang->ppm->noChanges) : div(
     setID('diff-sidebar-left'),
@@ -34,6 +39,14 @@ $domBox = empty($diffs) ? p(setClass('detail-content'), $lang->ppm->noChanges) :
                     )
                 ),
                 div(set::id('tab-' . $currentEntry))
+            ),
+            btn
+            (
+                setClass('btn ghost square absolute z-10 pull-right text-black'),
+                setStyle('right', '40px'),
+                setStyle('top', '5px'),
+                icon('fullscreen'),
+                set::url('javascript:toggleFilesFullscreen();')
             ),
             dropdown
             (
