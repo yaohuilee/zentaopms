@@ -610,35 +610,43 @@ class repoModel extends model
 
         /* Get project products. */
         $projectProductIds = in_array($type, array('project', 'execution')) ? $this->loadModel('product')->getProductIDByProject($projectID, false) : array();
+        $spaces            = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->fetchPairs('id', 'name');
 
         /* Get repo data for dropmenu. */
-        $repoPairs = array();
+        $repoPairs      = array();
+        $spaceRepoPairs = array();
         foreach($repos as $repo)
         {
-            if($this->checkPriv($repo))
+            $repoItem = array();
+            $repoItem['id']       = $repo->id;
+            $repoItem['text']     = $repo->name;
+            $repoItem['keys']     = zget(common::convert2Pinyin(array($repo->name)), $repo->name, '');
+            $repoItem['data-app'] = $this->app->tab;
+            if(!isset($spaceRepoPairs[$repo->spaceID]))
             {
-                $repoItem = array();
-                $repoItem['id']       = $repo->id;
-                $repoItem['text']     = $repo->name;
-                $repoItem['keys']     = zget(common::convert2Pinyin(array($repo->name)), $repo->name, '');
-                $repoItem['data-app'] = $this->app->tab;
+                $spaceRepoPairs[$repo->spaceID]['id']    = $repo->spaceID;
+                $spaceRepoPairs[$repo->spaceID]['type']  = 'space';
+                $spaceRepoPairs[$repo->spaceID]['text']  = zget($spaces, $repo->spaceID);
+                $spaceRepoPairs[$repo->spaceID]['items'] = array();
+            }
 
-                $repoProducts = explode(',', $repo->product);
-                foreach($repoProducts as $productID)
+            $spaceRepoPairs[$repo->spaceID]['items'][] = $repoItem;
+
+            $repoProducts = explode(',', $repo->product);
+            foreach($repoProducts as $productID)
+            {
+                if(!$productID) continue;
+                if(in_array($type, array('project', 'execution')) && $projectID && !in_array($productID, $projectProductIds)) continue;
+
+                if(strpos(",$repo->product,", ",$productID,") !== false)
                 {
-                    if(!$productID) continue;
-                    if(in_array($type, array('project', 'execution')) && $projectID && !in_array($productID, $projectProductIds)) continue;
-
-                    if(strpos(",$repo->product,", ",$productID,") !== false)
-                    {
-                        if(!isset($repoPairs[$productID])) $repoPairs[$productID] = $productItems[$productID];
-                        $repoPairs[$productID]['items'][] = $repoItem;
-                    }
+                    if(!isset($repoPairs[$productID])) $repoPairs[$productID] = $productItems[$productID];
+                    $repoPairs[$productID]['items'][] = $repoItem;
                 }
             }
         }
 
-        return $repoPairs;
+        return array('space' => $spaceRepoPairs, 'product' => $repoPairs);
     }
 
     /**
