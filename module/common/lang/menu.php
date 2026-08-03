@@ -579,6 +579,9 @@ $lang->devops->menu->review['subMenu'] = new stdclass();
 $lang->devops->menu->review['subMenu']->review   = array('link' => "{$lang->devops->reviewIssue}|repo|review|repoID=%s", 'subModule' => 'bug');
 $lang->devops->menu->review['subMenu']->codescan = array('link' => "{$lang->devops->scanIssue}|codescan|issue|repoID=%s", 'alias' => 'issueview', 'subModule' => 'bug', 'exclude' => 'bug-view');
 
+$lang->devops->menu->review['menuOrder'][10] = 'review';
+$lang->devops->menu->review['menuOrder'][15] = 'codescan';
+
 $lang->devops->menu->settings = array('link' => "{$lang->repoSettings->common}|repobranchtype|browse|repoID=%s", 'subModule' => 'reporeviewflow,repobranchtype', 'alias' => 'browsewebhooks,browserule,createwebhook,editwebhook,logwebhook,setarchive');
 
 $lang->devops->menu->settings['subMenu'] = new stdclass();
