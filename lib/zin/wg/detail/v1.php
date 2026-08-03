@@ -464,7 +464,8 @@ CSS;
     {
         global $config;
 
-        $mainSections = $this->buildMainSections();
+        $mainSections    = $this->buildMainSections();
+        $enableProcedure = !empty($config->enableAITeammate) && $config->edition != 'open';
         return div
         (
             setClass('detail-main flex-auto col gap-2 min-w-0'),
@@ -478,6 +479,11 @@ CSS;
             $this->block('sections'),
             !empty($config->enableAITeammate) && hasPriv('aitask', 'browse') ? $this->buildAITasks() : null,
             $this->children(),
+            $enableProcedure ? aiprocedureEntry
+            (
+                set::objectType($this->prop('objectType')),
+                set::objectID((int)$this->prop('objectID')),
+            ) : null,
             $this->buildHistory(),
             $this->buildActions()
         );
