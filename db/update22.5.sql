@@ -1,6 +1,3 @@
-ALTER TABLE `zt_ai_agent` MODIFY COLUMN `skill` varchar(255) NOT NULL DEFAULT '' COMMENT '关联的技能ID列表';
-UPDATE `zt_ai_agent` SET `skill` = '' WHERE `skill` = '0';
-
 -- DROP TABLE IF EXISTS `zt_ai_vectorqueue`;
 CREATE TABLE IF NOT EXISTS `zt_ai_vectorqueue` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
