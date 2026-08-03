@@ -90,25 +90,6 @@ class zaiModelTest extends baseTest
     }
 
     /**
-     * Test getNextTarget method.
-     *
-     * @param  string $type
-     * @param  int $id
-     * @access public
-     * @return object|null
-     */
-    public function getNextTargetTest($type, $id)
-    {
-        $result = $this->instance->getNextTarget($type, $id);
-        if(dao::isError()) return dao::getError();
-
-        if(is_null($result) || $result === false) return false;
-        if(is_object($result) && empty((array)$result)) return false;
-
-        return $result;
-    }
-
-    /**
      * Test getNextSyncType static method.
      *
      * @param  string $currentType
@@ -385,6 +366,95 @@ class zaiModelTest extends baseTest
         $result = $this->instance->enableVectorization($force);
         if(dao::isError()) return dao::getError();
 
+        return $result;
+    }
+
+    /**
+     * Test getTarget method.
+     *
+     * @param  string $type
+     * @param  int    $id
+     * @access public
+     * @return object|bool
+     */
+    public function getTargetTest($type, $id)
+    {
+        $result = $this->instance->getTarget($type, $id);
+        if(dao::isError()) return dao::getError();
+        if(is_null($result) || $result === false) return false;
+        return $result;
+    }
+
+    /**
+     * Test pushToVectorQueue method.
+     *
+     * @param  string $objectType
+     * @param  int    $objectID
+     * @param  string $actionType
+     * @param  bool   $updateCursor
+     * @access public
+     * @return bool
+     */
+    public function pushToVectorQueueTest($objectType, $objectID, $actionType = '', $updateCursor = true)
+    {
+        $result = $this->instance->pushToVectorQueue($objectType, $objectID, $actionType, $updateCursor);
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
+
+    /**
+     * Test enqueueVectorTarget method.
+     *
+     * @param  string $type
+     * @param  int    $id
+     * @param  bool   $updateCursor
+     * @access public
+     * @return bool
+     */
+    public function enqueueVectorTargetTest($type, $id, $updateCursor = true)
+    {
+        $result = $this->instance->enqueueVectorTarget($type, $id, $updateCursor);
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
+
+    /**
+     * Test enqueuePendingTargets method.
+     *
+     * @param  int $limit
+     * @access public
+     * @return int
+     */
+    public function enqueuePendingTargetsTest($limit = 0)
+    {
+        $result = $this->instance->enqueuePendingTargets($limit);
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
+
+    /**
+     * Test ensureEnqueueCursors method.
+     *
+     * @access public
+     * @return object
+     */
+    public function ensureEnqueueCursorsTest()
+    {
+        $result = $this->instance->ensureEnqueueCursors();
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
+
+    /**
+     * Test refreshVectorizedStatus method.
+     *
+     * @access public
+     * @return object
+     */
+    public function refreshVectorizedStatusTest()
+    {
+        $result = $this->instance->refreshVectorizedStatus();
+        if(dao::isError()) return dao::getError();
         return $result;
     }
 

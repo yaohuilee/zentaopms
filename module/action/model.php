@@ -131,6 +131,8 @@ class actionModel extends model
 
         $this->saveIndex($objectType, $objectID, $actionType);
 
+        $this->loadModel('zai')->pushToVectorQueue($objectType, $objectID, $actionType);
+
         $changeFunc = 'after' . ucfirst($objectType);
         if(method_exists($this, $changeFunc)) call_user_func_array(array($this, $changeFunc), array($action, $actionID));
 
