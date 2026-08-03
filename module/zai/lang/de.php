@@ -15,9 +15,9 @@ $lang->zai->vectorizedAlreadyEnabled = 'Datenvektorisierung ist bereits aktivier
 $lang->zai->vectorizedEnabled        = 'Datenvektorisierung aktiviert.';
 $lang->zai->authenticationFailed     = 'Authentifizierung fehlgeschlagen!';
 $lang->zai->syncRequestFailed        = 'Synchronisierungsanfrage fehlgeschlagen, bitte versuchen Sie es später erneut';
-$lang->zai->syncingHint              = 'Das Schließen dieser Seite während der Synchronisierung pausiert den Synchronisierungsprozess.';
-$lang->zai->syncedWithFailedHint     = 'Einige Datensynchronisierungen sind fehlgeschlagen, bitte versuchen Sie es später erneut';
-$lang->zai->cannotFindMemoryInZai    = 'Kann Wissensdatenbank mit angegebenem Schlüssel in ZAI nicht finden, bitte setzen Sie das Synchronisierungsziel zurück.';
+$lang->zai->syncingHint              = 'Vektorisierte Daten werden im Hintergrund automatisch synchronisiert.';
+$lang->zai->syncedWithFailedHint     = 'Einige Datensynchronisierungen sind fehlgeschlagen. Das System versucht es automatisch erneut.';
+$lang->zai->cannotFindMemoryInZai    = 'Kann Wissensdatenbank mit angegebenem Schlüssel in ZAI nicht finden, bitte aktivieren Sie die Vektorisierung erneut.';
 $lang->zai->confirmResetSync         = 'Möchten Sie den Synchronisierungsstatus zurücksetzen? Dies erstellt eine neue Wissensdatenbank in ZAI.';
 $lang->zai->settingTips              = 'Please install <a class="btn btn-link text-primary px-1" style="text-decoration: none;" href="%s" target="_blank">ZAI service</a> to get the key.';
 
