@@ -15,10 +15,11 @@ $lang->zai->vectorizedAlreadyEnabled = 'Data vectorization is already enabled.';
 $lang->zai->vectorizedEnabled        = 'Data vectorization enabled.';
 $lang->zai->authenticationFailed     = 'Authentication failed!';
 $lang->zai->syncRequestFailed        = 'Sync request failed, please try again later';
-$lang->zai->syncingHint              = 'Closing this page during sync will pause the sync process.';
-$lang->zai->syncedWithFailedHint     = 'Some data sync failed, please try again later';
-$lang->zai->cannotFindMemoryInZai    = 'Cannot find knowledge base with specified key in ZAI, please reset sync target.';
+$lang->zai->syncingHint              = 'Vectorization data will be synced automatically in the background.';
+$lang->zai->syncedWithFailedHint     = 'Some data sync failed. The system will retry automatically.';
+$lang->zai->cannotFindMemoryInZai    = 'Cannot find knowledge base with specified key in ZAI, please enable vectorization again.';
 $lang->zai->confirmResetSync         = 'Do you want to reset sync status? This will create a new knowledge base in ZAI.';
+$lang->zai->lastFailReason           = 'Failure Reason';
 $lang->zai->settingTips              = 'Please install <a class="btn btn-link text-primary px-1" style="text-decoration: none;" href="%s" target="_blank">ZAI service</a> to get the key.';
 
 $lang->zai->zentaoVectorization       = 'Zentao Data Vectorization';

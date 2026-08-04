@@ -153,16 +153,18 @@ class zaiModel extends model
             $info = new stdClass();
             $info->key             = '';
             $info->status          = 'disabled';
-            $info->syncedTime      = 0;
             $info->syncedCount     = 0;
             $info->syncFailedCount = 0;
             $info->syncTime        = 0;
             $info->syncingType     = zaiModel::getNextSyncType();
             $info->syncingID       = 0;
             $info->syncDetails     = new stdClass();
+            $info->enqueueMaxIDs   = new stdClass();
             $info->createdAt       = time();
-            $info->createdBy       = $this->app->user->account;
+            $info->createdBy       = !empty($this->app->user->account) ? $this->app->user->account : 'system';
         }
+        if(!isset($info->enqueueMaxIDs) || !is_object($info->enqueueMaxIDs)) $info->enqueueMaxIDs = new stdClass();
+        if(!isset($info->syncDetails) || !is_object($info->syncDetails)) $info->syncDetails = new stdClass();
         return $info;
     }
 
@@ -377,43 +379,46 @@ class zaiModel extends model
 
         if(empty($result['data']['id'])) return array('result' => 'fail', 'message' => $this->lang->zai->vectorizedFailed);
 
-        $info->status          = 'wait';
+        $this->dao->delete()->from(TABLE_AI_VECTORQUEUE)->exec();
+
+        $info->status          = 'syncing';
         $info->key             = $result['data']['id'];
-        $info->syncedTime      = 0;
         $info->syncedCount     = 0;
         $info->syncFailedCount = 0;
         $info->syncTime        = 0;
         $info->syncingType     = zaiModel::getNextSyncType();
         $info->syncingID       = 0;
         $info->syncDetails     = new stdClass();
+        $info->enqueueMaxIDs   = new stdClass();
+        foreach(array_keys(static::getSyncTypes()) as $type) $info->enqueueMaxIDs->$type = 0;
         $this->setVectorizedInfo($info);
 
         return array('result' => 'success', 'info' => $info, 'data' => $result['data'], 'message' => $this->lang->zai->vectorizedEnabled);
     }
 
     /**
-     * 获取下一个指定类型的对象。
-     * 从数据库查询对应 $syncingType 的下一个待同步的对象，即 ID 大于 $syncingID 的且没有被删除的下一个对象。如果未查询到，则返回 null。
+     * 获取指定类型和 ID 的对象。
+     * Get target by type and exact ID.
      *
      * @access public
      * @param string $type
-     * @param int $id
+     * @param int    $id
      * @return object|null
      */
-    public function getNextTarget($type, $id)
+    public function getTarget($type, $id)
     {
         if(!isset(static::$syncTables[$type])) return null;
 
-        $table = static::$syncTables[$type];
-        $target = $this->dao->select('*')->from($table)->where('id')->ge($id)->andWhere('deleted')->eq(0)->orderby('id_asc')->fetch();
+        $table  = static::$syncTables[$type];
+        $target = $this->dao->select('*')->from($table)->where('id')->eq($id)->andWhere('deleted')->eq(0)->fetch();
         if(!$target) return null;
 
         return $target;
     }
 
     /**
-     * 同步下一个目标。
-     * Sync next target.
+     * 同步指定类型和 ID 的目标到知识库。
+     * Sync target by type and ID to knowledge base.
      *
      * @access public
      * @param string $memoryID 知识库 ID。The ID of knowledge base.
@@ -423,7 +428,7 @@ class zaiModel extends model
      */
     public function syncNextTarget($memoryID, $type, $id)
     {
-        $target = $this->getNextTarget($type, $id);
+        $target = $this->getTarget($type, $id);
         if(!$target) return null;
 
         $markdownData = static::convertTargetToMarkdown($type, $target);
@@ -454,6 +459,318 @@ class zaiModel extends model
         }
 
         return array('result' => 'success', 'target' => $target, 'id' => $target->id, 'data' => $result['data'], 'syncedData' => $syncData);
+    }
+
+    /**
+     * 将对象推入向量化队列（存在则更新）。
+     * Push object into vectorization queue (upsert).
+     *
+     * @access public
+     * @param string $objectType
+     * @param int    $objectID
+     * @param string $actionType
+     * @param bool   $updateCursor
+     * @return bool
+     */
+    public function pushToVectorQueue(string $objectType, int $objectID, string $actionType = '', bool $updateCursor = true): bool
+    {
+        $objectType = strtolower($objectType);
+        $actionType = strtolower($actionType);
+
+        if($actionType == 'deleted') return false;
+        if(!isset(static::$syncTables[$objectType])) return false;
+
+        $syncTypes = static::getSyncTypes();
+        if(!isset($syncTypes[$objectType])) return false;
+
+        $info = $this->getVectorizedInfo();
+        if(empty($info->key) || $info->status === 'disabled') return false;
+
+        return $this->enqueueVectorTarget($objectType, $objectID, $updateCursor);
+    }
+
+    /**
+     * 写入或更新向量化队列项。
+     * Enqueue or update a vectorization queue item.
+     *
+     * @access public
+     * @param string $type
+     * @param int    $id
+     * @param bool   $updateCursor
+     * @return bool
+     */
+    public function enqueueVectorTarget(string $type, int $id, bool $updateCursor = true): bool
+    {
+        if(!isset(static::$syncTables[$type]) || $id <= 0) return false;
+
+        $now  = helper::now();
+        $data = new stdClass();
+        $data->objectType   = $type;
+        $data->objectID     = $id;
+        $data->retries      = 0;
+        $data->lastError    = '';
+        $data->lastSyncTime = null;
+        $data->createdDate  = $now;
+        $data->editedDate   = $now;
+        $this->dao->replace(TABLE_AI_VECTORQUEUE)->data($data)->exec();
+
+        if(dao::isError()) return false;
+
+        if($updateCursor)
+        {
+            $info = $this->getVectorizedInfo();
+            if(!isset($info->enqueueMaxIDs->$type) || (int)$info->enqueueMaxIDs->$type < $id)
+            {
+                $info->enqueueMaxIDs->$type = $id;
+                if($info->status == 'synced') $info->status = 'syncing';
+                $this->setVectorizedInfo($info);
+            }
+            elseif($info->status == 'synced')
+            {
+                $info->status = 'syncing';
+                $this->setVectorizedInfo($info);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 确保所有可同步类型都有入队游标（支持新增对象类型时自动增量）。
+     * Ensure enqueue cursors exist for all syncable types.
+     *
+     * @access public
+     * @return object
+     */
+    public function ensureEnqueueCursors()
+    {
+        $info    = $this->getVectorizedInfo();
+        $changed = false;
+        foreach(array_keys(static::getSyncTypes()) as $type)
+        {
+            if(!isset($info->enqueueMaxIDs->$type))
+            {
+                $info->enqueueMaxIDs->$type = 0;
+                $changed = true;
+            }
+        }
+        if($changed) $this->setVectorizedInfo($info);
+        return $info;
+    }
+
+    /**
+     * 按游标分批将历史对象入队。
+     * Enqueue historical targets by cursors in batches.
+     *
+     * @access public
+     * @param int $limit
+     * @return int
+     */
+    public function enqueuePendingTargets(int $limit = 0): int
+    {
+        if($limit <= 0) $limit = (int)$this->config->zai->vectorQueueLimit;
+
+        $info = $this->ensureEnqueueCursors();
+        if(empty($info->key) || $info->status === 'disabled') return 0;
+
+        $enqueued = 0;
+        foreach(array_keys(static::getSyncTypes()) as $type)
+        {
+            $remaining = $limit - $enqueued;
+            if($remaining <= 0) break;
+
+            $table  = static::$syncTables[$type];
+            $cursor = (int)$info->enqueueMaxIDs->$type;
+            $rows   = $this->dao->select('id')->from($table)
+                ->where('id')->gt($cursor)
+                ->andWhere('deleted')->eq(0)
+                ->orderBy('id_asc')
+                ->limit($remaining)
+                ->fetchAll();
+
+            foreach($rows as $row)
+            {
+                if($this->enqueueVectorTarget($type, (int)$row->id, false))
+                {
+                    $info->enqueueMaxIDs->$type = (int)$row->id;
+                    $enqueued++;
+                }
+            }
+        }
+
+        if($enqueued > 0)
+        {
+            if($info->status !== 'syncing') $info->status = 'syncing';
+            $info->syncTime = time();
+            $this->setVectorizedInfo($info);
+        }
+
+        return $enqueued;
+    }
+
+    /**
+     * 消费向量化队列。
+     * Process vectorization queue.
+     *
+     * @access public
+     * @param int $limit
+     * @return int
+     */
+    public function processVectorQueue(int $limit = 0): int
+    {
+        if($limit <= 0) $limit = (int)$this->config->zai->vectorQueueLimit;
+        $maxRetries = (int)$this->config->zai->vectorMaxRetries;
+
+        $info = $this->getVectorizedInfo();
+        if(empty($info->key) || $info->status === 'disabled') return 0;
+
+        $items = $this->dao->select('*')->from(TABLE_AI_VECTORQUEUE)
+            ->where('retries')->lt($maxRetries)
+            ->orderBy('id_asc')
+            ->limit($limit)
+            ->fetchAll();
+        if(empty($items)) return 0;
+
+        if($info->status !== 'syncing') $info->status = 'syncing';
+        $info->syncTime = time();
+        $processed      = 0;
+
+        foreach($items as $item)
+        {
+            $type = $item->objectType;
+            $id   = (int)$item->objectID;
+            if(!isset($info->syncDetails->$type))
+            {
+                $detail = new stdClass();
+                $detail->synced       = 0;
+                $detail->failed       = 0;
+                $detail->lastError    = '';
+                $detail->lastFailTime = 0;
+                $info->syncDetails->$type = $detail;
+            }
+
+            $info->syncingType = $type;
+            $info->syncingID   = $id;
+
+            $result = $this->syncNextTarget($info->key, $type, $id);
+            $now    = helper::now();
+
+            if(!empty($result['result']) && $result['result'] == 'success')
+            {
+                $this->dao->delete()->from(TABLE_AI_VECTORQUEUE)->where('id')->eq($item->id)->exec();
+                $info->syncedCount++;
+                $info->syncDetails->$type->synced++;
+                $processed++;
+                continue;
+            }
+
+            /* 对象已删除或不存在：直接出队，不记失败。 */
+            if($result == null)
+            {
+                $this->dao->delete()->from(TABLE_AI_VECTORQUEUE)->where('id')->eq($item->id)->exec();
+                $processed++;
+                continue;
+            }
+
+            $retries = (int)$item->retries + 1;
+            $message = isset($result['message']) ? $result['message'] : 'unknown error';
+            $this->dao->update(TABLE_AI_VECTORQUEUE)
+                ->set('retries')->eq($retries)
+                ->set('lastError')->eq($message)
+                ->set('lastSyncTime')->eq($now)
+                ->set('editedDate')->eq($now)
+                ->where('id')->eq($item->id)
+                ->exec();
+
+            $info->syncDetails->$type->lastError = $message;
+            $info->syncDetails->$type->lastFailTime = time();
+
+            if($retries >= $maxRetries)
+            {
+                $this->dao->delete()->from(TABLE_AI_VECTORQUEUE)->where('id')->eq($item->id)->exec();
+                $info->syncFailedCount++;
+                $info->syncDetails->$type->failed++;
+            }
+
+            $processed++;
+
+            if(!empty($result['fatal']))
+            {
+                $info->status = 'synced';
+                $this->setVectorizedInfo($info);
+                return $processed;
+            }
+        }
+
+        $this->setVectorizedInfo($info);
+        return $processed;
+    }
+
+    /**
+     * 自动向量化：分批入队并消费队列，更新同步状态。
+     * Auto vectorization: enqueue and process queue, then refresh status.
+     *
+     * @access public
+     * @return array
+     */
+    public function syncVectorization(): array
+    {
+        $info = $this->getVectorizedInfo();
+        if(empty($info->key) || $info->status === 'disabled')
+        {
+            return array('result' => 'skip', 'enqueued' => 0, 'processed' => 0, 'info' => $info);
+        }
+
+        $limit     = (int)$this->config->zai->vectorQueueLimit;
+        $enqueued  = $this->enqueuePendingTargets($limit);
+        $processed = $this->processVectorQueue($limit);
+
+        $info = $this->refreshVectorizedStatus();
+        return array('result' => 'success', 'enqueued' => $enqueued, 'processed' => $processed, 'info' => $info);
+    }
+
+    /**
+     * 根据队列与入队游标刷新向量化状态。
+     * Refresh vectorization status by queue and enqueue cursors.
+     *
+     * @access public
+     * @return object
+     */
+    public function refreshVectorizedStatus()
+    {
+        $info = $this->ensureEnqueueCursors();
+        if(empty($info->key) || $info->status === 'disabled') return $info;
+
+        $pending = (int)$this->dao->select('COUNT(1) AS count')->from(TABLE_AI_VECTORQUEUE)->fetch('count');
+        $hasMore = false;
+        foreach(array_keys(static::getSyncTypes()) as $type)
+        {
+            $table  = static::$syncTables[$type];
+            $cursor = (int)$info->enqueueMaxIDs->$type;
+            $nextID = $this->dao->select('id')->from($table)
+                ->where('id')->gt($cursor)
+                ->andWhere('deleted')->eq(0)
+                ->orderBy('id_asc')
+                ->limit(1)
+                ->fetch('id');
+            if($nextID)
+            {
+                $hasMore = true;
+                break;
+            }
+        }
+
+        if($pending > 0 || $hasMore)
+        {
+            $info->status = 'syncing';
+        }
+        else
+        {
+            $info->status = 'synced';
+        }
+
+        $this->setVectorizedInfo($info);
+        return $info;
     }
 
     /**
@@ -882,6 +1199,47 @@ class zaiModel extends model
     }
 
     /**
+     * 构造进度列表。
+     * Build progress list.
+     *
+     * @access public
+     * @param object $info
+     * @param array  $syncTypes
+     * @return array
+     */
+    public function buildProgressList(object $info, array $syncTypes): array
+    {
+        $progressList = array();
+        $maxCount     = 100;
+        foreach($syncTypes as $type => $text)
+        {
+            $detail = isset($info->syncDetails->$type) ? $info->syncDetails->$type : null;
+            $synced = $detail && isset($detail->synced) ? (int)$detail->synced : 0;
+            $failed = $detail && isset($detail->failed) ? (int)$detail->failed : 0;
+            $maxCount = max($maxCount, $synced + $failed);
+
+            $item = new stdClass();
+            $item->type         = $type;
+            $item->text         = $text;
+            $item->synced       = $synced;
+            $item->failed       = $failed;
+            $item->total        = $synced + $failed;
+            $item->lastError    = $detail && !empty($detail->lastError) ? $detail->lastError : '';
+            $item->lastFailTime = $detail && !empty($detail->lastFailTime) ? date('Y-m-d H:i:s', (int)$detail->lastFailTime) : '';
+            $progressList[] = $item;
+        }
+
+        foreach($progressList as $item)
+        {
+            $item->barWidth  = max(1, (int)round(700 * $item->total / $maxCount));
+            $item->syncedPct = $item->total ? round(100 * $item->synced / $item->total, 2) : 0;
+            $item->failedPct = $item->total ? round(100 * $item->failed / $item->total, 2) : 0;
+        }
+
+        return $progressList;
+    }
+
+    /**
      * 获取下一个同步类型。
      * Get next sync type.
      *
@@ -914,8 +1272,6 @@ class zaiModel extends model
      */
     public static function convertTargetToMarkdown($type, $target, array $langData = [])
     {
-        global $app;
-
         $funcName = 'convert' . ucfirst($type) . 'ToMarkdown';
         if(method_exists(static::class, $funcName))
         {

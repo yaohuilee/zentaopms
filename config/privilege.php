@@ -39,6 +39,7 @@ $config->openMethods[] = 'user.resetpassword';
 $config->openMethods[] = 'gitfox.devopsintroduction';
 $config->openMethods[] = 'gitfox.installgitfox';
 $config->openMethods[] = 'gitfox.ajaxcheckgitfoxhealth';
+$config->openMethods[] = 'zai.syncvectorization';
 
 /* 登录用户可以访问的方法。The methods that can be accessed by the logged users. */
 $config->logonMethods   = [];
@@ -533,7 +534,6 @@ $config->ajaxDependencies['zahost.ajaxgethosts']                              = 
 $config->ajaxDependencies['zahost.ajaxgetservicestatus']                      = 'zahost.view';
 $config->ajaxDependencies['zahost.ajaximagedownloadprogress']                 = ['zahost.browseimage', 'host.browseimage'];
 $config->ajaxDependencies['zai.ajaxenablevectorization']                      = 'zai.vectorized';
-$config->ajaxDependencies['zai.ajaxsyncvectorization']                        = 'zai.vectorized';
 $config->ajaxDependencies['zanode.ajaxgetimage']                              = 'zanode.create';
 $config->ajaxDependencies['zanode.ajaxgetimages']                             = 'zanode.create';
 $config->ajaxDependencies['zanode.ajaxgetservicestatus']                      = 'zanode.view';
