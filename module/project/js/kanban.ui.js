@@ -25,6 +25,13 @@ window.getItem = function(info)
         info.item.titleUrl = $.createLink('project', 'index', `id=${info.item.id}`);
     }
     info.item.titleAttrs = {'class': 'text-black clip', 'title' : info.item.title};
+
+    if(info.item.begin || info.item.end)
+    {
+        var beginText = info.item.begin ? info.item.begin.replace(/-/g, '/') : '';
+        var endText   = info.item.end == LONG_TIME ? longTimeText : (info.item.end ? info.item.end.replace(/-/g, '/') : '');
+        info.item.content = {html: `<div class="text-black">${beginText} ${toText} ${endText}</div>`};
+    }
 }
 
 window.canDrop = function(dragInfo, dropInfo)
