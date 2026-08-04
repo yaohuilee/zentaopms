@@ -460,11 +460,22 @@ class product extends control
      * Delete a product.
      *
      * @param  int    $productID
+     * @param  string $confirm   no|yes
      * @access public
      * @return void
      */
-    public function delete(int $productID)
+    public function delete(int $productID, string $confirm = 'no')
     {
+        if($confirm == 'no')
+        {
+            $confirmMessage   = $this->lang->product->confirmDelete;
+            $unclosedProjects = $this->product->getUnclosedProjectsByProduct($productID);
+            if($unclosedProjects) $confirmMessage = sprintf($this->lang->product->confirmDeleteWithProjects, implode(', ', $unclosedProjects));
+
+            $confirmURL = $this->createLink('product', 'delete', "productID={$productID}&confirm=yes");
+            return $this->send(array('result' => 'success', 'load' => array('confirm' => $confirmMessage, 'confirmed' => $confirmURL)));
+        }
+
         /* Delete product. */
         $this->product->deleteByID($productID);
 

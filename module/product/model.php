@@ -908,6 +908,25 @@ class productModel extends model
     }
 
     /**
+     * 获取关联某产品的未关闭项目列表。
+     * Get unclosed projects linked to a product.
+     *
+     * @param  int    $productID
+     * @access public
+     * @return array
+     */
+    public function getUnclosedProjectsByProduct(int $productID): array
+    {
+        return $this->dao->select('t2.id, t2.name')->from(TABLE_PROJECTPRODUCT)->alias('t1')
+            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
+            ->where('t1.product')->eq($productID)
+            ->andWhere('t2.type')->eq('project')
+            ->andWhere('t2.deleted')->eq('0')
+            ->andWhere('t2.status')->ne('closed')
+            ->fetchPairs('id', 'name');
+    }
+
+    /**
      * 获取与该产品关联的项目列表。
      * Get project list by product.
      *
