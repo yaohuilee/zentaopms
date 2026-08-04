@@ -1096,7 +1096,7 @@ class productZen extends product
                     $cardList = !empty($laneData->{$columnKey}) ? $laneData->{$columnKey} : array();
                     foreach($cardList as $card)
                     {
-                        $items[$laneKey][$columnKey][] = array('id' => $card->id, 'name' => $card->id, 'title' => isset($card->name) ? $card->name : $card->title, 'status' => isset($card->status) ? $card->status : '', 'cardType' => $columnKey, 'delay' => !empty($card->delay) ? $card->delay : 0, 'progress' => isset($card->progress) ? $card->progress : 0, 'marker' => isset($card->marker) ? $card->marker : 0);
+                        $items[$laneKey][$columnKey][] = array('id' => $card->id, 'name' => $card->id, 'title' => isset($card->name) ? $card->name : $card->title, 'status' => isset($card->status) ? $card->status : '', 'cardType' => $columnKey, 'delay' => !empty($card->delay) ? $card->delay : 0, 'progress' => isset($card->progress) ? $card->progress : 0, 'marker' => isset($card->marker) ? $card->marker : 0, 'begin' => !empty($card->begin) && !helper::isZeroDate($card->begin) ? $card->begin : '', 'end' => !empty($card->end) && !helper::isZeroDate($card->end) ? $card->end : '');
 
                         if(!isset($columnCards[$columnKey])) $columnCards[$columnKey] = 0;
                         $columnCards[$columnKey] ++;
@@ -1106,7 +1106,7 @@ class productZen extends product
                             if(!empty($latestExecutions[$card->id]))
                             {
                                 $execution = $latestExecutions[$card->id];
-                                $items[$laneKey]['doingExecution'][] = array('id' => $execution->id, 'name' => $execution->id, 'title' => $execution->name, 'status' => $execution->status, 'cardType' => 'doingExecution', 'delay' => !empty($execution->delay) ? $execution->delay : 0, 'progress' => $execution->progress);
+                                $items[$laneKey]['doingExecution'][] = array('id' => $execution->id, 'name' => $execution->id, 'title' => $execution->name, 'status' => $execution->status, 'cardType' => 'doingExecution', 'delay' => !empty($execution->delay) ? $execution->delay : 0, 'progress' => $execution->progress, 'begin' => !helper::isZeroDate($execution->begin) ? $execution->begin : '', 'end' => !helper::isZeroDate($execution->end) ? $execution->end : '');
 
                                 if(!isset($columnCards['doingExecution'])) $columnCards['doingExecution'] = 0;
                                 $columnCards['doingExecution'] ++;

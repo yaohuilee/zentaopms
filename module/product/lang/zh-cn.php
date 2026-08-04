@@ -44,6 +44,7 @@ $lang->product->checkedProducts  = "已选择%s项{$lang->productCommon}";
 $lang->product->pageSummary      = "本页共%s个{$lang->productCommon}。";
 $lang->product->lineSummary      = "本页共%s个产品线，%s个{$lang->productCommon}。";
 $lang->product->noData           = '暂无数据';
+$lang->product->future           = '待定';
 
 $lang->product->indexAction    = "所有{$lang->productCommon}仪表盘";
 $lang->product->closeAction    = "关闭{$lang->productCommon}";

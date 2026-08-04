@@ -44,6 +44,7 @@ $lang->product->checkedProducts  = "%s {$lang->productCommon}s selected";
 $lang->product->pageSummary      = "%s {$lang->productCommon}s on this page.";
 $lang->product->lineSummary      = "%s product lines and %s {$lang->productCommon}s on this page.";
 $lang->product->noData           = 'No data available.';
+$lang->product->future           = 'TBD';
 
 $lang->product->indexAction    = "All {$lang->productCommon}";
 $lang->product->closeAction    = "Close {$lang->productCommon}";
