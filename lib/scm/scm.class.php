@@ -181,7 +181,57 @@ class scm
         }
 
         if($parse  != 'yes') return implode("\n", $diffs);
-        return $this->engine->parseDiff($diffs);
+        $diffs = $this->engine->parseDiff($diffs);
+        return $this->appendDiffContent($diffs, $fromRevision, $toRevision);
+    }
+
+    /**
+     * 补全每个文件的完整内容用于 diff 计算，同时记录修改片段在完整文件中的行号范围，展示时只显示修改片段。
+     * Append full file content and changed ranges to diff files.
+     *
+     * @param  array  $diffs
+     * @param  string $fromRevision
+     * @param  string $toRevision
+     * @access public
+     * @return array
+     */
+    public function appendDiffContent(array $diffs, string $fromRevision, string $toRevision): array
+    {
+        if(empty($diffs)) return $diffs;
+
+        $oldRevision = $fromRevision == '^' ? $toRevision . '^' : $fromRevision;
+        foreach($diffs as $diffFile)
+        {
+            $diffFile->oldContent = htmlSpecialString($this->cat($diffFile->fileName, $oldRevision));
+            $diffFile->newContent = htmlSpecialString($this->cat($diffFile->fileName, $toRevision));
+
+            $oldRanges = array();
+            $newRanges = array();
+            $contents  = empty($diffFile->contents) ? array() : $diffFile->contents;
+            foreach($contents as $content)
+            {
+                $oldStart = 0; $oldEnd = 0;
+                $newStart = 0; $newEnd = 0;
+                foreach($content->lines as $line)
+                {
+                    if($line->type != 'new')
+                    {
+                        $oldStart = $oldStart ? min($oldStart, (int)$line->oldlc) : (int)$line->oldlc;
+                        $oldEnd   = max($oldEnd, (int)$line->oldlc);
+                    }
+                    if($line->type != 'old')
+                    {
+                        $newStart = $newStart ? min($newStart, (int)$line->newlc) : (int)$line->newlc;
+                        $newEnd   = max($newEnd, (int)$line->newlc);
+                    }
+                }
+                if($oldStart) $oldRanges[] = array($oldStart, $oldEnd);
+                if($newStart) $newRanges[] = array($newStart, $newEnd);
+            }
+            $diffFile->oldRanges = $oldRanges;
+            $diffFile->newRanges = $newRanges;
+        }
+        return $diffs;
     }
 
     /**
