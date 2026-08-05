@@ -80,19 +80,21 @@ class zai extends control
         $zaiSetting = $this->zai->getSetting();
         $syncTypes  = $this->zai->getSyncTypes();
 
-        $status        = empty($zaiSetting) ? 'unavailable' : $info->status;
-        $syncFailed    = ($status === 'synced' && empty($info->syncedCount) && !empty($info->syncFailedCount));
-        $displayStatus = $syncFailed ? 'failed' : $status;
+        $status         = empty($zaiSetting) ? 'unavailable' : $info->status;
+        $syncFailed     = ($status === 'synced' && empty($info->syncedCount) && !empty($info->syncFailedCount));
+        $displayStatus  = $syncFailed ? 'failed' : $status;
+        $pendingEnqueue = ($status !== 'disabled' && $status !== 'unavailable') ? $this->zai->hasPendingEnqueueTargets() : false;
 
-        $this->view->title         = $this->lang->zai->vectorized;
-        $this->view->info          = $info;
-        $this->view->zaiSetting    = $zaiSetting;
-        $this->view->syncTypes     = $syncTypes;
-        $this->view->status        = $status;
-        $this->view->displayStatus = $displayStatus;
-        $this->view->syncFailed    = $syncFailed;
-        $this->view->progressList  = $this->zai->buildProgressList($info, $syncTypes);
-        $this->view->lastSyncTime  = $info->syncTime ? date('Y-m-d H:i:s', (int)$info->syncTime) : '';
+        $this->view->title          = $this->lang->zai->vectorized;
+        $this->view->info           = $info;
+        $this->view->zaiSetting     = $zaiSetting;
+        $this->view->syncTypes      = $syncTypes;
+        $this->view->status         = $status;
+        $this->view->displayStatus  = $displayStatus;
+        $this->view->syncFailed     = $syncFailed;
+        $this->view->pendingEnqueue = $pendingEnqueue;
+        $this->view->progressList   = $this->zai->buildProgressList($info, $syncTypes);
+        $this->view->lastSyncTime   = $info->syncTime ? date('Y-m-d H:i:s', (int)$info->syncTime) : '';
         $this->display();
     }
 
@@ -116,8 +118,44 @@ class zai extends control
     }
 
     /**
-     * 计划任务：自动同步向量化数据。
-     * Cron: Auto sync vectorization data.
+     * Ajax: 分批将历史数据写入向量化队列。
+     * Ajax: Enqueue historical targets into vectorization queue in batches.
+     *
+     * @param  string $type
+     * @param  int    $lastID
+     * @access public
+     * @return void
+     */
+    public function ajaxEnqueueTargets(string $type = '', int $lastID = 0)
+    {
+        $result = $this->zai->batchEnqueueTargets($type, $lastID);
+        if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+        if(!empty($result['finished']))
+        {
+            $this->zai->refreshVectorizedStatus();
+            return $this->send(array('result' => 'finished', 'message' => $result['message']));
+        }
+
+        if(isset($result['result']) && $result['result'] === 'fail')
+        {
+            $message = isset($result['message']) ? $result['message'] : $this->lang->zai->syncRequestFailed;
+            return $this->send(array('result' => 'fail', 'message' => $message));
+        }
+
+        return $this->send(array(
+            'result'  => 'unfinished',
+            'message' => $result['message'],
+            'type'    => $result['type'],
+            'count'   => $result['count'],
+            'lastID'  => $result['lastID'],
+            'next'    => $result['next']
+        ));
+    }
+
+    /**
+     * 计划任务：自动同步向量化数据（消费队列；必要时补历史入队）。
+     * Cron: Auto sync vectorization data (consume queue; backfill enqueue if needed).
      *
      * @access public
      * @return void
@@ -127,11 +165,11 @@ class zai extends control
         $result = $this->zai->syncVectorization();
         if($result['result'] === 'skip')
         {
-            echo "VECTORIZATION DISABLED\n";
+            echo "VECTORIZATION DISABLED";
             return;
         }
 
-        echo "OK enqueued={$result['enqueued']} processed={$result['processed']}\n";
+        echo "OK";
     }
 
     /**
