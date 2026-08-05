@@ -1533,7 +1533,7 @@ class storyModel extends model
             $this->storyTao->doCreateReviewer((int)$twinID, $story->reviewer, $oldStory->version);
         }
 
-        $story->reviewer = implode(',', $story->reviewer);
+        $story->reviewer = $story->prevReviewers = implode(',', $story->reviewer);
         if($story->reviewer) $story->status = 'reviewing';
 
         $this->dao->update(TABLE_STORY)->data($story, 'reviewer')->where('id')->in($twinsIdList)->exec();

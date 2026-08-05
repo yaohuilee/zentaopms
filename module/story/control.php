@@ -897,7 +897,7 @@ class story extends control
 
         /* Get story reviewer. */
         $reviewerList    = $this->story->getReviewerPairs($story->id, $story->version);
-        $story->reviewer = array_keys($reviewerList);
+        $story->reviewer = !empty($reviewerList) ? array_keys($reviewerList) : $story->prevReviewers;
 
         $this->view->story        = $story;
         $this->view->actions      = $this->action->getList('story', $storyID);

@@ -671,7 +671,7 @@ class storyZen extends story
         $fields['stage']['options']          = $this->lang->{$story->type}->stageList;
 
         /* 设置默认值。 */
-        if(empty($fields['reviewer']['default'])) $fields['reviewer']['default'] = implode(',', array_keys($reviewerList));
+        if(empty($fields['reviewer']['default'])) $fields['reviewer']['default'] = !empty($reviewerList) ? implode(',', array_keys($reviewerList)) : $story->prevReviewers;
 
         if($story->type == 'story') unset($fields['stage']['options']['inroadmap'], $fields['stage']['options']['incharter']);
 
@@ -1242,6 +1242,7 @@ class storyZen extends story
         if(dao::isError()) return false;
 
         $storyData = form::data($fields)
+            ->setDefault('prevReviewers', implode(',', array_filter($_POST['reviewer'])))
             ->setIF($this->post->assignedTo, 'assignedDate', helper::now())
             ->setIF($this->post->plan > 0 && $storyType == 'story', 'stage', 'planned')
             ->setIF(!in_array($this->post->source, $this->config->story->feedbackSource), 'feedbackBy', '')
@@ -1334,6 +1335,7 @@ class storyZen extends story
             ->setIF(!isset($_POST['spec']), 'spec', $oldStory->spec)
             ->setIF(!isset($_POST['verify']), 'verify', $oldStory->verify)
             ->setIF(!isset($_POST['estimate']), 'estimate', $oldStory->estimate)
+            ->setIF($this->post->reviewer, 'prevReviewers', implode(',', array_filter($_POST['reviewer'])))
             ->get();
 
         if($this->post->linkStories)      $storyData->linkStories      = implode(',', array_unique($this->post->linkStories));
@@ -1371,6 +1373,7 @@ class storyZen extends story
             ->setDefault('deleteFiles', array())
             ->setDefault('lastEditedDate', $now)
             ->setDefault('version', $oldStory->version)
+            ->setDefault('prevReviewers', implode(',', array_filter($_POST['reviewer'])))
             ->get();
 
         $specChanged        = false;
@@ -1562,14 +1565,15 @@ class storyZen extends story
 
             if(!empty($story->estimate) && $story->estimate < 0) dao::$errors["estimate[$i]"] = sprintf($this->lang->story->errorRecordMinus, $this->lang->story->estimate);
 
-            $story->type       = $storyType;
-            $story->status     = (empty($story->reviewer) && !$forceReview) ? 'active' : 'reviewing';
-            $story->status     = $saveDraft ? 'draft' : $story->status;
-            $story->product    = $productID;
-            $story->openedBy   = $account;
-            $story->vision     = $this->config->vision;
-            $story->openedDate = $now;
-            $story->version    = 1;
+            $story->type          = $storyType;
+            $story->status        = (empty($story->reviewer) && !$forceReview) ? 'active' : 'reviewing';
+            $story->status        = $saveDraft ? 'draft' : $story->status;
+            $story->product       = $productID;
+            $story->openedBy      = $account;
+            $story->vision        = $this->config->vision;
+            $story->openedDate    = $now;
+            $story->version       = 1;
+            $story->prevReviewers = implode(',', $story->reviewer);
 
             if(in_array($this->app->tab, array('project', 'execution')))
             {
