@@ -378,8 +378,10 @@ class ppm extends control
             $encoding = empty($param) ? 'utf-8' : $param;
             $encoding = strtolower(str_replace('_', '-', $encoding)); /* Revert $config->requestFix in $encoding. */
         }
-        $diffs   = $scm->diff('', $ppm->mergeBaseSHA, $ppm->sourceSHA, 'yes', 'isBranchOrTag', true);
-        $arrange = $this->cookie->arrange ? $this->cookie->arrange : 'inline';
+        $fromRevision = !empty($ppm->mergeBaseSHA) ? $ppm->mergeBaseSHA : $ppm->targetBranch;
+        $toRevision   = !empty($ppm->sourceSHA) ? $ppm->sourceSHA : $ppm->sourceBranch;
+        $diffs        = $scm->diff('', $fromRevision, $toRevision, 'yes', 'isBranchOrTag', true);
+        $arrange      = $this->cookie->arrange ? $this->cookie->arrange : 'inline';
         if($this->server->request_method == 'POST')
         {
             if($this->post->arrange)

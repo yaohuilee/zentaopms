@@ -279,7 +279,7 @@ function htmlspecialchars_decode(str){
     str = str.replace(/&amp;/g, '&');
     str = str.replace(/&lt;/g, '<');
     str = str.replace(/&gt;/g, '>');
-    str = str.replace(/&quot;/g, "''");
+    str = str.replace(/&quot;/g, '"');
     str = str.replace(/&#039;/g, "'");
     return str;
 }
@@ -306,6 +306,20 @@ window.getDiffs = function(fileName)
     {
         if(diff.fileName == fileName)
         {
+            /* 有完整文件内容时直接使用，避免多 hunk 拼接缺失中间行导致 diff 错乱。 */
+            if(diff.oldContent !== undefined && diff.newContent !== undefined)
+            {
+                result.code.old = htmlspecialchars_decode(diff.oldContent);
+                result.code.new = htmlspecialchars_decode(diff.newContent);
+                const oldLineCount = result.code.old.split('\n').length;
+                const newLineCount = result.code.new.split('\n').length;
+                for(let line = 1; line <= oldLineCount; line ++) result.line.old.push(line);
+                for(let line = 1; line <= newLineCount; line ++) result.line.new.push(line);
+                result.oldRanges = diff.oldRanges;
+                result.newRanges = diff.newRanges;
+                return result;
+            }
+
             if(!diff.contents || typeof diff.contents[0].lines != 'object') return result;
 
             $.each(diff.contents, function(k, content)
