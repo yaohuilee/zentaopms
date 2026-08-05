@@ -2042,8 +2042,12 @@ class treeModel extends model
         }
 
         /* reorder modules. 重新排序。 */
-        $sortModules = $this->dao->select('id')->from(TABLE_MODULE)->where('id')->in($allIdList)->orderBy('`order`,id')->fetchAll();
-        foreach($sortModules as $i => $module) $this->dao->update(TABLE_MODULE)->set('`order`')->eq($i * 5)->where('id')->eq($module->id)->exec();
+        $sortModules = $this->dao->select('id,`order`')->from(TABLE_MODULE)->where('id')->in($allIdList)->orderBy('`order`,id')->fetchAll();
+        foreach($sortModules as $i => $module)
+        {
+            $order = ($i + 1) * 10;
+            if($order != $module->order) $this->dao->update(TABLE_MODULE)->set('`order`')->eq($order)->where('id')->eq($module->id)->exec();
+        }
 
         return $createIdList;
     }
