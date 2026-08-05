@@ -1047,6 +1047,8 @@ class repoZen extends repo
         foreach($diffs as $diff)
         {
             $diff->fileName = helper::convertEncoding($diff->fileName, $encoding);
+            if(isset($diff->oldContent)) $diff->oldContent = helper::convertEncoding($diff->oldContent, $encoding);
+            if(isset($diff->newContent)) $diff->newContent = helper::convertEncoding($diff->newContent, $encoding);
             if(empty($diff->contents)) continue;
 
             foreach($diff->contents as $content)
