@@ -846,7 +846,7 @@ class zaiModel extends model
                     continue;
                 }
 
-                $message = isset($result['message']) ? $result['message'] : 'unknown error';
+                $message = isset($result['data']) ? $result['data'] : 'unknown error';
                 $dropIDs = array();
                 foreach($submitItems as $itemID)
                 {
