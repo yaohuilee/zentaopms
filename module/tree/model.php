@@ -1950,6 +1950,7 @@ class treeModel extends model
         $oldModules   = $this->getOptionMenu($rootID, 'story', 0, 'all');
         $createIdList = array();
         $editIdList   = array();
+        $allIdList    = array();
         foreach($childs as $moduleID => $moduleName)
         {
             if(empty($moduleName)) continue;
@@ -1981,6 +1982,7 @@ class treeModel extends model
 
                 $moduleID       = $this->dao->lastInsertID();
                 $createIdList[] = $moduleID;
+                $allIdList[]    = $moduleID;
                 $childPath      = $parentPath . "$moduleID,";
                 $this->dao->update(TABLE_MODULE)->set('path')->eq($childPath)->where('id')->eq($moduleID)->exec();
                 if(dao::isError()) return false;
@@ -1989,7 +1991,6 @@ class treeModel extends model
             {
                 $originID = $moduleID;
                 $short    = $shorts[$moduleID];
-                $order    = $orders[$moduleID];
                 $moduleID = (int)str_replace('id', '', $moduleID);
 
                 $oldModule = $this->getByID($moduleID);
@@ -1997,7 +1998,6 @@ class treeModel extends model
                 $data = new stdClass();
                 $data->name   = strip_tags(trim($moduleName));
                 $data->short  = $short;
-                $data->order  = $order;
                 $data->branch = isset($branches[$originID]) ? $branches[$originID] : 0;
 
                 $this->dao->update(TABLE_MODULE)->data($data)->autoCheck()->where('id')->eq($moduleID)->exec();
@@ -2006,9 +2006,10 @@ class treeModel extends model
                 $newModule = $this->getByID($moduleID);
                 if(common::createChanges($oldModule, $newModule))
                 {
-                    $editIdList[]             = $moduleID;
+                    $editIdList[] = $moduleID;
                     $moduleChanges[$moduleID] = common::createChanges($oldModule, $newModule);
                 }
+                $allIdList[] = $moduleID;
             }
         }
 
@@ -2039,6 +2040,11 @@ class treeModel extends model
                 if(!empty($changes)) $this->action->logHistory($actionID, $changes);
             }
         }
+
+        /* reorder modules. 重新排序。 */
+        $sortModules = $this->dao->select('id')->from(TABLE_MODULE)->where('id')->in($allIdList)->orderBy('`order`,id')->fetchAll();
+        foreach($sortModules as $i => $module) $this->dao->update(TABLE_MODULE)->set('`order`')->eq($i * 5)->where('id')->eq($module->id)->exec();
+
         return $createIdList;
     }
 

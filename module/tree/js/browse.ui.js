@@ -86,6 +86,8 @@ window.addItem = function(e)
 
     newItem.find('input[id^=modules]').attr('id', 'modules[]').attr('name', 'modules[]').val('');
     newItem.find('input[id^=shorts]').attr('id', 'shorts[]').attr('name', 'shorts[]').val('');
+    newItem.find('input[id^=order]').attr('id', 'order[]').attr('name', 'order[]');
+    newItem.find('.existing-actions.action-group').removeClass('existing-actions');
 
     if($pickerBox)
     {

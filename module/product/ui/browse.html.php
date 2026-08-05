@@ -361,7 +361,7 @@ $fnGenerateFootToolbar = function() use ($lang, $app, $product, $productID, $pro
         }
         else
         {
-            if(!str_contains('|tested|verified|rejected|released|', "|$key|")) continue;
+            if(!str_contains('|tested|verified|rejected|released|closed|', "|$key|")) continue;
             $stageItems[] = array('text' => $stageName,  'class' => 'batch-btn', 'data-formaction' => $this->createLink('story', 'batchChangeStage', "stage=$key"));
         }
     }
