@@ -419,15 +419,67 @@ class zaiModelTest extends baseTest
     }
 
     /**
-     * Test enqueuePendingTargets method.
+     * Test buildSyncContent method.
+     *
+     * @param  string $type
+     * @param  object $target
+     * @access public
+     * @return array
+     */
+    public function buildSyncContentTest($type, $target)
+    {
+        return $this->instance->buildSyncContent($type, $target);
+    }
+
+    /**
+     * Test syncTargetsBatch method.
+     *
+     * @param  string $memoryID
+     * @param  array  $contents
+     * @access public
+     * @return array
+     */
+    public function syncTargetsBatchTest($memoryID, $contents)
+    {
+        return $this->instance->syncTargetsBatch($memoryID, $contents);
+    }
+
+    /**
+     * Test enqueueTargetsBatch method.
+     *
+     * @param  string $type
+     * @param  int    $lastID
+     * @access public
+     * @return array
+     */
+    public function enqueueTargetsBatchTest($type = '', $lastID = 0)
+    {
+        $result = $this->instance->enqueueTargetsBatch($type, $lastID);
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
+
+    /**
+     * Test hasPendingEnqueueTargets method.
+     *
+     * @access public
+     * @return bool
+     */
+    public function hasPendingEnqueueTargetsTest()
+    {
+        return $this->instance->hasPendingEnqueueTargets();
+    }
+
+    /**
+     * Test processVectorQueue method.
      *
      * @param  int $limit
      * @access public
      * @return int
      */
-    public function enqueuePendingTargetsTest($limit = 0)
+    public function processVectorQueueTest($limit = 0)
     {
-        $result = $this->instance->enqueuePendingTargets($limit);
+        $result = $this->instance->processVectorQueue($limit);
         if(dao::isError()) return dao::getError();
         return $result;
     }

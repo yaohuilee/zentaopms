@@ -534,6 +534,7 @@ $config->ajaxDependencies['zahost.ajaxgethosts']                              = 
 $config->ajaxDependencies['zahost.ajaxgetservicestatus']                      = 'zahost.view';
 $config->ajaxDependencies['zahost.ajaximagedownloadprogress']                 = ['zahost.browseimage', 'host.browseimage'];
 $config->ajaxDependencies['zai.ajaxenablevectorization']                      = 'zai.vectorized';
+$config->ajaxDependencies['zai.ajaxenqueuetargets']                           = 'zai.vectorized';
 $config->ajaxDependencies['zanode.ajaxgetimage']                              = 'zanode.create';
 $config->ajaxDependencies['zanode.ajaxgetimages']                             = 'zanode.create';
 $config->ajaxDependencies['zanode.ajaxgetservicestatus']                      = 'zanode.view';

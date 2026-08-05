@@ -86,6 +86,31 @@ foreach($progressList as $item)
     );
 }
 
+$alertContent = [];
+if($status == 'disabled')    $alertContent[] = p(setClass('vectorized-intro mb-3'), $lang->zai->vectorizedIntro);
+if($status == 'unavailable') $alertContent[] = p(setClass('vectorized-intro mb-3'), $lang->zai->vectorizedUnavailableHint);
+if($status == 'disabled')    $alertContent[] = form
+(
+    setClass('not-watch form-horz'),
+    set::actions(array('submit')),
+    set::submitBtnText($lang->zai->syncActions->enable),
+    input(set::type('hidden'), set::name('enable'), set::value('1'))
+);
+if($toolbarItems) $alertContent[] = toolbar(setClass('vectorized-actions gap-4'), set::items($toolbarItems));
+if($status != 'disabled' && $status != 'unavailable' && !empty($pendingEnqueue)) $alertContent[] = div
+(
+    setID('enqueueResult'),
+    setClass('mt-3'),
+    setData('auto-enqueue', !empty($pendingEnqueue) ? '1' : '0'),
+    !empty($pendingEnqueue) ? button
+    (
+        setID('continueEnqueueBtn'),
+        setClass('btn primary mb-2'),
+        on::click('enqueueTargets'),
+        $lang->zai->enqueueContinue
+    ) : null
+);
+
 panel
 (
     set::title($lang->zai->vectorized),
@@ -110,25 +135,12 @@ panel
                 span(setClass('vectorized-last-sync-time'), $lastSyncTime),
                 ($syncFailed || ($status === 'synced' && !empty($info->syncFailedCount))) ? span(setClass('ml-2 text-danger'), $lang->zai->syncedWithFailedHint) : null
             ) : null,
-            ($status === 'syncing' || $status === 'wait') ? div
+            ($status == 'syncing' || $status == 'wait') ? div
             (
                 setClass('text-gray'),
-                $lang->zai->syncingHint
+                empty($pendingEnqueue) ? $lang->zai->syncingHint : $lang->zai->enqueueHint
             ) : null,
-            div
-            (
-                setClass('alert-text'),
-                $status === 'disabled' ? p(setClass('vectorized-intro mb-3'), $lang->zai->vectorizedIntro) : null,
-                $status === 'unavailable' ? p(setClass('vectorized-intro mb-3'), $lang->zai->vectorizedUnavailableHint) : null,
-                $status === 'disabled' ? form
-                (
-                    setClass('not-watch form-horz'),
-                    set::actions(array('submit')),
-                    set::submitBtnText($lang->zai->syncActions->enable),
-                    input(set::type('hidden'), set::name('enable'), set::value('1'))
-                ) : null,
-                $toolbarItems ? toolbar(setClass('vectorized-actions gap-4'), set::items($toolbarItems)) : null
-            )
+            $alertContent ? div(setClass('alert-text'), $alertContent) : null,
         )
     ),
     ($status !== 'disabled' && $status !== 'unavailable') ? div
