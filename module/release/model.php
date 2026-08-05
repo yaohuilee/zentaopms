@@ -877,6 +877,7 @@ class releaseModel extends model
 
         $action = strtolower($action);
 
+        if($release->status == 'terminate' && !in_array($action, array('play', 'delete'))) return false;
         if($action == 'notify')  return ($release->bugs || $release->stories) && $release->status == 'normal';
         if($action == 'play')    return $release->status == 'terminate';
         if($action == 'pause')   return $release->status == 'normal';
