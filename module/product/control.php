@@ -470,7 +470,7 @@ class product extends control
         {
             $confirmMessage   = $this->lang->product->confirmDelete;
             $unclosedProjects = $this->product->getUnclosedProjectsByProduct($productID);
-            if($unclosedProjects) $confirmMessage = sprintf($this->lang->product->confirmDeleteWithProjects, implode(', ', $unclosedProjects));
+            if($unclosedProjects) $confirmMessage = sprintf($this->lang->product->confirmDeleteWithProjects, '#' . implode(', #', array_keys($unclosedProjects)));
 
             $confirmURL = $this->createLink('product', 'delete', "productID={$productID}&confirm=yes");
             return $this->send(array('result' => 'success', 'load' => array('confirm' => $confirmMessage, 'confirmed' => $confirmURL)));

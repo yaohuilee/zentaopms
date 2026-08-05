@@ -365,6 +365,7 @@ $lang->story->childTaskTitle         = 'Contains %s subtasks, of which %s are co
 $lang->story->successSaved           = "Story is saved!";
 $lang->story->confirmDelete          = "Are you sure you want to delete this {$lang->SRCommon}?";
 $lang->story->confirmRecall          = "Are you sure you want to revoke this {$lang->SRCommon}?";
+$lang->story->confirmChange          = "You have modified the basic information. Would you like to save the modified content before entering the change page?";
 $lang->story->errorEmptyChildStory   = "The field Split {$lang->SRCommon} cannot be empty.";
 $lang->story->errorNotSubdivide      = "{$lang->SRCommon} in review, closed, or a substory cannot be split.";
 $lang->story->errorMaxGradeSubdivide = "The hierarchy level of this story has reached the maximum level set in the system; stories of the same type cannot be split further.";

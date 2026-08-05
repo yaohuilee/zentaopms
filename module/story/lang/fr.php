@@ -365,6 +365,7 @@ $lang->story->childTaskTitle         = 'Contains %s tasks, of which %s have been
 $lang->story->successSaved           = "Story est sauvegardée !";
 $lang->story->confirmDelete          = "Voulez-vous vraiment supprimer cette story ?";
 $lang->story->confirmRecall          = "Do you want to recall this story?";
+$lang->story->confirmChange          = "You have modified the basic information. Would you like to save the modified content before entering the change page?";
 $lang->story->errorEmptyChildStory   = '『Decomposed Stories』ne peuvent être vides.';
 $lang->story->errorNotSubdivide      = "If the status is reviewing/closed, or a sub story, it cannot be subdivided.";
 $lang->story->errorMaxGradeSubdivide = "The current story's grade exceeds the system setting, so it cannot be subdivided same type story.";

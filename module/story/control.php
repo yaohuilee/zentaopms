@@ -358,6 +358,7 @@ class story extends control
 
             $response = array('result' => 'success', 'message' => $message);
             $response['load'] = $this->storyZen->getAfterEditLocation($storyID, $storyType);
+            if($this->post->locate == 'change') $response['load'] = $this->createLink($this->app->rawModule, 'change', "storyID=$storyID&from=&storyType={$storyType}");
             return $this->send($response);
         }
 

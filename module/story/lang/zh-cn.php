@@ -365,6 +365,7 @@ $lang->story->childTaskTitle         = '包含%s个子任务，其中%s个已完
 $lang->story->successSaved           = "{$lang->SRCommon}成功添加，";
 $lang->story->confirmDelete          = "您确认删除该{$lang->SRCommon}吗?";
 $lang->story->confirmRecall          = "您确认撤销该{$lang->SRCommon}吗?";
+$lang->story->confirmChange          = "您修改了基本信息，是否保存修改的内容后再进入变更页面？";
 $lang->story->errorEmptyChildStory   = "『拆分{$lang->SRCommon}』不能为空。";
 $lang->story->errorNotSubdivide      = "状态在评审中、已关闭的{$lang->SRCommon}，或者是子需求，不能拆分。";
 $lang->story->errorMaxGradeSubdivide = "该需求的层级已经达到系统设置的最大层级，不能拆分同类型需求。";
