@@ -539,7 +539,7 @@ class bug extends control
         $this->qa->setMenu($oldBug->product, $oldBug->branch);
 
         $users  = $this->loadModel('user')->getPairs('noclosed');
-        $builds = $this->loadModel('build')->getBuildPairs(array($oldBug->product), $oldBug->branch, 'withbranch,noreleased,nofail');
+        $builds = $this->loadModel('build')->getBuildPairs(array($oldBug->product), $oldBug->branch, 'noterminate,withbranch,noreleased,nofail');
 
         /* 展示相关变量。 */
         /* Show the variables associated. */
