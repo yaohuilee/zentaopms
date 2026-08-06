@@ -107,6 +107,7 @@ class releaseModel extends model
             ->beginIF($productIdList)->andWhere('product')->in($productIdList)->fi()
             ->beginIF(!empty($branchQuery))->andWhere($branchQuery)->fi()
             ->beginIF(!empty($project))->andWhere("FIND_IN_SET($project, `project`)")->fi()
+            ->orderBy('id_desc')
             ->fetchPairs();
     }
 
