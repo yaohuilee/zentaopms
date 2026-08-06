@@ -760,6 +760,8 @@ class productModel extends model
         $projectID = ($this->app->tab == 'project' && empty($projectID)) ? $this->session->project : $projectID;
         $searchConfig['params']['module']['values'] = empty($showAll) ? $this->productTao->getModulesForSearchForm($productID, $products, $branch, (int)$projectID) : $this->loadModel('tree')->getAllModulePairs('story');
 
+        if($storyType != 'story') unset($searchConfig['fields']['release'], $searchConfig['params']['release']);
+
         $gradePairs = $this->loadModel('story')->getGradePairs($storyType, 'all');
 
         if($projectID || $storyType == 'all')
@@ -793,6 +795,14 @@ class productModel extends model
         $productIdList = ($this->app->tab == 'project' && empty($productID)) || !empty($showAll) ? array_keys($products) : array($productID);
         $branchParam   = ($this->app->tab == 'project' && empty($productID)) || !empty($showAll) ? '' : $branch;
         $searchConfig['params']['plan']['values'] = $this->loadModel('productplan')->getPairs($productIdList, (empty($branchParam) || $branchParam == 'all') ? '' : $branchParam);
+
+        /* Get product release data. */
+        if(isset($searchConfig['fields']['release']))
+        {
+            $productParam = $this->app->rawMethod == 'relateobject' ? 0 : $productID;
+            $projectParam = $this->app->tab == 'project' && empty($productID) ? $this->session->project : 0;
+            $searchConfig['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), $productParam, (empty($branchParam) || $branchParam == 'all') ? '' : $branchParam, $projectParam);
+        }
 
         /* Get branch data. */
         if($productID && empty($showAll))

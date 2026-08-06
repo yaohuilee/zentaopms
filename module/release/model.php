@@ -75,15 +75,38 @@ class releaseModel extends model
      * 获取发布列表。
      * Get release list.
      *
-     * @param  array  $idList
+     * @param  array            $idList
+     * @param  int|array        $productIdList
+     * @param  int|string|array $branch
+     * @param  int              $project
      * @access public
      * @return array
      */
-    public function getPairs(array $idList = array()): array
+    public function getPairs(array $idList = array(), int|array $productIdList = 0, int|string|array $branch = '', int $project = 0): array
     {
+        /* Get the query condition for the branch. */
+        $branchQuery = '';
+        if($branch !== '' && $branch != 'all')
+        {
+            if(is_int($branch)) $branchQuery = "branch = '$branch'";
+            if(is_string($branch)) $branch = array_unique(explode(',', trim($branch, ',')));
+            if(is_array($branch) && !empty($branch))
+            {
+                if(count($branch) == 1) $branchQuery = "FIND_IN_SET('$branch[0]', branch)";
+                if(count($branch) > 1)
+                {
+                    foreach($branch as $key => $branchID) $branch[$key] = "FIND_IN_SET('$branchID', branch)";
+                    $branchQuery = '(' . implode(' OR ', $branch) . ')';
+                }
+            }
+        }
+
         return $this->dao->select('id, name')->from(TABLE_RELEASE)
             ->where('deleted')->eq(0)
             ->beginIF($idList)->andWhere('id')->in($idList)->fi()
+            ->beginIF($productIdList)->andWhere('product')->in($productIdList)->fi()
+            ->beginIF(!empty($branchQuery))->andWhere($branchQuery)->fi()
+            ->beginIF(!empty($project))->andWhere("FIND_IN_SET($project, `project`)")->fi()
             ->fetchPairs();
     }
 

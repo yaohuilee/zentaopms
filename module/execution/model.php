@@ -2387,6 +2387,7 @@ class executionModel extends model
         $this->config->product->search['params']['product']['values'] = $productPairs + array('all' => $this->lang->product->allProductsOfProject);
         $this->config->product->search['params']['plan']['values']    = $planPairs;
         $this->config->product->search['params']['module']['values']  = $modules;
+        $this->config->product->search['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), array_keys($products));
         $this->config->product->search['params']['status']            = array('operator' => '=', 'control' => 'select', 'values' => $this->lang->story->statusList);
         $this->config->product->search['params']['stage']['values']   = array('' => '') + $this->lang->story->stageList;
         if($productType == 'normal')
@@ -2410,6 +2411,7 @@ class executionModel extends model
             {
                 unset($this->config->product->search['fields']['plan']);
                 unset($this->config->product->search['params']['plan']);
+                unset($this->config->product->search['fields']['release'], $this->config->product->search['params']['release']);
             }
         }
 
