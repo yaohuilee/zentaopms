@@ -17,7 +17,6 @@ foreach(array_keys($lang->zai->vectorizedStatusList) as $statusType)
     $panelClass[] = $statusType === $status ? "is-status-{$statusType}" : "not-status-{$statusType}";
 }
 $panelClass[] = ($status === 'syncing' || $status === 'wait') ? 'is-syncing-loop' : 'not-syncing-loop';
-$panelClass[] = $syncFailed ? 'is-synced-failed' : 'not-synced-failed';
 
 $toolbarItems = array();
 if($status === 'unavailable')
@@ -28,12 +27,6 @@ if($status === 'unavailable')
 $progressItems = array();
 foreach($progressList as $item)
 {
-    $failReason = '';
-    if($item->lastError)
-    {
-        $failReason = $item->lastFailTime ? "{$item->lastFailTime}: {$item->lastError}" : $item->lastError;
-    }
-
     $progressItems[] = wg
     (
         div
@@ -78,8 +71,7 @@ foreach($progressList as $item)
                         setClass('vectorized-failed-info pl-2 flex-none', $item->failed ? '' : 'hidden'),
                         $lang->zai->failed . ' ',
                         span(setClass('vectorized-failed-count'), $item->failed)
-                    ),
-                    $failReason ? div(setClass('vectorized-fail-reason text-danger text-sm w-full'), $failReason) : null
+                    )
                 )
             )
         )
@@ -132,8 +124,7 @@ panel
             (
                 setClass('vectorized-last-sync-info'),
                 text($lang->zai->lastSyncTime . $lang->colon),
-                span(setClass('vectorized-last-sync-time'), $lastSyncTime),
-                ($syncFailed || ($status === 'synced' && !empty($info->syncFailedCount))) ? span(setClass('ml-2 text-danger'), $lang->zai->syncedWithFailedHint) : null
+                span(setClass('vectorized-last-sync-time'), $lastSyncTime)
             ) : null,
             ($status == 'syncing' || $status == 'wait') ? div
             (
