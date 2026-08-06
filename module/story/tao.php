@@ -395,6 +395,7 @@ class storyTao extends storyModel
         $storyQuery = $this->replaceRevertQuery($storyQuery, $productID);
         $storyQuery = preg_replace('/`(\w+)`/', 't2.`$1`', $storyQuery);
         $storyQuery = preg_replace_callback("/t2.`grade` (=|!=) '(\w+)(\d+)'/", function($matches){return "t2.`grade` {$matches[1]} '" . $matches[3] . "' AND t2.`type` = '" . $matches[2] . "'";}, $storyQuery);
+        $storyQuery = preg_replace_callback("/t2\.`release`\s*(=|!=)\s*'(\d+)'/i", function($matches){$op = $matches[1] == '!=' ? 'NOT ' : ''; return "{$op}EXISTS (SELECT 1 FROM " . TABLE_RELEASE . " WHERE " . TABLE_RELEASE . ".id = '{$matches[2]}' AND " . TABLE_RELEASE . ".deleted = '0' AND FIND_IN_SET(t2.`id`, " . TABLE_RELEASE . ".stories))";}, $storyQuery);
         if(strpos($storyQuery, 'result') !== false) $storyQuery = str_replace('t2.`result`', 't4.`result`', $storyQuery);
 
         $hasExecution = strpos($storyQuery, 't2.`execution`') !== false;

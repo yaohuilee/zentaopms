@@ -2946,6 +2946,7 @@ class storyModel extends model
         }
         $storyQuery = preg_replace("/`plan` +LIKE +'%([0-9]+)%'/i", "CONCAT(',', `plan`, ',') LIKE '%,$1,%'", $storyQuery);
         $storyQuery = preg_replace_callback("/AND `grade` (=|!=) '(\w+)(\d+)'/", function($matches){return "AND `grade` {$matches[1]} '" . $matches[3] . "' AND `type` = '" . $matches[2] . "'";}, $storyQuery);
+        $storyQuery = preg_replace_callback("/`release`\s*(=|!=)\s*'(\d+)'/i", function($matches){$op = $matches[1] == '!=' ? 'NOT ' : ''; return "{$op}EXISTS (SELECT 1 FROM " . TABLE_RELEASE . " WHERE " . TABLE_RELEASE . ".id = '{$matches[2]}' AND " . TABLE_RELEASE . ".deleted = '0' AND FIND_IN_SET(`id`, " . TABLE_RELEASE . ".stories))";}, $storyQuery);
 
         return $this->getBySQL($queryProductID, $storyQuery, $orderBy, $pager, $type);
     }

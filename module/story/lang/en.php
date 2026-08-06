@@ -212,6 +212,7 @@ $lang->story->draft            = 'Draft';
 $lang->story->unclosed         = 'Open';
 $lang->story->deleted          = 'Deleted';
 $lang->story->released         = 'Released Stories';
+$lang->story->release          = 'Linked Release';
 $lang->story->URChanged        = 'Change Feature';
 $lang->story->design           = 'Design';
 $lang->story->case             = 'Test Cases';

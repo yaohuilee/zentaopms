@@ -212,6 +212,7 @@ $lang->story->draft            = 'Brouillon';
 $lang->story->unclosed         = 'Non Fermées';
 $lang->story->deleted          = 'Supprimé';
 $lang->story->released         = 'Stories Versionnées';
+$lang->story->release          = 'Linked Release';
 $lang->story->URChanged        = 'Feature Changed';
 $lang->story->design           = 'Designs';
 $lang->story->case             = 'Cases';
