@@ -1373,7 +1373,7 @@ class bugZen extends bug
         if($executionID)
         {
             /* Get builds, stories and branches of this execution. */
-            $builds          = $this->loadModel('build')->getBuildPairs(array($product->id), $branch, 'noempty,noreleased', $executionID, 'execution');
+            $builds          = $this->loadModel('build')->getBuildPairs(array($product->id), $branch, 'noempty,noterminate,noreleased', $executionID, 'execution');
             $stories         = $this->story->getExecutionStoryPairs($executionID);
             $productBranches = $product->type != 'normal' ? $this->loadModel('execution')->getBranchByProduct(array($product->id), $executionID) : array();
             $branches        = isset($productBranches[$product->id]) ? $productBranches[$product->id] : array();
@@ -1386,7 +1386,7 @@ class bugZen extends bug
         else
         {
             /* Get builds, stories and branches of the product. */
-            $builds   = $this->loadModel('build')->getBuildPairs(array($product->id), $branch, 'noempty,noreleased');
+            $builds   = $this->loadModel('build')->getBuildPairs(array($product->id), $branch, 'noempty,noterminate,noreleased');
             $stories  = $this->story->getProductStoryPairs($product->id, $branch);
             $branches = $product->type != 'normal' ? $this->loadModel('branch')->getPairs($product->id, 'active') : array();
         }
