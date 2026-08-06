@@ -402,6 +402,9 @@ $lang->story->batchParentError       = "The parent requirement of %s requirement
 $lang->story->errorNoGradeSplit      = "There has no grade to split.";
 $lang->story->errorRecordMinus       = '『%s』should not be negative number.';
 $lang->story->closeParentTips        = 'There are still unclosed child stories under this parent story: %s. If the parent story is closed, the child stories will also be closed. Are you sure you want to close the parent story?';
+$lang->story->undoneTasksTips        = "This story has %s undone tasks. Please confirm whether to close the story?";
+$lang->story->undoneTasksBatchTips   = "Story %s has %s undone tasks.";
+$lang->story->confirmCloseTips       = "Please confirm whether to close the story?";
 
 $lang->story->form = new stdclass();
 $lang->story->form->area     = 'Périmètre';

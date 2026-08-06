@@ -402,6 +402,9 @@ $lang->story->batchParentError       = "%s需求的父需求不能为其本身�
 $lang->story->errorNoGradeSplit      = "没有可拆分的需求层级";
 $lang->story->errorRecordMinus       = '『%s』不能为负数';
 $lang->story->closeParentTips        = "该父需求下还有未关闭的子需求：%s。父需求关闭后，子需求也将同时关闭，您确定要关闭父需求吗？";
+$lang->story->undoneTasksTips        = "该需求还有 %s 个未完成的任务，请确认是否继续关闭需求？";
+$lang->story->undoneTasksBatchTips   = "%s 需求还有 %s 个未完成的任务。";
+$lang->story->confirmCloseTips       = "请确认是否继续关闭需求？";
 
 $lang->story->form = new stdclass();
 $lang->story->form->area     = "该{$lang->SRCommon}所属范围";
