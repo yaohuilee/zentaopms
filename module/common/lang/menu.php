@@ -47,8 +47,8 @@ if(isset($_SESSION['tutorialMode']) && $_SESSION['tutorialMode'])
     $projectMethod   = 'browse';
     $executionModule = 'execution';
     $executionMethod = 'task';
-    $devopsModule    = 'repo';
-    $devopsMethod    = 'maintain';
+    $devopsModule    = 'space';
+    $devopsMethod    = 'browse';
 }
 
 /* Main Navigation. */

@@ -364,7 +364,7 @@ class router extends baseRouter
         $config->projectLink   = 'project-browse';
         $config->executionLink = 'execution-task';
         $config->docLink       = 'doc-lastViewedSpace';
-        $config->devopsLink    = 'repo-maintain';
+        $config->devopsLink    = 'space-browse';
 
         /* Get user preference. */
         $account     = $_SESSION['user']->account ?? '';

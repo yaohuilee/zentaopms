@@ -1618,7 +1618,7 @@ class my extends control
         $this->view->executionLink    = isset($this->config->executionLink)    ? $this->config->executionLink    : 'execution-task';
         $this->view->docLink          = isset($this->config->docLink)          ? $this->config->docLink          : 'doc-lastViewedSpace';
         $this->view->devopsspaceLink  = isset($this->config->devopsspaceLink)  ? $this->config->devopsspaceLink  : 'repo-maintain';
-        $this->view->devopsLink       = isset($this->config->devopsLink)       ? $this->config->devopsLink       : 'repo-maintain';
+        $this->view->devopsLink       = isset($this->config->devopsLink)       ? $this->config->devopsLink       : 'space-browse';
         $this->view->preferenceSetted = isset($this->config->preferenceSetted) ? true : false;
 
         $this->display();
