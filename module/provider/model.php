@@ -89,7 +89,7 @@ class providerModel extends model
         }
         else
         {
-            $provider->account = '';
+            $provider->account = zget($provider, 'account', '');
         }
 
         return $provider;
