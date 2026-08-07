@@ -36,3 +36,6 @@ INSERT INTO `zt_config`(`vision`, `owner`, `module`, `section`, `key`, `value`) 
 INSERT INTO `zt_config`(`vision`, `owner`, `module`, `section`, `key`, `value`) VALUES ('', 'system', 'execution', '', 'ganttVersionSettings', 'gantt');
 
 UPDATE `zt_config` SET `value` = 'ui20' WHERE `module` = 'common' AND `section` = 'global' AND `key` = 'showUpgradeGuide';
+
+ALTER TABLE `ops_runner` MODIFY COLUMN `labels` varchar(255) NOT NULL DEFAULT '' COMMENT '标签';
+ALTER TABLE `ops_runner` ADD COLUMN `isDefault` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否为默认 runner(0:不是, 1:是)' AFTER `status`;
