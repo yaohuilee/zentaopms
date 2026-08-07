@@ -12959,6 +12959,11 @@ REPLACE INTO `zt_grouppriv` (`group`, `module`, `method`) VALUES
 (21, 'provider', 'create'),
 (21, 'provider', 'edit'),
 (21, 'provider', 'delete'),
+(21, 'runner', 'browse'),
+(21, 'runner', 'changeState'),
+(21, 'runner', 'create'),
+(21, 'runner', 'edit'),
+(21, 'runner', 'delete'),
 (22, 'codescan', 'browse'),
 (22, 'codescan', 'issue'),
 (22, 'codescan', 'issueView'),
@@ -13005,6 +13010,7 @@ REPLACE INTO `zt_grouppriv` (`group`, `module`, `method`) VALUES
 (22, 'system', 'view'),
 (22, 'artifact', 'browse'),
 (22, 'provider', 'browse'),
+(22, 'runner', 'browse'),
 (23, 'artifact', 'browse'),
 (23, 'artifact', 'createDir'),
 (23, 'artifact', 'deleteDir'),
@@ -13083,7 +13089,8 @@ REPLACE INTO `zt_grouppriv` (`group`, `module`, `method`) VALUES
 (23, 'space', 'group'),
 (23, 'space', 'members'),
 (23, 'system', 'view'),
-(23, 'provider', 'browse');
+(23, 'provider', 'browse'),
+(23, 'runner', 'browse');
 
 REPLACE INTO `zt_grouppriv`(`module`, `method`,`group`)
 SELECT `module`, `method`, 14 FROM `zt_grouppriv` WHERE `group` = 1;
@@ -15999,11 +16006,12 @@ CREATE TABLE IF NOT EXISTS `ops_runner` (
   `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IP地址',
   `os` varchar(50) NOT NULL DEFAULT '' COMMENT '操作系统',
   `arch` varchar(20) NOT NULL DEFAULT '' COMMENT '系统架构',
-  `labels` text DEFAULT NULL COMMENT '标签（JSON格式）',
+  `labels` varchar(255) NOT NULL DEFAULT '' COMMENT '标签',
   `token` varchar(255) NOT NULL DEFAULT '' COMMENT '认证令牌',
   `heartBeat` int unsigned NOT NULL DEFAULT 0 COMMENT '心跳时间戳',
   `online` varchar(20) NOT NULL DEFAULT 'offline' COMMENT '在线状态 (online:离线, offline:在线)',
   `status` varchar(20) NOT NULL DEFAULT 'disable' COMMENT 'Runner状态 (disable:停用, enable:启用)',
+  `isDefault` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否为默认 runner(0:不是, 1:是)',
   `createdBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
   `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
   `editedBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁编辑',
