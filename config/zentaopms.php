@@ -500,6 +500,7 @@ define('TABLE_ARTIFACTGROUPS',   '`ops_artifact_groups`');
 define('TABLE_ARTIFACTPACKAGES', '`ops_artifact_packages`');
 define('TABLE_ARTIFACTVERSIONS', '`ops_artifact_versions`');
 define('TABLE_PROVIDER',         '`ops_provider`');
+define('TABLE_RUNNER',           '`ops_runner`');
 
 $config->objectTables['dept']           = TABLE_DEPT;
 $config->objectTables['product']        = TABLE_PRODUCT;
@@ -598,6 +599,7 @@ $config->objectTables['ops_review_flow'] = TABLE_REVIEWFLOW;
 
 $config->objectTables['repobranchtype'] = TABLE_BRANCHTYPE;
 $config->objectTables['provider']       = TABLE_PROVIDER;
+$config->objectTables['runner']         = TABLE_RUNNER;
 
 $config->newFeatures      = array('introduction', 'tutorial', 'youngBlueTheme', 'visions', 'aiPrompts', 'promptDesign', 'promptExec');
 $config->disabledFeatures = '';

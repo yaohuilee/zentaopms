@@ -2638,3 +2638,4 @@ $config->delete['22_3'][] = 'module/store';
 $config->delete['22_3'][] = 'module/git';
 $config->delete['22_3'][] = 'module/svn';
 $config->delete['22_3'][] = 'module/compile';
+$config->delete['22_5'][] = 'extension/custom/runner';

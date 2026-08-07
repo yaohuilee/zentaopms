@@ -532,12 +532,12 @@ $lang->qa->menu->automation['subMenu']->zanode      = array('link' => "{$lang->z
 $lang->devops->homeMenu = new stdclass();
 $lang->devops->homeMenu->space    = array('link' => "{$lang->space->common}|space|browse", 'alias' => 'create,edit', 'exclude' => 'space-view');
 $lang->devops->homeMenu->repos    = array('link' => "{$lang->devops->repo}|repo|maintain", 'alias' => 'create,edit,import,createrepo,binduser', 'exclude' => 'repo-setrules');
-$lang->devops->homeMenu->pipeline = array('link' => "{$lang->pipeline->common}|pipeline|browse|spaceID=%s&repoID=0&type=space", 'subModule' => 'pipeline,runner');
+$lang->devops->homeMenu->pipeline = array('link' => "{$lang->pipeline->common}|pipeline|browse|spaceID=%s&repoID=0&type=space", 'subModule' => 'pipeline');
 $lang->devops->homeMenu->artifact = array('link' => "{$lang->artifact->common}|artifact|browse|spaceID=%s&repoID=0&type=space", 'subModule' => 'artifact');
 $lang->devops->homeMenu->codescan = array('link' => "{$lang->devops->codescan}|codescan|task", 'subModule' => 'codescan');
 $lang->devops->homeMenu->system   = array('link' => "{$lang->devops->system}|repo|browsesystem", 'subModule' => 'system', 'exclude' => 'system-dashboard,system-dblist,system-domainview,system-ossview');
 
-$lang->devops->homeMenu->configure = array('link' => "{$lang->devops->configure}|repobranchtype|browse|", 'subModule' => 'system,store,instance,repo,gitlab,gitea,gogs,gitfox,jenkins,sonarqube,repobranchtype,provider', 'exclude' => 'repo-maintain,repo-browsesystem,system-view,repo-create,repo-createrepo,repo-import,repo-edit,repo-binduser');
+$lang->devops->homeMenu->configure = array('link' => "{$lang->devops->configure}|repobranchtype|browse|", 'subModule' => 'system,store,instance,repo,gitlab,gitea,gogs,gitfox,jenkins,sonarqube,repobranchtype,provider,runner', 'exclude' => 'repo-maintain,repo-browsesystem,system-view,repo-create,repo-createrepo,repo-import,repo-edit,repo-binduser');
 
 $lang->devops->homeMenu->spaceSetting = array('link' => "{$lang->devops->spaceSetting}|space|view|spaceID=%s", 'subModule' =>'space', 'exclude' => 'repo-maintain,repo-browsesystem,system-view,repo-create,repo-createrepo,repo-import,repo-edit');
 $lang->devops->homeMenu->spaceSetting['subMenu'] = new stdclass();
@@ -593,10 +593,12 @@ $lang->devops->homeMenu->configure['subMenu'] = new stdclass();
 $lang->devops->homeMenu->configure['subMenu']->branchType = array('link' => "{$lang->devops->branchType}|repobranchtype|browse|", 'alias' => 'create,edit,delete,import');
 $lang->devops->homeMenu->configure['subMenu']->rules      = array('link' => "{$lang->devops->rules}|repo|setrules|", 'subModule' => 'repo');
 $lang->devops->homeMenu->configure['subMenu']->provider   = array('link' => "{$lang->provider->common}|provider|browse|", 'alias' => 'create,edit');
+$lang->devops->homeMenu->configure['subMenu']->runner     = array('link' => "{$lang->runner->common}|runner|browse|");
 
 $lang->devops->homeMenu->configure['menuOrder'][5]  = 'branchType';
 $lang->devops->homeMenu->configure['menuOrder'][10] = 'rules';
 $lang->devops->homeMenu->configure['menuOrder'][15] = 'provider';
+$lang->devops->homeMenu->configure['menuOrder'][20] = 'runner';
 
 /* The menu order $lang->devops->menuOrder[30] is a reserved position for 'artifactrepo'. */
 $lang->devops->menuOrder[5]   = 'space';
@@ -832,6 +834,7 @@ $lang->navGroup->host             = 'devops';
 $lang->navGroup->artifact         = 'devops';
 $lang->navGroup->provider         = 'devops';
 $lang->navGroup->gitfox           = 'devops';
+$lang->navGroup->runner           = 'devops';
 
 $lang->navGroup->company        = 'system';
 $lang->navGroup->systemteam     = 'system';
