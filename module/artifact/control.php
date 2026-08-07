@@ -297,11 +297,11 @@ class artifact extends control
             $base64Path = $path ? helper::safe64Encode($path) : '';
 
             $formData = form::data($this->config->artifact->form->createDir)->get();
-            if(!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\-_]+$/u', $formData->name)) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameFormatError));
+            if(!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\-_.]+$/u', $formData->name)) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameFormatError));
             if(mb_strlen($formData->name) > 15) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameTooLong));
             if($path)
             {
-                $formData->name = ltrim($path . '.' . $formData->name, '/');
+                $formData->name = ltrim($path . '/' . $formData->name, '/');
             }
             if(empty($path) && $isSubDir) $formData->name = '/' . $formData->name;
             $result = $this->loadModel('gitfox')->request('/artifacts/groups', 'POST', array('artifactID' => (int)$artifactLibID, 'names' => $formData->name, 'format' => $artifactLib->type));
@@ -334,7 +334,7 @@ class artifact extends control
 
         $currentPath = $path ? helper::safe64Decode($path) : '';
         $parentPath  = $currentPath ? $this->artifact->parseDirname($currentPath) : '/';
-        if($parentPath === '' || $parentPath === '.') $parentPath = '/';
+        if($parentPath === '') $parentPath = '/';
         $parentNode = $this->artifactZen->getNodeByPath($artifactLib, $parentPath);
 
         $artifactLibs = $this->artifactZen->getArtifactLibPickerItems($artifactLib->scope, $artifactLib->type, $this->spaces, $this->repos);
@@ -344,10 +344,10 @@ class artifact extends control
             if(empty($node)) return $this->sendError($this->lang->fail);
 
             $formData = form::data($this->config->artifact->form->editDir)->get();
-            if(!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\-_]+$/u', $formData->name)) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameFormatError));
+            if(!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\-_.]+$/u', $formData->name)) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameFormatError));
             if(mb_strlen($formData->name) > 15) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameTooLong));
 
-            $targetGroupID = $formData->parent == '/' ? 0 : explode('.', $formData->parent)[1];
+            $targetGroupID = $formData->parent == '/' ? 0 : explode('/', $formData->parent)[1];
             $params = array();
             $params['entityID']         = $node->entityID;
             $params['newName']          = $formData->name;
@@ -358,7 +358,7 @@ class artifact extends control
 
             if($result)
             {
-                $dirID = empty(explode('.', $node->entityID)[1]) ? 0 : explode('.', $node->entityID)[1];
+                $dirID = empty(explode('/', $node->entityID)[1]) ? 0 : explode('/', $node->entityID)[1];
                 $this->loadModel('action')->create('artifactDir', (int)$dirID, 'edited', '', $artifactLibID . '|' . $currentPath . '|' . $node->entityID);
             }
 

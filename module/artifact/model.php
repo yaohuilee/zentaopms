@@ -129,7 +129,7 @@ class artifactModel extends model
         $param = array();
         $param['artifactID'] = $artifactLibID;
         $param['name']       = basename($file['name']);
-        $param['group']      = str_replace('/', '.', ltrim($path, '/'));
+        $param['group']      = ltrim($path, '/');
         $param['file']       = curl_file_create($file['tmp_name']);
 
         $apiRoot = $this->loadModel('gitfox')->getApiRoot();
