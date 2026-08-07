@@ -16011,7 +16011,7 @@ CREATE TABLE IF NOT EXISTS `ops_runner` (
   `heartBeat` int unsigned NOT NULL DEFAULT 0 COMMENT '心跳时间戳',
   `online` varchar(20) NOT NULL DEFAULT 'offline' COMMENT '在线状态 (online:离线, offline:在线)',
   `status` varchar(20) NOT NULL DEFAULT 'disable' COMMENT 'Runner状态 (disable:停用, enable:启用)',
-  `isDefault` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否为默认 runner(0:不是, 1:是)' AFTER `status`;
+  `isDefault` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否为默认 runner(0:不是, 1:是)',
   `createdBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
   `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
   `editedBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁编辑',
