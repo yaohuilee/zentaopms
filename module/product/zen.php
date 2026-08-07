@@ -1561,6 +1561,7 @@ class productZen extends product
         $listFields['task']        = $this->lang->story->tasks;
         $listFields['bug']         = $this->lang->story->bugs;
         $listFields['case']        = $this->lang->story->cases;
+        $listFields['doc']         = $this->lang->story->docs;
 
         if($storyType == 'requirement' || $storyType == 'story') unset($listFields['requirement']);
         if($storyType == 'story') unset($listFields['story']);

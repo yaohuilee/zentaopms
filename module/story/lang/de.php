@@ -54,6 +54,7 @@ $lang->story->setting            = "Einstellungen";
 $lang->story->tasks              = "Verknüpfte Aufgaben";
 $lang->story->bugs               = "Verknüpfte Bugs";
 $lang->story->cases              = "Verknüpfte Fälle";
+$lang->story->docs               = "Verknüpfte Dokumente";
 $lang->story->taskCount          = 'Aufgaben';
 $lang->story->bugCount           = 'Bugs';
 $lang->story->caseCount          = 'Fälle';

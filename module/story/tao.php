@@ -2339,6 +2339,7 @@ class storyTao extends storyModel
         $cols['task']      = $this->buildTrackCol('task',      $this->lang->story->tasks);
         $cols['bug']       = $this->buildTrackCol('bug',       $this->lang->story->bugs);
         $cols['case']      = $this->buildTrackCol('case',      $this->lang->story->cases);
+        $cols['doc']       = $this->buildTrackCol('doc',       $this->lang->story->docs);
 
         foreach($storyGrade as $type => $grades)
         {
@@ -2389,6 +2390,7 @@ class storyTao extends storyModel
         $tasks      = $this->getTasksForTrack($storyIdList);
         $cases      = $this->dao->select('id,project,pri,status,color,title,story,`lastRunner`,`lastRunResult`')->from(TABLE_CASE)->where('story')->in($storyIdList)->andWhere('deleted')->eq(0)->orderBy('project')->fetchGroup('story', 'id');
         $bugs       = $this->dao->select('id,project,pri,status,color,title,story,`assignedTo`,severity')->from(TABLE_BUG)->where('story')->in($storyIdList)->andWhere('deleted')->eq(0)->orderBy('project')->fetchGroup('story', 'id');
+        $docs       = $this->getDocsForTrack($storyIdList);
         $storyGrade = $this->getGradeGroup();
 
         $items = array();
@@ -2417,6 +2419,7 @@ class storyTao extends storyModel
             $items[$laneName]['task']      = array_values(zget($tasks,      $node->id, array()));
             $items[$laneName]['bug']       = array_values(zget($bugs,       $node->id, array()));
             $items[$laneName]['case']      = array_values(zget($cases,      $node->id, array()));
+            $items[$laneName]['doc']       = array_values(zget($docs,       $node->id, array()));
         }
 
         return $items;
@@ -2533,6 +2536,25 @@ class storyTao extends storyModel
         if($preTask && $preTask->isParent) $preTask->isParent = 0;
 
         return $taskGroup;
+    }
+
+    /**
+     * 根据需求ID列表获取关联的文档。
+     * Get linked docs by story id list.
+     *
+     * @param  array  $storyIdList
+     * @access public
+     * @return array
+     */
+    public function getDocsForTrack(array $storyIdList): array
+    {
+        return $this->dao->select('t1.id,t1.title,t1.addedBy,t1.lib,t2.AID')->from(TABLE_DOC)->alias('t1')
+            ->leftJoin(TABLE_RELATION)->alias('t2')->on("t1.id=t2.BID && t2.BType='doc'")
+            ->where('t2.AID')->in($storyIdList)
+            ->andWhere('t2.AType')->eq('story')
+            ->andWhere('t1.deleted')->eq(0)
+            ->orderBy('t1.id')
+            ->fetchGroup('AID', 'id');
     }
 
     /**

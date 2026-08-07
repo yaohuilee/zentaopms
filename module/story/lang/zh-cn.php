@@ -54,6 +54,7 @@ $lang->story->setting            = "设置";
 $lang->story->tasks              = "相关任务";
 $lang->story->bugs               = "相关Bug";
 $lang->story->cases              = "相关用例";
+$lang->story->docs               = "相关文档";
 $lang->story->taskCount          = '任务数';
 $lang->story->bugCount           = 'Bug数';
 $lang->story->caseCount          = '用例数';

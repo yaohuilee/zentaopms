@@ -54,6 +54,7 @@ $lang->story->setting            = "Settings";
 $lang->story->tasks              = "Linked Tasks";
 $lang->story->bugs               = "Linked Bugs";
 $lang->story->cases              = "Linked  Test Cases";
+$lang->story->docs               = "Linked Docs";
 $lang->story->taskCount          = 'Tasks';
 $lang->story->bugCount           = 'Bugs';
 $lang->story->caseCount          = 'Test Cases';

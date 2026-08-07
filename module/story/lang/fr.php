@@ -54,6 +54,7 @@ $lang->story->setting            = "Paramétrage";
 $lang->story->tasks              = "Tâches Associées";
 $lang->story->bugs               = "Bugs Associés";
 $lang->story->cases              = "CasTest Associés";
+$lang->story->docs               = "Documents Associés";
 $lang->story->taskCount          = 'Tâches';
 $lang->story->bugCount           = 'Bugs';
 $lang->story->caseCount          = 'CasTests';
