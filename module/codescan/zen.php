@@ -552,7 +552,7 @@ class codescanZen extends codescan
      */
     protected function processIssueData(object $issue): object
     {
-        $issue->content    = zget($issue, 'message', '');
+        $issue->content    = zget($issue, 'title', '');
         $issue->file       = zget($issue, 'path', '');
         $issue->priority   = zget($issue, 'rulePriority', '');
         $issue->type       = zget($issue, 'ruleType', '');

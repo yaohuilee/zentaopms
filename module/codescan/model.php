@@ -844,7 +844,7 @@ class codescanModel extends model
         foreach($issueIdList as $issueID)
         {
             $issue = $this->getScanIssue($issueID, false);
-            $extra = empty($issue) || empty($repoPair[$issue->repoID]) ? '' : "{$issue->message}|issueID={$issueID}&repoID={$repoPair[$issue->repoID]}";
+            $extra = empty($issue) || empty($repoPair[$issue->repoID]) ? '' : "{$issue->title}|issueID={$issueID}&repoID={$repoPair[$issue->repoID]}";
             $this->action->create('codescanissue', $issueID, $status . 'ScanIssue', '', $extra);
         }
 
@@ -938,10 +938,10 @@ class codescanModel extends model
         $result->rangeStartLine     = (int)zget($result->payload->location->range, 'startLine', 0);
         $result->rangeEndLine       = (int)zget($result->payload->location->range, 'endLine', 0);
         $result->commit             = zget($result->payload->location, 'commit', array());
-        if($result->rangeStartLine < 1 && !empty($result->line))
+        if($result->rangeStartLine < 1 && !empty($result->startLine))
         {
-            $result->rangeStartLine = (int)$result->line;
-            $result->rangeEndLine   = (int)$result->line;
+            $result->rangeStartLine = (int)$result->startLine;
+            $result->rangeEndLine   = !empty($result->endLine) ? (int)$result->endLine : (int)$result->startLine;
         }
         elseif($result->rangeEndLine < $result->rangeStartLine || ($result->rangeEndLine === 0 && $result->rangeStartLine > 0))
         {

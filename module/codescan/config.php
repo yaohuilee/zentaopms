@@ -245,7 +245,7 @@ $config->codescan->actions->issueview['suffixActions'] = array();
 
 $config->codescan->issue->search['module'] = 'codeScanIssue';
 $config->codescan->issue->search['fields']['issueID']      = $lang->idAB;
-$config->codescan->issue->search['fields']['message']      = $lang->codescan->title;
+$config->codescan->issue->search['fields']['title']        = $lang->codescan->title;
 $config->codescan->issue->search['fields']['scanBranch']   = $lang->codescan->scanBranch;
 $config->codescan->issue->search['fields']['file']         = $lang->codescan->file;
 $config->codescan->issue->search['fields']['rulePriority'] = $lang->codescan->severity;
@@ -257,7 +257,7 @@ $config->codescan->issue->search['fields']['plan']         = $lang->codescan->sc
 $config->codescan->issue->search['fields']['ruleID']       = $lang->codescan->ruleID;
 
 $config->codescan->issue->search['params']['issueID']      = array('operator' => '=', 'control' => 'input',  'values' => '');
-$config->codescan->issue->search['params']['message']      = array('operator' => '=', 'control' => 'input',  'values' => '');
+$config->codescan->issue->search['params']['title']        = array('operator' => '=', 'control' => 'input',  'values' => '');
 $config->codescan->issue->search['params']['scanBranch']   = array('operator' => '=', 'control' => 'select', 'values' => array());
 $config->codescan->issue->search['params']['file']         = array('operator' => 'include', 'control' => 'input', 'values' => '');
 $config->codescan->issue->search['params']['rulePriority'] = array('operator' => '=', 'control' => 'select', 'values' => array_diff_key($lang->codescan->severityList, array_flip(array('all'))));
