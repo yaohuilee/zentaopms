@@ -838,6 +838,7 @@ class storyModel extends model
             }
         }
 
+        unset($story->prevReviewers);
         $changes = common::createChanges($oldStory, $story);
 
         if($this->post->comment != '' or !empty($changes))
@@ -992,6 +993,8 @@ class storyModel extends model
         {
             $this->dao->delete()->from(TABLE_STORYREVIEW)->where('story')->eq($storyID)->andWhere('version')->eq($oldStory->version)->exec(); // 勾选了不需要评审，要将评审人删除。
         }
+
+        unset($story->prevReviewers);
 
         $story   = $this->loadModel('file')->replaceImgURL($story, 'spec,verify');
         $changes = common::createChanges($oldStory, $story);
