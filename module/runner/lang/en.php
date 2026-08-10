@@ -19,6 +19,7 @@ $lang->runner->ip         = 'IP Address';
 $lang->runner->package    = 'Package';
 $lang->runner->cmd        = 'Command';
 $lang->runner->desc       = 'Description';
+$lang->runner->labels     = 'Labels';
 
 $lang->runner->statusList = array();
 $lang->runner->statusList['online']  = 'Online';
@@ -45,7 +46,7 @@ curl  --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 # 2. Uncompress executable file
 
 # 3. Install service
-.\install.bat %GITFOX_URL% %GITFOX_TOKEN%
+.\install.bat %GITFOX_URL% %GITFOX_TOKEN% %RUNNER_LABELS%
 EOF;
 $lang->runner->cmdList['linux'] = <<<EOF
 # 1. Download runner executable file to specified path
@@ -55,7 +56,7 @@ sudo curl --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 sudo tar -zxvf gitfox-runner.tar.gz -C /usr/local/bin
 
 # 3. Install service
-sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN%
+sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN% --labels=%RUNNER_LABELS%
 
 # 4. Start service
 sudo gitfox-runner start
@@ -75,10 +76,11 @@ helm install --namespace <NAMESPACE> --name gitfox-runner -f <CONFIG_VALUES_FILE
 EOF;
 
 $lang->runner->notice = new stdclass();
-$lang->runner->notice->confirmDelete  = 'Are you sure to delete this Runner?';
-$lang->runner->notice->confirmDisable = 'Are you sure to suspend this Runner?';
-$lang->runner->notice->disableDelete  = 'Online status runner cannot be deleted';
-$lang->runner->notice->nameLength     = 'Name cannot exceed 200 characters';
-$lang->runner->notice->descLength     = 'Description cannot exceed 500 characters';
+$lang->runner->notice->confirmDelete    = 'Are you sure to delete this Runner?';
+$lang->runner->notice->confirmDisable   = 'Are you sure to suspend this Runner?';
+$lang->runner->notice->disableDelete    = 'Online status runner cannot be deleted';
+$lang->runner->notice->nameLength       = 'Name cannot exceed 200 characters';
+$lang->runner->notice->descLength       = 'Description cannot exceed 500 characters';
+$lang->runner->notice->newLabelsInvalid = 'Only letters, digits, underscores, dots, hyphens and Chinese characters are allowed.';
 
 $lang->runner->apiError = array();

@@ -19,6 +19,7 @@ $lang->runner->ip         = 'IP地址';
 $lang->runner->package    = '安装包';
 $lang->runner->cmd        = '部署命令';
 $lang->runner->desc       = '描述';
+$lang->runner->labels     = '标签';
 
 $lang->runner->statusList = array();
 $lang->runner->statusList['online']  = '在线';
@@ -45,7 +46,7 @@ curl  --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 # 2. 解压缩可执行文件包
 
 # 3. 安装服务
-.\install.bat %GITFOX_URL% %GITFOX_TOKEN%
+.\install.bat %GITFOX_URL% %GITFOX_TOKEN% %RUNNER_LABELS%
 EOF;
 $lang->runner->cmdList['linux'] = <<<EOF
 # 1. 下载runner可执行文件到指定的路径
@@ -55,7 +56,7 @@ sudo curl --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 sudo tar -zxvf gitfox-runner.tar.gz -C /usr/local/bin
 
 # 3. 安装服务
-sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN%
+sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN% --labels=%RUNNER_LABELS%
 
 # 4. 启动服务
 sudo gitfox-runner start
@@ -75,10 +76,11 @@ helm install --namespace <NAMESPACE> --name gitfox-runner -f <CONFIG_VALUES_FILE
 EOF;
 
 $lang->runner->notice = new stdclass();
-$lang->runner->notice->confirmDelete  = '您确定要删除该执行节点吗？';
-$lang->runner->notice->confirmDisable = '您确定要停用该执行节点吗？';
-$lang->runner->notice->disableDelete  = '在线状态的执行节点不可删除';
-$lang->runner->notice->nameLength     = '名称不能超过200个字符。';
-$lang->runner->notice->descLength     = '描述不能超过500个字符。';
+$lang->runner->notice->confirmDelete    = '您确定要删除该执行节点吗？';
+$lang->runner->notice->confirmDisable   = '您确定要停用该执行节点吗？';
+$lang->runner->notice->disableDelete    = '在线状态的执行节点不可删除';
+$lang->runner->notice->nameLength       = '名称不能超过200个字符。';
+$lang->runner->notice->descLength       = '描述不能超过500个字符。';
+$lang->runner->notice->newLabelsInvalid = '只允许输入英文、数字、下划线、点、中横线、中文';
 
 $lang->runner->apiError = array();
