@@ -35,9 +35,7 @@ $lang->runner->typeList['k8s']    = 'Kubernetes';
 
 $lang->runner->archList = array();
 $lang->runner->archList['amd64'] = 'amd64';
-$lang->runner->archList['amd32'] = 'amd32';
 $lang->runner->archList['arm64'] = 'arm64';
-$lang->runner->archList['arm32'] = 'arm32';
 
 $lang->runner->cmdList = array();
 $lang->runner->cmdList['windows'] = <<<EOF
