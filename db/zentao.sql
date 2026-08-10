@@ -16038,23 +16038,32 @@ CREATE INDEX `idx_issueID` ON `ops_scan_issue_task_binds` (`issueID`);
 CREATE TABLE IF NOT EXISTS `ops_scan_issues` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `issueKey` varchar(255) NOT NULL DEFAULT '' COMMENT '问题唯一标识（SHA1）',
+  `ppmID` int unsigned NOT NULL DEFAULT 0 COMMENT '合并请求ID',
   `ruleID` int unsigned NOT NULL DEFAULT 0 COMMENT '关联规则ID',
-  `message` text DEFAULT NULL COMMENT '问题描述信息',
+  `title` varchar(500) NOT NULL DEFAULT '' COMMENT '问题描述信息',
+  `content` text DEFAULT NULL COMMENT '问题详细内容',
   `path` varchar(500) NOT NULL DEFAULT '' COMMENT '文件路径',
-  `line` bigint unsigned NOT NULL DEFAULT 0 COMMENT '行号',
+  `startLine` int unsigned NOT NULL DEFAULT 0 COMMENT '问题起始行',
+  `endLine` int unsigned NOT NULL DEFAULT 0 COMMENT '问题结束行',
+  `oldCode` text DEFAULT NULL COMMENT '原代码片段',
+  `newCode` text DEFAULT NULL COMMENT '建议代码片段',
   `repoID` int unsigned NOT NULL DEFAULT 0 COMMENT '仓库ID',
   `repoBranch` varchar(255) NOT NULL DEFAULT '' COMMENT '仓库分支',
   `createdByTaskID` int unsigned NOT NULL DEFAULT 0 COMMENT '创建该问题的任务ID',
   `updatedByTaskID` int unsigned NOT NULL DEFAULT 0 COMMENT '最后更新该问题的任务ID',
   `status` varchar(20) NOT NULL DEFAULT 'wait' COMMENT '问题状态（wait/todo/solving/solved/closed/ignore）',
-  `scanMethod` varchar(20) NOT NULL DEFAULT '' COMMENT '扫描方法（check/smell）',
+  `scanMethod` varchar(20) NOT NULL DEFAULT '' COMMENT '扫描方法（check/smell/ai）',
+  `category` varchar(30) NOT NULL DEFAULT 'other' COMMENT '问题类别（critical,high,medium,low）',
+  `severity` varchar(30) NOT NULL DEFAULT '' COMMENT '严重程度（bug,security,performance,maintainability,test,style,documentation,other）',
   `payload` text DEFAULT NULL COMMENT '扩展数据（JSON）',
+  `createdBy` varchar(30) NOT NULL DEFAULT '' COMMENT '创建人',
   `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
+  `editedBy` varchar(30) NOT NULL DEFAULT '' COMMENT '更新人',
   `editedDate` datetime DEFAULT NULL COMMENT '编辑时间',
   `resolution` varchar(50) NOT NULL DEFAULT '' COMMENT '问题解决方案（bydesign/duplicate/external/fixed/notrepro/postponed/willnotfix/tostory）',
-  `resolved` datetime DEFAULT NULL COMMENT '问题解决时间',
-  `closed` datetime DEFAULT NULL COMMENT '问题关闭时间',
-  `ignored` bigint unsigned NOT NULL DEFAULT 0 COMMENT '问题忽略到期时间',
+  `resolvedDate` datetime DEFAULT NULL COMMENT '问题解决时间',
+  `closedDate` datetime DEFAULT NULL COMMENT '问题关闭时间',
+  `ignoredDate` bigint unsigned NOT NULL DEFAULT 0 COMMENT '问题忽略到期时间',
   `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB COMMENT='扫描问题表';
@@ -16065,6 +16074,8 @@ CREATE INDEX `idx_status` ON `ops_scan_issues` (`status`);
 CREATE INDEX `idx_scanMethod` ON `ops_scan_issues` (`scanMethod`);
 CREATE INDEX `idx_deleted` ON `ops_scan_issues` (`deleted`);
 CREATE INDEX `idx_resolution` ON `ops_scan_issues` (`resolution`);
+CREATE INDEX `idx_createdByTaskID` ON `ops_scan_issues` (`createdByTaskID`);
+CREATE INDEX `idx_ppmID` ON `ops_scan_issues` (`ppmID`);
 
 -- DROP TABLE IF EXISTS `ops_scan_plan_conditions`;
 CREATE TABLE IF NOT EXISTS `ops_scan_plan_conditions` (
