@@ -1541,6 +1541,7 @@ class storyModel extends model
 
         $this->dao->update(TABLE_STORY)->data($story, 'reviewer')->where('id')->in($twinsIdList)->exec();
 
+        unset($story->prevReviewers);
         $changes = common::createChanges($oldStory, $story);
         if(!empty($oldStory->twins)) $this->syncTwins($storyID, $oldStory->twins, $changes, 'submitReview');
         if(!dao::isError()) return $changes;
