@@ -55,7 +55,11 @@ window.initCmd = function(event)
 
     /* Merge selected labels and new labels, deduplicate, and join as comma-separated string. */
     const allLabels = [...new Set([...selectedLabels, ...newLabelValues])];
-    const labelsStr  = allLabels.join(',');
+    let labelsStr  = allLabels.join(',');
+    if(plat != 'window' && labelsStr != '')
+    {
+        labelsStr = '--labels=' + labelsStr;
+    }
 
     const packageURL = `${runnerConfig.packageURL}${plat}_${arch}.tar.gz?t=${new Date().getTime()}`;
     let cmd = runnerConfig.cmdList[plat];

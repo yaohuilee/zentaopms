@@ -46,7 +46,7 @@ curl  --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 # 2. Uncompress executable file
 
 # 3. Install service
-.\install.bat %GITFOX_URL% %GITFOX_TOKEN% %RUNNER_LABELS%
+.\install.bat %GITFOX_URL% %GITFOX_TOKEN% %RUNNER_RUNTIME% %RUNNER_LABELS%
 EOF;
 $lang->runner->cmdList['linux'] = <<<EOF
 # 1. Download runner executable file to specified path
@@ -56,7 +56,7 @@ sudo curl --output "gitfox-runner.tar.gz" "%PACKAGE_URL%" %RUNNER_RUNTIME%
 sudo tar -zxvf gitfox-runner.tar.gz -C /usr/local/bin
 
 # 3. Install service
-sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN% --labels=%RUNNER_LABELS% --runtime=%RUNNER_RUNTIME%
+sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN% --runtime=%RUNNER_RUNTIME% %RUNNER_LABELS%
 
 # 4. Start service
 sudo gitfox-runner start
