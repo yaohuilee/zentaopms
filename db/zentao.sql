@@ -14952,9 +14952,9 @@ CREATE TABLE IF NOT EXISTS `zt_ai_agent` (
   `actionPurpose` varchar(100) NOT NULL DEFAULT '' COMMENT '操作目的编码',
   `operation` varchar(30) NOT NULL DEFAULT '' COMMENT '定时操作目的：report/risk/notify',
   `cycleType` varchar(10) NOT NULL DEFAULT '' COMMENT '周期类型：day/week/month',
-  `cycleConfig` text NULL COMMENT '周期配置',
-  `notifyRule` text NULL COMMENT '通知规则JSON：roles/users/methods',
-  `reviewRule` text NULL COMMENT 'AI审查规则，非空表示开启审查',
+  `cycleConfig` text NULL DEFAULT NULL COMMENT '周期配置',
+  `notifyRule` text NULL DEFAULT NULL COMMENT '通知规则JSON：roles/users/methods',
+  `reviewRule` text NULL DEFAULT NULL COMMENT 'AI审查规则，非空表示开启审查',
   `source` text DEFAULT NULL,
   `targetForm` varchar(30) NOT NULL DEFAULT '',
   `purpose` text DEFAULT NULL,
@@ -14966,7 +14966,7 @@ CREATE TABLE IF NOT EXISTS `zt_ai_agent` (
   `createdDate` datetime DEFAULT NULL,
   `editedBy` varchar(30) NOT NULL DEFAULT '',
   `editedDate` datetime DEFAULT NULL,
-  `lastRunDate` datetime NULL COMMENT '最近一次定时执行时间',
+  `lastRunDate` datetime NULL DEFAULT NULL COMMENT '最近一次定时执行时间',
   `deleted` tinyint unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
@@ -14980,7 +14980,7 @@ CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   `failCount` int unsigned NOT NULL DEFAULT 0 COMMENT '失败数量',
   `message` varchar(500) NOT NULL DEFAULT '' COMMENT '展示文案',
   `error` varchar(1000) NOT NULL DEFAULT '' COMMENT '错误摘要',
-  `createdDate` datetime NULL COMMENT '执行时间',
+  `createdDate` datetime NULL DEFAULT NULL COMMENT '执行时间',
   `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
