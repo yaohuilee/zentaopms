@@ -113,7 +113,7 @@ class runner extends control
         $status = new stdClass();
         $status->status = $state;
 
-        $this->runner->update($this->serverID, $runnerID, $status);
+        $this->runner->update($runnerID, $status);
         if(dao::isError()) return $this->sendError(dao::getError());
 
         $this->loadModel('action')->create('runner', $runnerID, $state == 'enable' ? 'enabledRunner' : 'disabledRunner');
