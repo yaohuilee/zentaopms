@@ -11,12 +11,6 @@ declare(strict_types=1);
  */
 class runner extends control
 {
-    public function __construct($module = '', $method = '')
-    {
-        parent::__construct($module, $method);
-        $this->loadModel('space')->setMenu();
-    }
-
     /**
      * 浏览Runner列表。
      * browse Runner.
@@ -29,6 +23,8 @@ class runner extends control
      */
     public function browse(string $orderBy = '', int $recPerPage = 20, int $pageID = 1)
     {
+        $this->loadModel('space')->setMenu();
+
         $this->app->loadClass('pager', true);
         $pager = new pager(0, $recPerPage, $pageID);
 
@@ -130,10 +126,9 @@ class runner extends control
      */
     public function delete(int $runnerID)
     {
-        $this->runner->deleteRunner($this->serverID, $runnerID);
+        $this->runner->delete(TABLE_RUNNER, $runnerID);
         if(dao::isError()) return $this->sendError(dao::getError());
 
-        $this->loadModel('action')->create('runner', $runnerID, 'deleted');
         $this->sendSuccess(array('load' => true));
     }
 }
