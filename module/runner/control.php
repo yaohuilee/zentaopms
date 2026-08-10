@@ -79,16 +79,13 @@ class runner extends control
         if($_POST)
         {
             $formData = form::data($this->config->runner->form->edit)
-                ->setDefault('updatedBy', $this->app->user->account)
+                ->setDefault('editedBy', $this->app->user->account)
                 ->get();
 
-            if($formData->name == $runner->name && $formData->desc == $runner->desc)
-            {
-                return $this->sendSuccess(array('load' => true));
-            }
-
-            $this->runnerZen->checkFormData($formData);
-            if(dao::isError()) return $this->sendError(dao::getError());
+            $labels = array_unique(array_merge(explode(',', $formData->labels), explode(',', $formData->newLabels)));
+            $labels = implode(',', array_filter($labels));
+            $formData->labels = empty($labels) ? '' : ",{$labels},";
+            unset($formData->newLabels);
 
             $this->runner->update($runnerID, $formData);
             if(dao::isError()) return $this->sendError(dao::getError());
@@ -98,6 +95,7 @@ class runner extends control
         }
         $this->view->title  = $this->lang->runner->edit;
         $this->view->runner = $runner;
+        $this->view->labels = $this->runner->getLabels();
         $this->display();
     }
 
