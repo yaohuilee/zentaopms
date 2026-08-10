@@ -6,8 +6,6 @@ ALTER TABLE `zt_ai_agent` ADD `notifyRule` text NULL COMMENT '通知规则JSON�
 ALTER TABLE `zt_ai_agent` ADD `reviewRule` text NULL COMMENT 'AI审查规则，非空表示开启审查' AFTER `notifyRule`;
 ALTER TABLE `zt_ai_agent` ADD `lastRunDate` datetime NULL COMMENT '最近一次定时执行时间' AFTER `editedDate`;
 
-CREATE INDEX `idx_type_status_deleted` ON `zt_ai_agent`(`type`, `status`, `deleted`);
-
 CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `agent` int unsigned NOT NULL DEFAULT 0 COMMENT '智能体ID',
@@ -20,8 +18,6 @@ CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-
-CREATE INDEX `idx_agent_createdDate` ON `zt_ai_timerlog`(`agent`, `createdDate`);
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents', '执行定时智能体', 'zentao', 1, 'normal', NULL);
