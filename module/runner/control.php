@@ -37,7 +37,6 @@ class runner extends control
         foreach($runnerList as $runner)
         {
             $runner->runnerStatus = $runner->online == 'online' && $runner->status == 'disable' ? 'suspend' : $runner->online;
-            $runner->platOrArch   = $this->lang->runner->osList[$runner->os] . '_' . $this->lang->runner->archList[$runner->arch];
         }
 
         $this->view->title      = $this->lang->runner->browse;

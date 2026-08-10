@@ -32,4 +32,8 @@ $config->runner->actionList['delete']['data-confirm'] = array('message' => $lang
 $config->runner->actionList['delete']['ajaxSubmit']   = true;
 $config->runner->actionList['delete']['showText']     = true;
 
+$config->runner->runtimeList = array();
+$config->runner->runtimeList['windows'] = 'PowerShell';
+$config->runner->runtimeList['linux']   = 'Bash';
+
 $config->runner->apiError = array();

@@ -15,6 +15,7 @@ window.removeItem = function(event)
 {
     const obj = $(event.target);
     obj.closest('.labelsRow').remove();
+    initCmd();
 }
 
 window.validateNewLabels = function(event)
@@ -40,6 +41,7 @@ window.initCmd = function(event)
 
     /* Get selected labels from the multi-select picker. */
     const labelsVal = $('[name^="labels"]').val();
+    const runtime   = runnerConfig.runtimeList[plat];
     const selectedLabels = labelsVal ? (Array.isArray(labelsVal) ? labelsVal : [labelsVal]) : [];
 
     /* Collect all non-empty and valid values from newLabels text inputs. */
@@ -60,6 +62,7 @@ window.initCmd = function(event)
     cmd = cmd.replace('%PACKAGE_URL%', packageURL)
         .replace('%GITFOX_URL%', token.url)
         .replace('%GITFOX_TOKEN%', token.token)
+        .replace('%RUNNER_RUNTIME%', runtime)
         .replace('%RUNNER_LABELS%', labelsStr);
 
     $('#cmd code').empty();
