@@ -88,4 +88,37 @@ class runnerModel extends model
         if($result && isset($result->message)) return false;
         return true;
     }
+
+    /**
+     * 获取Runner标签。
+     * Get runner labels.
+     *
+     * @param  string $status
+     * @param  string $online
+     * @access public
+     * @return array
+     */
+    public function getLabels(string $status = '', string $online = ''): array
+    {
+        $runnerLabels = $this->dao->select('`labels`')->from(TABLE_RUNNER)
+            ->where('`deleted`')->eq(0)
+            ->beginIF($status)->andWhere('`status`')->eq($status)->fi()
+            ->beginIF($online)->andWhere('`online`')->eq($online)->fi()
+            ->fetchAll();
+        if(empty($runnerLabels)) return array();
+
+        $labels = array();
+        foreach($runnerLabels as $runnerLabel)
+        {
+            if(empty($runnerLabel->labels)) continue;
+
+            $runnerLabels = explode(',', $runnerLabel->labels);
+            foreach($runnerLabels as $label)
+            {
+                if(in_array($label, $labels)) continue;
+                $labels[$label] = $label;
+            }
+        }
+        return array_filter($labels);
+    }
 }

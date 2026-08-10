@@ -59,8 +59,9 @@ class runner extends control
         $token = $this->loadModel('gitfox')->request('/runners/token');
         if(dao::isError()) $this->sendError(zget(dao::getError(), 'apiMessage', 'fail'));
 
-        $this->view->title = $this->lang->runner->createGuide;
-        $this->view->token = $token;
+        $this->view->title  = $this->lang->runner->createGuide;
+        $this->view->token  = $token;
+        $this->view->labels = $this->runner->getLabels();
         $this->display();
     }
 
