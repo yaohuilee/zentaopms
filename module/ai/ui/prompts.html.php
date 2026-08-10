@@ -5,6 +5,10 @@ namespace zin;
 $viewType = $this->cookie->aiPromptsViewType ? $this->cookie->aiPromptsViewType : 'card';
 
 featureBar(set::current($status), set::linkParams("module={$module}&status={key}"));
+
+$canCreate       = $this->config->edition != 'open' && common::hasPriv('ai', 'createprompt');
+$createLink      = inlink('promptbasicinfo');
+$timerCreateItem = $canCreate ? array('text' => $lang->ai->timer->create, 'url' => inlink('timerbasicinfo')) : null;
 toolbar
 (
     item(set(array
@@ -25,12 +29,17 @@ toolbar
             )
         )
     ))),
-    $this->config->edition != 'open' && common::hasPriv('ai', 'createprompt') ? item(set(array(
-        'class'       => 'primary',
-        'icon'        => 'plus',
-        'text'        => $lang->ai->prompts->create,
-        'url'         => inlink('promptbasicinfo')
-    ))) : null
+    $canCreate ? btngroup
+    (
+        btn(setClass('btn primary'), set::icon('plus'), set::url($createLink), $lang->ai->prompts->create),
+        dropdown
+        (
+            btn(setClass('btn primary dropdown-toggle'),
+            setStyle(array('padding' => '6px', 'border-radius' => '0 2px 2px 0'))),
+            set::items(array($timerCreateItem)),
+            set::placement('bottom-end')
+        )
+    ) : null
 );
 
 $cols    = $config->ai->dtable->prompts;
