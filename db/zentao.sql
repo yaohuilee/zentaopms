@@ -16006,6 +16006,7 @@ CREATE TABLE IF NOT EXISTS `ops_runner` (
   `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IP地址',
   `os` varchar(50) NOT NULL DEFAULT '' COMMENT '操作系统',
   `arch` varchar(20) NOT NULL DEFAULT '' COMMENT '系统架构',
+  `runtime` varchar(50) NOT NULL DEFAULT '' COMMENT '运行方式',
   `labels` varchar(255) NOT NULL DEFAULT '' COMMENT '标签',
   `token` varchar(255) NOT NULL DEFAULT '' COMMENT '认证令牌',
   `heartBeat` int unsigned NOT NULL DEFAULT 0 COMMENT '心跳时间戳',

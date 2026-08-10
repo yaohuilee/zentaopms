@@ -39,6 +39,7 @@ UPDATE `zt_config` SET `value` = 'ui20' WHERE `module` = 'common' AND `section` 
 
 ALTER TABLE `ops_runner` MODIFY COLUMN `labels` varchar(255) NOT NULL DEFAULT '' COMMENT '标签';
 ALTER TABLE `ops_runner` ADD COLUMN `isDefault` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否为默认 runner(0:不是, 1:是)' AFTER `status`;
+ALTER TABLE `ops_runner` ADD COLUMN `runtime`  varchar(50) NOT NULL DEFAULT '' COMMENT '运行方式' AFTER `arch`;
 
 -- Devops - Ai review change
 ALTER TABLE `ops_scan_issues`
