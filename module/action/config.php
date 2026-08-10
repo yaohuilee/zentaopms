@@ -88,6 +88,7 @@ $config->action->objectNameFields['ganttversion'] = 'title';
 $config->action->objectNameFields['projectchange'] = 'name';
 
 $config->action->objectNameFields['provider'] = 'name';
+$config->action->objectNameFields['runner']   = 'name';
 
 $config->action->commonImgSize = 870;
 
@@ -152,4 +153,4 @@ $config->action->multipleObjectFields['testtask']['type'] = 'typeList';
 $config->action->approvalFields['reviewStatus'] = 'reviewStatusList';
 $config->action->approvalFields['reviewResult'] = 'reviewResultList';
 
-$config->action->hiddenTrashObjects = 'object,cm,stage,review_flow';
+$config->action->hiddenTrashObjects = 'object,cm,stage,review_flow,runner';

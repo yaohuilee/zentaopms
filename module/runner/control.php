@@ -11,12 +11,6 @@ declare(strict_types=1);
  */
 class runner extends control
 {
-    public function __construct($module = '', $method = '')
-    {
-        parent::__construct($module, $method);
-        $this->loadModel('space')->setMenu();
-    }
-
     /**
      * 浏览Runner列表。
      * browse Runner.
@@ -29,6 +23,8 @@ class runner extends control
      */
     public function browse(string $orderBy = '', int $recPerPage = 20, int $pageID = 1)
     {
+        $this->loadModel('space')->setMenu();
+
         $this->app->loadClass('pager', true);
         $pager = new pager(0, $recPerPage, $pageID);
 
@@ -37,7 +33,6 @@ class runner extends control
         foreach($runnerList as $runner)
         {
             $runner->runnerStatus = $runner->online == 'online' && $runner->status == 'disable' ? 'suspend' : $runner->online;
-            $runner->platOrArch   = $this->lang->runner->osList[$runner->os] . '_' . $this->lang->runner->archList[$runner->arch];
         }
 
         $this->view->title      = $this->lang->runner->browse;
@@ -80,16 +75,13 @@ class runner extends control
         if($_POST)
         {
             $formData = form::data($this->config->runner->form->edit)
-                ->setDefault('updatedBy', $this->app->user->account)
+                ->setDefault('editedBy', $this->app->user->account)
                 ->get();
 
-            if($formData->name == $runner->name && $formData->desc == $runner->desc)
-            {
-                return $this->sendSuccess(array('load' => true));
-            }
-
-            $this->runnerZen->checkFormData($formData);
-            if(dao::isError()) return $this->sendError(dao::getError());
+            $labels = array_unique(array_merge(explode(',', $formData->labels), explode(',', $formData->newLabels)));
+            $labels = implode(',', array_filter($labels));
+            $formData->labels = empty($labels) ? '' : ",{$labels},";
+            unset($formData->newLabels);
 
             $this->runner->update($runnerID, $formData);
             if(dao::isError()) return $this->sendError(dao::getError());
@@ -99,6 +91,7 @@ class runner extends control
         }
         $this->view->title  = $this->lang->runner->edit;
         $this->view->runner = $runner;
+        $this->view->labels = $this->runner->getLabels();
         $this->display();
     }
 
@@ -116,7 +109,7 @@ class runner extends control
         $status = new stdClass();
         $status->status = $state;
 
-        $this->runner->update($this->serverID, $runnerID, $status);
+        $this->runner->update($runnerID, $status);
         if(dao::isError()) return $this->sendError(dao::getError());
 
         $this->loadModel('action')->create('runner', $runnerID, $state == 'enable' ? 'enabledRunner' : 'disabledRunner');
@@ -133,10 +126,9 @@ class runner extends control
      */
     public function delete(int $runnerID)
     {
-        $this->runner->deleteRunner($this->serverID, $runnerID);
+        $this->runner->delete(TABLE_RUNNER, $runnerID);
         if(dao::isError()) return $this->sendError(dao::getError());
 
-        $this->loadModel('action')->create('runner', $runnerID, 'deleted');
         $this->sendSuccess(array('load' => true));
     }
 }

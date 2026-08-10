@@ -9,7 +9,6 @@ $config->runner->dtable->fieldList['name']['name']        = 'name';
 $config->runner->dtable->fieldList['name']['fixed']       = 'left';
 $config->runner->dtable->fieldList['name']['type']        = 'shortTitle';
 $config->runner->dtable->fieldList['name']['sortType']    = false;
-$config->runner->dtable->fieldList['name']['width']       = '200';
 $config->runner->dtable->fieldList['name']['hint']        = true;
 $config->runner->dtable->fieldList['name']['show']        = true;
 $config->runner->dtable->fieldList['name']['required']    = true;
@@ -19,28 +18,38 @@ $config->runner->dtable->fieldList['runnerStatus']['title']     = $lang->runner-
 $config->runner->dtable->fieldList['runnerStatus']['name']      = 'runnerStatus';
 $config->runner->dtable->fieldList['runnerStatus']['type']      = 'status';
 $config->runner->dtable->fieldList['runnerStatus']['statusMap'] = $lang->runner->statusList;
-$config->runner->dtable->fieldList['runnerStatus']['sortType']  = true;
 $config->runner->dtable->fieldList['runnerStatus']['show']      = true;
-$config->runner->dtable->fieldList['runnerStatus']['width']     = '40';
+$config->runner->dtable->fieldList['runnerStatus']['sortType']  = false;
 
-$config->runner->dtable->fieldList['platOrArch']['title']    = $lang->runner->platOrArch;
-$config->runner->dtable->fieldList['platOrArch']['name']     = 'platOrArch';
-$config->runner->dtable->fieldList['platOrArch']['sortType'] = true;
-$config->runner->dtable->fieldList['platOrArch']['width']    = '60';
-$config->runner->dtable->fieldList['platOrArch']['hint']     = true;
-$config->runner->dtable->fieldList['platOrArch']['show']     = true;
+$config->runner->dtable->fieldList['os']['title']    = $lang->runner->plat;
+$config->runner->dtable->fieldList['os']['name']     = 'os';
+$config->runner->dtable->fieldList['os']['sortType'] = true;
+$config->runner->dtable->fieldList['os']['hint']     = true;
+$config->runner->dtable->fieldList['os']['show']     = true;
+$config->runner->dtable->fieldList['os']['map']      = $lang->runner->osList;
+
+$config->runner->dtable->fieldList['arch']['title']    = $lang->runner->arch;
+$config->runner->dtable->fieldList['arch']['name']     = 'arch';
+$config->runner->dtable->fieldList['arch']['sortType'] = true;
+$config->runner->dtable->fieldList['arch']['hint']     = true;
+$config->runner->dtable->fieldList['arch']['show']     = true;
+$config->runner->dtable->fieldList['arch']['map']      = $lang->runner->archList;
+
+$config->runner->dtable->fieldList['runtime']['title']    = $lang->runner->runtime;
+$config->runner->dtable->fieldList['runtime']['name']     = 'runtime';
+$config->runner->dtable->fieldList['runtime']['sortType'] = true;
+$config->runner->dtable->fieldList['runtime']['hint']     = true;
+$config->runner->dtable->fieldList['runtime']['show']     = true;
 
 $config->runner->dtable->fieldList['version']['title']    = $lang->runner->version;
 $config->runner->dtable->fieldList['version']['name']     = 'version';
 $config->runner->dtable->fieldList['version']['sortType'] = false;
-$config->runner->dtable->fieldList['version']['width']    = '60';
 $config->runner->dtable->fieldList['version']['hint']     = true;
 $config->runner->dtable->fieldList['version']['show']     = true;
 
 $config->runner->dtable->fieldList['ip']['title']    = $lang->runner->ip;
 $config->runner->dtable->fieldList['ip']['name']     = 'ip';
 $config->runner->dtable->fieldList['ip']['sortType'] = false;
-$config->runner->dtable->fieldList['ip']['width']    = '20';
 $config->runner->dtable->fieldList['ip']['hint']     = true;
 $config->runner->dtable->fieldList['ip']['show']     = true;
 

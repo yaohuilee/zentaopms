@@ -20,6 +20,7 @@ $lang->runner->package    = '安装包';
 $lang->runner->cmd        = '部署命令';
 $lang->runner->desc       = '描述';
 $lang->runner->labels     = '标签';
+$lang->runner->runtime    = '运行方式';
 
 $lang->runner->statusList = array();
 $lang->runner->statusList['online']  = '在线';
@@ -46,7 +47,7 @@ curl  --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 # 2. 解压缩可执行文件包
 
 # 3. 安装服务
-.\install.bat %GITFOX_URL% %GITFOX_TOKEN% %RUNNER_LABELS%
+.\install.bat %GITFOX_URL% %GITFOX_TOKEN% %RUNNER_LABELS% %RUNNER_RUNTIME%
 EOF;
 $lang->runner->cmdList['linux'] = <<<EOF
 # 1. 下载runner可执行文件到指定的路径
@@ -56,7 +57,7 @@ sudo curl --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
 sudo tar -zxvf gitfox-runner.tar.gz -C /usr/local/bin
 
 # 3. 安装服务
-sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN% --labels=%RUNNER_LABELS%
+sudo gitfox-runner install --url=%GITFOX_URL% --token=%GITFOX_TOKEN% --labels=%RUNNER_LABELS% --runtime=%RUNNER_RUNTIME%
 
 # 4. 启动服务
 sudo gitfox-runner start
