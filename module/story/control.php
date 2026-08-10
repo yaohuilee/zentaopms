@@ -342,6 +342,7 @@ class story extends control
 
         if(!empty($_POST))
         {
+            if(isset($_POST['reviewer']) && !is_array($_POST['reviewer'])) $_POST['reviewer'] = array();
             $storyData = $this->storyZen->buildStoryForEdit($storyID);
             if(!$storyData) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 

@@ -228,7 +228,7 @@ window.locateChange = function(obj)
             field   = key.replace('[]', '');
         }
         if(field == 'comment' && value != '') changed = true;
-        if(storyData[field] == undefined || field == 'title') continue;
+        if(storyData[field] == undefined || field == 'title' || field == 'reviewer') continue;
 
         if(!isArray)
         {
