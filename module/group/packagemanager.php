@@ -1709,12 +1709,13 @@ $config->group->package->browseDeploy = new stdclass();
 $config->group->package->browseDeploy->order  = 5;
 $config->group->package->browseDeploy->subset = 'deployment';
 $config->group->package->browseDeploy->privs  = array();
-$config->group->package->browseDeploy->privs['host-browse']       = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5, 'depend' => array('admin-index'), 'recommend' => array('host-create', 'host-edit', 'host-treemap', 'host-view'));
-$config->group->package->browseDeploy->privs['host-view']         = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 10, 'depend' => array('host-browse'), 'recommend' => array('host-create', 'host-edit'));
-$config->group->package->browseDeploy->privs['host-treemap']      = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 15, 'depend' => array('host-browse'), 'recommend' => array());
-$config->group->package->browseDeploy->privs['serverroom-browse'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20, 'depend' => array(), 'recommend' => array('serverroom-create', 'serverroom-edit', 'serverroom-view'));
-$config->group->package->browseDeploy->privs['serverroom-view']   = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 25, 'depend' => array('serverroom-browse'), 'recommend' => array('serverroom-create', 'serverroom-edit'));
-$config->group->package->browseDeploy->privs['env-browse']        = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 30, 'depend' => array('deploy-browse'), 'recommend' => array('env-create', 'env-edit', 'env-delete'));
+$config->group->package->browseDeploy->privs['host-browse']            = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5, 'depend' => array('admin-index'), 'recommend' => array('host-create', 'host-edit', 'host-treemap', 'host-view'));
+$config->group->package->browseDeploy->privs['host-view']              = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 10, 'depend' => array('host-browse'), 'recommend' => array('host-create', 'host-edit'));
+$config->group->package->browseDeploy->privs['host-treemap']           = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 15, 'depend' => array('host-browse'), 'recommend' => array());
+$config->group->package->browseDeploy->privs['serverroom-browse']      = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20, 'depend' => array(), 'recommend' => array('serverroom-create', 'serverroom-edit', 'serverroom-view'));
+$config->group->package->browseDeploy->privs['serverroom-view']        = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 25, 'depend' => array('serverroom-browse'), 'recommend' => array('serverroom-create', 'serverroom-edit'));
+$config->group->package->browseDeploy->privs['env-browse']             = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 30, 'depend' => array('deploy-browse'), 'recommend' => array('env-create', 'env-edit', 'env-delete'));
+$config->group->package->browseDeploy->privs['publishtemplate-browse'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 35, 'depend' => array('deploy-browse'), 'recommend' => array('publishtemplate-create', 'publishtemplate-edit', 'publishtemplate-delete'));
 
 $config->group->package->host = new stdclass();
 $config->group->package->host->order  = 2220;
@@ -1770,6 +1771,14 @@ $config->group->package->env->privs  = array();
 $config->group->package->env->privs['env-create'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 2, 'depend' => array('env-browse'), 'recommend' => array('env-edit', 'env-delete'));
 $config->group->package->env->privs['env-edit']   = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 3, 'depend' => array('env-browse'), 'recommend' => array('env-create', 'env-delete'));
 $config->group->package->env->privs['env-delete'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 6, 'depend' => array('env-browse'), 'recommend' => array('env-create', 'env-edit'));
+
+$config->group->package->publishtemplate = new stdclass();
+$config->group->package->publishtemplate->order  = 2250;
+$config->group->package->publishtemplate->subset = 'deployment';
+$config->group->package->publishtemplate->privs  = array();
+$config->group->package->publishtemplate->privs['publishtemplate-create'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 2, 'depend' => array('publishtemplate-browse'), 'recommend' => array('publishtemplate-edit', 'publishtemplate-delete'));
+$config->group->package->publishtemplate->privs['publishtemplate-edit']   = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 3, 'depend' => array('publishtemplate-browse'), 'recommend' => array('publishtemplate-create', 'publishtemplate-delete'));
+$config->group->package->publishtemplate->privs['publishtemplate-delete'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 6, 'depend' => array('publishtemplate-browse'), 'recommend' => array('publishtemplate-create', 'publishtemplate-edit'));
 
 $config->group->package->qaIndex = new stdclass();
 $config->group->package->qaIndex->order  = 5;
@@ -2954,21 +2963,6 @@ $config->group->package->managePipeline->privs['pipeline-edit']    = array('edit
 $config->group->package->managePipeline->privs['pipeline-arrange'] = array('edition' => 'biz,max,ipd',      'vision' => 'rnd', 'order' => 15, 'depend' => array('pipeline-browse'), 'recommend' => array('pipeline-create', 'pipeline-edit'));
 $config->group->package->managePipeline->privs['pipeline-delete']  = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20, 'depend' => array('pipeline-browse'), 'recommend' => array('pipeline-create', 'pipeline-edit', 'pipeline-arrange'));
 
-$config->group->package->browseRunner = new stdclass();
-$config->group->package->browseRunner->order  = 20;
-$config->group->package->browseRunner->subset = 'pipeline';
-$config->group->package->browseRunner->privs  = array();
-$config->group->package->browseRunner->privs['runner-browse'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array('pipeline-browse'), 'recommend' => array('runner-create', 'runner-changeState', 'runner-edit', 'runner-delete'));
-
-$config->group->package->manageRunner = new stdclass();
-$config->group->package->manageRunner->order  = 25;
-$config->group->package->manageRunner->subset = 'pipeline';
-$config->group->package->manageRunner->privs  = array();
-$config->group->package->manageRunner->privs['runner-create']      = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 10,  'depend' => array('runner-browse'), 'recommend' => array('runner-edit', 'runner-changeState', 'runner-delete'));
-$config->group->package->manageRunner->privs['runner-changeState'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 15,  'depend' => array('runner-browse'), 'recommend' => array('runner-create', 'runner-edit', 'runner-delete'));
-$config->group->package->manageRunner->privs['runner-edit']        = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 20,  'depend' => array('runner-browse'), 'recommend' => array('runner-create', 'runner-changeState', 'runner-delete'));
-$config->group->package->manageRunner->privs['runner-delete']      = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 25,  'depend' => array('runner-browse'), 'recommend' => array('runner-create', 'runner-edit', 'runner-changeState'));
-
 $config->group->package->backup = new stdclass();
 $config->group->package->backup->order  = 5;
 $config->group->package->backup->subset = 'admin';
@@ -4077,6 +4071,21 @@ $config->group->package->provider->privs['provider-browse'] = array('edition' =>
 $config->group->package->provider->privs['provider-create'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5, 'depend' => array(), 'recommend' => array('provider-edit', 'provider-delete'));
 $config->group->package->provider->privs['provider-edit']   = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5, 'depend' => array('provider-browse'), 'recommend' => array('provider-create', 'provider-delete'));
 $config->group->package->provider->privs['provider-delete'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5, 'depend' => array('provider-browse'), 'recommend' => array('provider-create', 'provider-edit'));
+
+$config->group->package->browseRunner = new stdclass();
+$config->group->package->browseRunner->order  = 2390;
+$config->group->package->browseRunner->subset = 'configure';
+$config->group->package->browseRunner->privs  = array();
+$config->group->package->browseRunner->privs['runner-browse'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array('pipeline-browse'), 'recommend' => array('runner-create', 'runner-changeState', 'runner-edit', 'runner-delete'));
+
+$config->group->package->manageRunner = new stdclass();
+$config->group->package->manageRunner->order  = 2395;
+$config->group->package->manageRunner->subset = 'configure';
+$config->group->package->manageRunner->privs  = array();
+$config->group->package->manageRunner->privs['runner-create']      = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 10,  'depend' => array('runner-browse'), 'recommend' => array('runner-edit', 'runner-changeState', 'runner-delete'));
+$config->group->package->manageRunner->privs['runner-changeState'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 15,  'depend' => array('runner-browse'), 'recommend' => array('runner-create', 'runner-edit', 'runner-delete'));
+$config->group->package->manageRunner->privs['runner-edit']        = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 20,  'depend' => array('runner-browse'), 'recommend' => array('runner-create', 'runner-changeState', 'runner-delete'));
+$config->group->package->manageRunner->privs['runner-delete']      = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 25,  'depend' => array('runner-browse'), 'recommend' => array('runner-create', 'runner-edit', 'runner-changeState'));
 
 $config->group->package->browseRepo = new stdclass();
 $config->group->package->browseRepo->order  = 2420;
