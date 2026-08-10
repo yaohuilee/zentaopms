@@ -51,47 +51,23 @@ class runnerModel extends model
     }
 
     /**
-     * 通过API获取Runner信息。
-     * get runner info by API.
-     *
-     * @param  int $gitfoxID
-     * @param  int $runnerID
-     * @access public
-     * @return array|object
-     */
-    public function getRunner(int $gitfoxID, int $runnerID): array|object
-    {
-        $apiRoot = $this->loadModel('gitfox')->getApiRoot($gitfoxID, false);
-        $url = sprintf($apiRoot->url, '/runner/' . $runnerID);
-
-        $result = json_decode(common::http($url, array(), array(), $apiRoot->header, 'json', 'GET'));
-        if(empty($result) || isset($result->message)) return array();
-        return $result;
-    }
-
-    /**
      * 通过API更新Runner信息。
      * update runner info by API.
      *
-     * @param  int    $gitfoxID
      * @param  int    $runnerID
      * @param  object $formData
      * @access public
      * @return bool
      */
-    public function update(int $gitfoxID, int $runnerID, object $formData): bool
+    public function update(int $runnerID, object $formData): bool
     {
-        $apiRoot = $this->loadModel('gitfox')->getApiRoot($gitfoxID, false);
-        $url = sprintf($apiRoot->url, '/runner/' . $runnerID);
-        if(isset($formData->status)) $url .= '/status';
+        $this->dao->update(TABLE_RUNNER)->data($formData)
+            ->autoCheck()
+            ->batchCheck('name,labels', 'notempty')
+            ->where('id')->eq($runnerID)
+            ->exec();
 
-        $result = json_decode(common::http($url, $formData, array(CURLOPT_CUSTOMREQUEST => 'PATCH'), $apiRoot->header, 'json', 'PATCH'));
-        if(empty($result) || !isset($result->code) || $result->code != 0)
-        {
-            dao::$errors['message'] = $this->parseApiError(zget($result, 'message', ''));
-            return false;
-        }
-        return true;
+        return !dao::isError();
     }
 
     /**
@@ -111,19 +87,5 @@ class runnerModel extends model
         $result  = json_decode(common::http($url, null, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $apiRoot->header, 'json', 'DELETE'));
         if($result && isset($result->message)) return false;
         return true;
-    }
-
-    /**
-     * 解析API错误。
-     * Parse API error.
-     *
-     * @param  string $error
-     * @access public
-     * @return string
-     */
-    public function parseApiError(string $error): string
-    {
-        if(!$error) $error = $this->lang->error->httpServerError;
-        return $this->loadModel('pipeline')->convertApiError($error, $this->config->runner->apiError, $this->lang->runner->apiError);
     }
 }

@@ -1643,6 +1643,20 @@ $lang->resource->codescan->issueView    = 'issueView';
 $lang->resource->codescan->ignoreIssue  = 'ignoreIssue';
 $lang->resource->codescan->confirmIssue = 'confirmIssue';
 $lang->resource->codescan->activeIssue  = 'activeIssue';
+
+$lang->resource->runner = new stdclass();
+$lang->resource->runner->browse      = 'browse';
+$lang->resource->runner->create      = 'create';
+$lang->resource->runner->changeState = 'changeState';
+$lang->resource->runner->edit        = 'edit';
+$lang->resource->runner->delete      = 'delete';
+
+$lang->runner->methodOrder[5]  = 'browse';
+$lang->runner->methodOrder[10] = 'create';
+$lang->runner->methodOrder[15] = 'changeState';
+$lang->runner->methodOrder[20] = 'edit';
+$lang->runner->methodOrder[25] = 'delete';
+
 /* Doc. */
 $lang->resource->doc = new stdclass();
 $lang->resource->doc->index                = 'index';

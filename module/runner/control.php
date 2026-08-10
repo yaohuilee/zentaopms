@@ -74,7 +74,7 @@ class runner extends control
      */
     public function edit(int $runnerID)
     {
-        $runner = $this->runner->getRunner($this->serverID, $runnerID);
+        $runner = $this->runner->fetchByID($runnerID);
 
         if($_POST)
         {
@@ -90,7 +90,7 @@ class runner extends control
             $this->runnerZen->checkFormData($formData);
             if(dao::isError()) return $this->sendError(dao::getError());
 
-            $this->runner->update($this->serverID, $runnerID, $formData);
+            $this->runner->update($runnerID, $formData);
             if(dao::isError()) return $this->sendError(dao::getError());
 
             $this->loadModel('action')->create('runner', $runnerID, 'edit');
