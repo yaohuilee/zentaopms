@@ -1009,6 +1009,9 @@ class storyModel extends model
             if(!isset($story->spec)) $story->spec = $oldStory->spec;
             $this->loadModel('message')->sendMentionNotice($oldStory->type, 'edit', $actionID, $story, $oldStory);
 
+            /* 如果阶段发生变化，记录阶段变动动态。 */
+            if($oldStory->type == 'story' && isset($story->stage) && $oldStory->stage != $story->stage) $this->createStageChangeAction($storyID, $oldStory->stage, $story->stage, array('type' => 'edit', 'objectID' => 0));
+
             if(isset($story->finalResult))
             {
                 if($story->finalResult == 'clarify')
@@ -1268,6 +1271,10 @@ class storyModel extends model
 
             $this->executeHooks($storyID);
             if($oldStory->type == 'story' && $story->stage != $oldStory->stage) $this->batchChangeStage(array($storyID), $story->stage);
+
+            /* 如果阶段发生变化，记录阶段变动动态。 */
+            if($oldStory->type == 'story' && $oldStory->stage != $story->stage) $this->createStageChangeAction($storyID, $oldStory->stage, $story->stage, array('type' => 'edit', 'objectID' => 0));
+
             if($story->closedReason == 'done') $this->loadModel('score')->create('story', 'close');
             if($story->roadmap != $oldStory->roadmap) $this->storyTao->computeParentStage($oldStory);
 
@@ -2368,13 +2375,17 @@ class storyModel extends model
      * Set stage of a story.
      *
      * @param  int    $storyID
+     * @param  array  $trigger  trigger info: array('type' => 'linkPlan', 'objectID' => 123)
      * @access public
      * @return bool
      */
-    public function setStage(int $storyID): bool
+    public function setStage(int $storyID, array $trigger = array()): bool
     {
         $story = $this->dao->findById($storyID)->from(TABLE_STORY)->fetch();
         if(empty($story)) return false;
+
+        /* 保存旧阶段用于检测变化。 */
+        $oldStage = $story->stage;
 
         /* 获取已经存在的分支阶段. */
         $oldStages = $this->dao->select('*')->from(TABLE_STORYSTAGE)->where('story')->eq($storyID)->fetchAll('branch');
@@ -2393,7 +2404,7 @@ class storyModel extends model
         if($hasBranch) $stages = $this->storyTao->getDefaultStages($story->plan, $linkedProjects ? $linkedBranches : array());
 
         /* When the status is closed, stage is also changed to closed. */
-        if($story->status == 'closed') return $this->storyTao->setStageToClosed($storyID, array_merge($linkedBranches, array_keys($stages)), $linkedProjects);
+        if($story->status == 'closed') return $this->storyTao->setStageToClosed($storyID, array_merge($linkedBranches, array_keys($stages)), $linkedProjects, $trigger, $oldStage);
 
         /* If no executions, in plan, stage is planned. No plan, wait. */
         if(!$linkedProjects) $this->storyTao->setStageToPlanned($storyID, $stages, $oldStages);
@@ -2403,8 +2414,31 @@ class storyModel extends model
         $stages   = $this->storyTao->computeStagesByTasks($storyID, $taskStat, $stages, $linkedProjects);
         $stages   = $this->storyTao->computeStagesByRelease($storyID, $stages);
 
-        $this->storyTao->updateStage($storyID, $stages, $oldStages, $linkedProjects);
+        $this->storyTao->updateStage($storyID, $stages, $oldStages, $linkedProjects, $trigger, $oldStage);
         return true;
+    }
+
+    /**
+     * 创建阶段变动动态。
+     * Create stage change action.
+     *
+     * @param  int    $storyID
+     * @param  string $oldStage
+     * @param  string $newStage
+     * @param  array  $trigger   trigger info: array('type' => 'linkPlan', 'objectID' => 123)
+     * @access public
+     * @return void
+     */
+    public function createStageChangeAction(int $storyID, string $oldStage, string $newStage, array $trigger): void
+    {
+        if($oldStage == $newStage) return;
+        if(empty($trigger['type'])) return;
+
+        $triggerType   = $trigger['type'];
+        $triggerObject = isset($trigger['objectID']) ? $trigger['objectID'] : 0;
+        $extra         = "{$triggerType}|{$triggerObject}|{$newStage}";
+
+        $this->loadModel('action')->create('story', $storyID, 'changedstorystage', '', $extra);
     }
 
     /**
