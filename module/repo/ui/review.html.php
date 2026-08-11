@@ -78,6 +78,5 @@ dtable
     set::orderBy($orderBy),
     set::onRenderCell(jsRaw('window.renderRepobugList')),
     hasPriv('bug', 'batchAssignTo') ? set::footToolbar($footToolbar) : null,
-    set::onCheckChange(jsRaw('window.checkedChange')),
     set::footPager(usePager())
 );
