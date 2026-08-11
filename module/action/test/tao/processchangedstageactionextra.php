@@ -45,3 +45,27 @@ $taskTable->status->range('doing,done');
 $taskTable->project->range('1');
 $taskTable->execution->range('1');
 $taskTable->gen(2);
+
+$releaseTable = zenData('release');
+$releaseTable->id->range('10001');
+$releaseTable->name->range('测试发布');
+$releaseTable->product->range('1');
+$releaseTable->gen(1);
+
+// 3. 用户登录
+su('admin');
+
+// 4. 创建测试实例
+$actionTest = new actionTaoTest();
+
+// 5. 测试步骤（至少5个，每个r()...e()写在同一行，从行首开始）
+r($actionTest->processChangedStageActionExtraTest('linkPlan|10001|planned'))        && p() && e('1'); // 步骤1：linkPlan触发，关联到计划+阶段更新为已计划
+r($actionTest->processChangedStageActionExtraTest('unlinkPlan|10001|wait'))         && p() && e('1'); // 步骤2：unlinkPlan触发，移除计划+阶段更新为未开始
+r($actionTest->processChangedStageActionExtraTest('linkProject|10001|projected'))   && p() && e('1'); // 步骤3：linkProject触发，关联到项目+阶段更新为研发立项
+r($actionTest->processChangedStageActionExtraTest('unlinkProject|10001|wait'))      && p() && e('1'); // 步骤4：unlinkProject触发，移除项目+阶段更新为未开始
+r($actionTest->processChangedStageActionExtraTest('startTask|10001|designing'))     && p() && e('1'); // 步骤5：startTask触发设计任务，开始设计任务+阶段更新为设计中
+r($actionTest->processChangedStageActionExtraTest('finishTask|10002|developed'))    && p() && e('1'); // 步骤6：finishTask触发开发任务，完成开发任务+阶段更新为研发完毕
+r($actionTest->processChangedStageActionExtraTest('linkRelease|10001|released'))    && p() && e('1'); // 步骤7：linkRelease触发，关联到发布+阶段更新为已发布
+r($actionTest->processChangedStageActionExtraTest('unlinkRelease|10001|projected')) && p() && e('1'); // 步骤8：unlinkRelease触发，移除发布+阶段更新为研发立项
+r($actionTest->processChangedStageActionExtraTest('edit|0|testing'))                && p() && e('1'); // 步骤9：edit触发，编辑需求后+阶段更新为测试中
+r($actionTest->processChangedStageActionExtraTest('invalid|0|wait'))                && p() && e('0'); // 步骤10：无效触发类型，返回空
