@@ -488,6 +488,53 @@ class actionTao extends actionModel
     }
 
     /**
+     * 处理changedstorystage action的extra字段。
+     * Process changedstorystage action extra.
+     *
+     * @param  object $action
+     * @access public
+     * @return void
+     */
+    public function processChangedStoryStageActionExtra(object $action): void
+    {
+        $parts = explode('|', $action->extra);
+        if(count($parts) < 3) return;
+
+        $triggerType     = $parts[0];
+        $triggerObjectID = $parts[1];
+        $newStage        = $parts[2];
+
+        $objectLink = '';
+        $actionText = zget($this->lang->action->changedStoryStage, $triggerType, '');
+        $stageName  = zget($this->lang->story->stageList, $newStage, $newStage);
+        switch($triggerType)
+        {
+            case 'linkPlan':
+            case 'unlinkPlan':
+                $plan = $this->fetchObjectInfoByID(TABLE_PRODUCTPLAN, (int)$triggerObjectID, 'title');
+                if($plan && $plan->title) $objectLink = common::hasPriv('productplan', 'view') ? html::a(helper::createLink('productplan', 'view', "planID={$triggerObjectID}"), $plan->title) : $plan->title;
+                break;
+            case 'linkProject':
+            case 'unlinkProject':
+                $project = $this->fetchObjectInfoByID(TABLE_PROJECT, (int)$triggerObjectID, 'name');
+                if($project && $project->name) $objectLink = common::hasPriv('project', 'view') ? html::a(helper::createLink('project', 'view', "projectID={$triggerObjectID}"), $project->name) : $project->name;
+                break;
+            case 'linkRelease':
+            case 'unlinkRelease':
+                $release = $this->fetchObjectInfoByID(TABLE_RELEASE, (int)$triggerObjectID, 'name');
+                if($release && $release->name) $objectLink = common::hasPriv('release', 'view') ? html::a(helper::createLink('release', 'view', "releaseID={$triggerObjectID}"), $release->name) : $release->name;
+                break;
+        }
+
+        $action->extra = sprintf($this->lang->action->changedStoryStage->common, $actionText, $stageName);
+        if($objectLink)
+        {
+            $objectLink = "<strong>{$objectLink}</strong>";
+            $action->extra = sprintf($this->lang->action->changedStoryStage->commonWithLink, $actionText, $objectLink, $stageName);
+        }
+    }
+
+    /**
      * 处理需求层级。
      * Process story grade.
      *
