@@ -449,6 +449,7 @@ $lang->story->action->syncgrade             = array('main' => '$date, the system
 $lang->story->action->linked2roadmap        = array('main' => '$date, linked to Roadmap <strong>$extra</strong> by <strong>$actor</strong>.');
 $lang->story->action->unlinkedfromroadmap   = array('main' => '$date, unlinked from Roadmap <strong>$extra</strong> by <strong>$actor</strong>.');
 $lang->story->action->changedbycharter      = array('main' => '$date, charter proposal <strong>$extra</strong> was approved by <strong>$actor</strong>. The story phase was automatically updated to Charter.');
+$lang->story->action->changedstorystage     = array('main' => '$date, by <strong>$actor</strong> $extra.');
 
 /* Statistical statement. */
 $lang->story->report = new stdclass();

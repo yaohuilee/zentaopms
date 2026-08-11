@@ -1235,15 +1235,18 @@ class storyTao extends storyModel
      * @param  int       $storyID
      * @param  array     $linkedBranches
      * @param  array     $linkedProjects
+     * @param  array     $trigger         trigger info
+     * @param  string    $oldStage
      * @access protected
      * @return bool
      */
-    protected function setStageToClosed(int $storyID, array $linkedBranches = array(), array $linkedProjects = array()): bool
+    protected function setStageToClosed(int $storyID, array $linkedBranches = array(), array $linkedProjects = array(), array $trigger = array(), string $oldStage = ''): bool
     {
         $story = $this->dao->findById($storyID)->from(TABLE_STORY)->fetch();
         if(empty($story)) return false;
 
         $this->dao->update(TABLE_STORY)->set('stage')->eq('closed')->where('id')->eq($storyID)->exec();
+        if($trigger && $oldStage != 'closed') $this->createStageChangeAction($storyID, $oldStage, 'closed', $trigger);
         foreach($linkedBranches as $branchID)
         {
             if(!empty($branchID)) $this->dao->replace(TABLE_STORYSTAGE)->set('story')->eq($storyID)->set('branch')->eq((int)$branchID)->set('stage')->eq('closed')->exec();
@@ -1262,10 +1265,12 @@ class storyTao extends storyModel
      * @param  array     $stages
      * @param  array     $oldStages
      * @param  array     $linkedProjects
+     * @param  array     $trigger         trigger info
+     * @param  string    $oldStage
      * @access protected
      * @return bool
      */
-    protected function updateStage(int $storyID, array $stages, array $oldStages = array(), array $linkedProjects = array()): bool
+    protected function updateStage(int $storyID, array $stages, array $oldStages = array(), array $linkedProjects = array(), array $trigger = array(), string $oldStage = ''): bool
     {
         $story = $this->dao->findById($storyID)->from(TABLE_STORY)->fetch();
         if(empty($stages) && $oldStages) $stages = array_column($oldStages, 'stage', 'branch');
@@ -1307,7 +1312,12 @@ class storyTao extends storyModel
 
         $this->dao->update(TABLE_STORY)->set('stage')->eq($stage)->where('id')->eq($storyID)->exec();
 
-        if($story->stage != $stage) $this->updateLinkedLane($storyID, $linkedProjects);
+        if($story->stage != $stage)
+        {
+            $this->updateLinkedLane($storyID, $linkedProjects);
+        }
+        /* 记录阶段变动动态。使用传入的oldStage而非从DB读取的stage，因为阶段可能已被setStageToPlanned等方法提前修改。 */
+        if($trigger && $oldStage && $oldStage != $stage) $this->createStageChangeAction($storyID, $oldStage, $stage, $trigger);
         $this->computeParentStage($story);
 
         return true;
