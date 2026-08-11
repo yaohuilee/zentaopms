@@ -76,7 +76,6 @@ function aiAgentEntry(): aiAgentEntry     { return createWg('aiAgentEntry', func
 function aiAgentMenu(): aiAgentMenu       { return createWg('aiAgentMenu', func_get_args()); }
 function aiTeammateMenu(): aiTeammateMenu { return createWg('aiTeammateMenu', func_get_args()); }
 function aiFormInject(): aiFormInject     { return createWg('aiFormInject', func_get_args()); }
-function aiprocedureEntry(): aiprocedureEntry { return createWg('aiprocedureEntry', func_get_args()); }
 function nav(): nav {return createWg('nav', func_get_args());}
 function label(): label {return createWg('label', func_get_args());}
 function statusLabel(): statusLabel {return createWg('statusLabel', func_get_args());}

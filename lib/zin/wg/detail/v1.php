@@ -479,10 +479,13 @@ CSS;
             $this->block('sections'),
             !empty($config->enableAITeammate) && hasPriv('aitask', 'browse') ? $this->buildAITasks() : null,
             $this->children(),
-            $enableProcedure ? aiprocedureEntry
+            $enableProcedure ? createWg
             (
-                set::objectType($this->prop('objectType')),
-                set::objectID((int)$this->prop('objectID')),
+                'aiprocedureentry',
+                [
+                    set::objectType($this->prop('objectType')),
+                    set::objectID((int)$this->prop('objectID'))
+                ]
             ) : null,
             $this->buildHistory(),
             $this->buildActions()
