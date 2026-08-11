@@ -35,7 +35,7 @@ foreach($kanbanList as $current => $region)
 }
 
 jsVar('privs',          $privs);
-jsVar('delayed',        $lang->project->statusList['delay']);
+jsVar('delayInfo',      $lang->project->delayInfo);
 jsVar('toText',         $lang->to);
 jsVar('futureDateText', $lang->product->future);
 jsVar('longTimeText',   $lang->program->longTime);
