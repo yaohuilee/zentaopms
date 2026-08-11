@@ -22,7 +22,7 @@ class runnerModel extends model
      */
     public function getList(string $orderBy = 'id_desc', ?object $pager = null): array
     {
-        return $this->dao->select('*')->from(TABLE_RUNNER)
+        return $this->dao->select('*, `labels`')->from(TABLE_RUNNER)
             ->where('`deleted`')->eq(0)
             ->orderBy($orderBy)
             ->page($pager)
