@@ -1184,7 +1184,7 @@ class pipeline extends control
             if(empty($runner->runtime)) continue;
 
             $runner->runtimeAction = $runner->runtime == 'docker' ? ucfirst($runner->runtime) : $runner->runtime . ' ' . $runner->version;
-            $runnerList[$runner->id] = $runner;
+            $runnerList[] = $runner;
         }
         $this->send(array('result' => 'success', 'data' => $runnerList));
     }
