@@ -243,6 +243,7 @@ class product extends control
             if(dao::isError()) return $this->sendError(dao::getError());
 
             $response = $this->productZen->responseAfterCreate($productID, !empty($productData->program) ? $productData->program : 0);
+            $response['changes'] = array('type' => 'add', 'objectType' => 'product', 'objectList' => array($productID));
             return $this->send($response);
         }
 
@@ -289,7 +290,9 @@ class product extends control
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             if($action == 'undelete') $this->loadModel('action')->undelete((int)$extra);
+
             $response = $this->productZen->responseAfterEdit($productID, $programID);
+            $response['changes'] = array('type' => 'update', 'objectType' => 'product', 'objectList' => array($productID));
             return $this->send($response);
         }
 
