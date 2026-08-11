@@ -1164,4 +1164,28 @@ class pipeline extends control
 
         $this->display();
     }
+
+    /**
+     * 获取运行器。
+     * Get runner.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxGetRunner()
+    {
+        $runners = $this->loadModel('runner')->getList();
+
+        $runnerList = array();
+        if(empty($runners)) return $runnerList;
+
+        foreach($runners as $runner)
+        {
+            if(empty($runner->runtime)) continue;
+
+            $runner->runtimeAction = $runner->runtime == 'docker' ? ucfirst($runner->runtime) : $runner->runtime . ' ' . $runner->version;
+            $runnerList[$runner->id] = $runner;
+        }
+        $this->send(array('result' => 'success', 'data' => $runnerList));
+    }
 }
