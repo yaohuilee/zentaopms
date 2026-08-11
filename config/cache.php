@@ -25,6 +25,7 @@ $config->cache->dao->excludeTables = array(   // 不使用 SQL 查询结果缓�
     TABLE_PPMREVIEWERS,
     TABLE_SPACE,
     TABLE_DEVOPSSPACEUSER,
+    TABLE_RUNNER,
     TABLE_PROVIDER
 );
 

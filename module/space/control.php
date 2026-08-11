@@ -21,8 +21,10 @@ class space extends control
      * @access public
      * @return void
      */
-    public function browse(int $recTotal = 0, int $recPerPage = 20, int $pageID = 1)
+    public function browse(string $type = 'all', int $queryID = 0, int $recTotal = 20, int $recPerPage = 20, int $pageID = 1)
     {
+        $type = strtolower($type);
+
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
 
@@ -30,16 +32,13 @@ class space extends control
         $this->app->loadClass('pager', true);
         $pager = pager::init($recTotal, $recPerPage, $pageID);
 
-        $spaces = $this->space->getListByAccount($this->app->user->account, $pager);
-        if(!empty($spaces->data))
-        {
-            $pager->recTotal   = $spaces->pager->total;
-            $pager->recPerPage = $spaces->pager->pageSize;
-            $pager->pageID     = $spaces->pager->page;
-        }
+        $queryID = $type == 'bysearch' ? $queryID : 0;
+        $actionURL = $this->createLink('space', 'browse', "type=bysearch&queryID=myQueryID&recTotal={$recTotal}&recPerPage={$recPerPage}&pageID={$pageID}");
+        $this->space->buildSearchForm($queryID, $actionURL);
 
-        $spaces = zget($spaces, 'data', array());
-        foreach($spaces as &$space)
+        $spaces  = $this->space->getListByAccount($this->app->user->account, $pager, $type, $queryID);
+
+        foreach($spaces as $space)
         {
             $space->desc    = str_replace('&nbsp;', ' ', strip_tags(htmlspecialchars_decode($space->desc)));
             $space->manager = '';
@@ -55,6 +54,7 @@ class space extends control
         $this->view->spaces = $spaces;
         $this->view->users  = $this->loadModel('user')->getPairs('noletter|noempty|nodeleted|noclosed');
         $this->view->pager  = $pager;
+        $this->view->type   = $type;
         $this->display();
     }
 

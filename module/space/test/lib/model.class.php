@@ -1239,6 +1239,58 @@ class spaceModelTest extends baseTest
     }
 
     /**
+     * Test getListByAccount method count by type.
+     *
+     * @param  string $account
+     * @param  string $type
+     * @param  int    $queryID
+     * @access public
+     * @return int|array
+     */
+    public function getListByAccountCountByTypeTest(string $account, string $type = '', int $queryID = 0): int|array
+    {
+        $spaces = $this->instance->getListByAccount($account, null, $type, $queryID);
+
+        if(dao::isError()) return dao::getError();
+        return count((array)$spaces);
+    }
+
+    /**
+     * Test getListByAccount method first space name by type.
+     *
+     * @param  string $account
+     * @param  string $type
+     * @param  int    $queryID
+     * @access public
+     * @return string|array
+     */
+    public function getListByAccountFirstNameByTypeTest(string $account, string $type = '', int $queryID = 0): string|array
+    {
+        $spaces = $this->instance->getListByAccount($account, null, $type, $queryID);
+
+        if(dao::isError()) return dao::getError();
+
+        $spaces = array_values((array)$spaces);
+        return empty($spaces) ? '' : zget($spaces[0], 'name', '');
+    }
+
+    /**
+     * Test getSearchQuery method.
+     *
+     * @param  int   $queryID
+     * @param  array $members
+     * @access public
+     * @return string|int|array
+     */
+    public function getSearchQueryTest(int $queryID = 0, array $members = array()): string|int|array
+    {
+        $result = $this->invokeArgs('getSearchQuery', array($queryID, $members));
+
+        if(dao::isError()) return dao::getError();
+        return $result === false ? 0 : $result;
+    }
+
+    /**
      * Test getSpacesByAccount method count.
      *
      * @param  string $account

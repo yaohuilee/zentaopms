@@ -21,8 +21,10 @@ class spaceModel extends model
      * @access public
      * @return array|object
      */
-    public function getListByAccount(string $account, ?object $pager = null): array|object
+    public function getListByAccount(string $account, ?object $pager = null, $type = '', $queryID = 0): array|object
     {
+        $type = strtolower($type);
+
         $members = $this->getMemberList();
 
         $userSpaces = array();
@@ -39,15 +41,123 @@ class spaceModel extends model
             }
         }
 
-        $query = array();
-        $query['ids']    = implode(',', array_keys($userSpaces));
-        $query['isOpen'] = true;
+        $query = '';
+        if($type == 'bysearch')
+        {
+            $query = $this->getSearchQuery($queryID, $members);
+            if($query === false) return array();
+        }
 
-        $result = $this->loadModel('gitfox')->apiGetSpaces($query, $pager);
-        if(empty($result) || empty($result->data)) return array();
-        foreach($result->data as &$space) $space->members = zget($members, $space->id, array());
+        $spaces = $this->dao->select('*')->from(TABLE_SPACE)
+            ->where('deleted')->eq(0)
+            ->andWhere('(`id`')->in(array_keys($userSpaces))
+            ->orWhere('acl')->eq('open')
+            ->markRight()
+            ->beginIF($query)->andWhere($query)->fi()
+            ->orderBy('id_desc')
+            ->page($pager)
+            ->fetchAll('id');
 
-        return is_null($pager) ? $result->data : $result;
+        foreach($spaces as $space) $space->members = zget($members, $space->id, array());
+
+        return $spaces;
+    }
+
+    /**
+     * 获取搜索查询条件SQL。
+     * Get search query SQL.
+     *
+     * 优先按 queryID 从保存的查询中获取并写入 session；否则使用 session 中的查询。
+     * 查询条件中的负责人/成员字段会转换为基于成员列表的空间ID过滤。
+     *
+     * @param  int   $queryID
+     * @param  array $members
+     * @access private
+     * @return string|false 查询条件SQL；无有效查询条件时返回 false
+     */
+    private function getSearchQuery(int $queryID, array $members): string|false
+    {
+        $queryName = 'spaceSearchQuery';
+        if($queryID)
+        {
+            $query = $this->loadModel('search')->getQuery($queryID);
+            if($query)
+            {
+                $this->session->set($queryName, $query->sql);
+                $this->session->set('spaceSearchForm', $query->form);
+            }
+        }
+        if($this->session->$queryName === false) return false;
+
+        return $this->processMemberSearchQuery($this->session->$queryName, $members);
+    }
+
+    /**
+     * 将负责人/成员搜索条件转换为基于成员列表的空间ID过滤。
+     * Convert manager/member search conditions to space id filters.
+     *
+     * ops_space 表没有 managers/members 列，搜索模块会生成引用不存在列的 SQL，
+     * 这里根据 getMemberList() 的成员数据把条件替换为 `id` IN/NOT IN (空间ID列表)。
+     *
+     * @param  string $query
+     * @param  array  $members
+     * @access private
+     * @return string
+     */
+    private function processMemberSearchQuery(string $query, array $members): string
+    {
+        if(strpos($query, '`managers`') === false && strpos($query, '`members`') === false) return $query;
+
+        /* 匹配 `managers` = 'user' 形式的条件。 */
+        preg_match_all('/`(managers|members)`\s*(<>|!=|>=|<=|=|>|<)\s*\'([^\']*)\'/', $query, $comparisons, PREG_SET_ORDER);
+
+        /* 匹配 CONCAT(',', `managers`, ',') LIKE CONCAT('%,', 'user', ',%') 形式的条件。 */
+        preg_match_all('/CONCAT\(\',\', `(managers|members)`, \',\'\)\s*(NOT\s+)?LIKE\s*CONCAT\(\'%,\', \'([^\']*)\', \',%\'\)/', $query, $likes, PREG_SET_ORDER);
+
+        foreach(array_merge($comparisons, $likes) as $match)
+        {
+            $field = $match[1];
+            if(empty($match[2]))
+            {
+                $operator = 'include';
+                $value    = $match[3];
+            }
+            elseif(strtoupper(trim($match[2])) == 'NOT')
+            {
+                $operator = 'notinclude';
+                $value    = $match[3];
+            }
+            else
+            {
+                $operator = $match[2];
+                $value    = $match[3];
+            }
+
+            if(!in_array($operator, array('=', '!=', '<>', 'include', 'notinclude'))) continue;
+
+            $spaceIds = array();
+            foreach($members as $spaceID => $users)
+            {
+                if(!isset($users[$value])) continue;
+                if($field == 'managers' && $users[$value]->role != 'manager') continue;
+                $spaceIds[] = (int)$spaceID;
+            }
+            $spaceIds = array_values(array_unique($spaceIds));
+
+            $negative = in_array($operator, array('!=', '<>', 'notinclude'));
+            if(empty($spaceIds))
+            {
+                $condition = $negative ? ' 1 = 1 ' : ' 0 ';
+            }
+            else
+            {
+                $condition = '`id` ' . ($negative ? 'NOT IN' : 'IN') . ' (' . implode(',', $spaceIds) . ')';
+            }
+
+            $query = str_replace($match[0], $condition, $query);
+        }
+
+        return $query;
     }
 
     /**
@@ -164,26 +274,14 @@ class spaceModel extends model
      */
     public function getByIdList(array $spaceIdList = array(), bool $showDeleted = true): array
     {
-        $query = array();
-        if(!empty($spaceIdList)) $query['ids']     = implode(',', $spaceIdList);
-        if($showDeleted)         $query['deleted'] = true;
-        $query['isOpen'] = true;
-
-        $pager = new stdClass();
-        $pager->recPerPage = 100;
-
-        $spaceList = array();
-        for($i = 1; true; $i++)
-        {
-            $pager->pageID = $i;
-
-            $result = $this->loadModel('gitfox')->apiGetSpaces($query, $pager);
-            if(empty($result) || empty($result->data)) break;
-
-            $spaceList = array_merge($spaceList, $result->data);
-            if(!empty($result->pager) && $result->pager->pageSize < 100) break;
-        }
-        return $spaceList;
+        return $this->dao->select('*')->from(TABLE_SPACE)
+            ->where('1=1')
+            ->beginIF(!empty($spaceIdList))->andWhere('(`id`')->in($spaceIdList)
+            ->orWhere('acl')->eq('open')
+            ->markRight()
+            ->fi()
+            ->beginIF(!$showDeleted)->andWhere('deleted')->eq(0)->fi()
+            ->fetchAll('id');
     }
 
     /**
@@ -225,7 +323,7 @@ class spaceModel extends model
      */
     public function getByID(int $spaceID): array|object
     {
-        $space = $this->loadModel('gitfox')->apiGetSpace($spaceID);
+        $space = $this->fetchByID($spaceID);
         if(empty($space)) return array();
 
         $createdDate = new DateTime($space->createdDate);
@@ -866,5 +964,30 @@ class spaceModel extends model
         }
 
         return !dao::isError();
+    }
+
+    /**
+     * 构建搜索表单.
+     * Build search form.
+     *
+     * @param  int $queryID
+     * @param  string $actionURL
+     * @param  bool $cacheSearchFunc
+     * @access public
+     * @return array
+     */
+    public function buildSearchForm(int $queryID, string $actionURL, bool $cacheSearchFunc = true): array
+    {
+        $searchConfig = $this->config->space->search;
+        if($cacheSearchFunc)
+        {
+            $this->cacheSearchFunc('spaceSearch', __METHOD__, func_get_args());
+            return $searchConfig;
+        }
+        $this->config->space->search['queryID']   = (int)$queryID;
+        $this->config->space->search['actionURL'] = $actionURL;
+        $this->loadModel('search')->setSearchParams($this->config->space->search);
+
+        return $searchConfig;
     }
 }
