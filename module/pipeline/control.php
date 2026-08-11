@@ -1172,7 +1172,7 @@ class pipeline extends control
      * @access public
      * @return void
      */
-    public function ajaxGetRunner()
+    public function ajaxGetRunners()
     {
         $runners = $this->loadModel('runner')->getList();
 
