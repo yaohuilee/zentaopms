@@ -519,6 +519,33 @@ class actionTao extends actionModel
                 $project = $this->fetchObjectInfoByID(TABLE_PROJECT, (int)$triggerObjectID, 'name');
                 if($project && $project->name) $objectLink = common::hasPriv('project', 'view') ? html::a(helper::createLink('project', 'view', "projectID={$triggerObjectID}"), $project->name) : $project->name;
                 break;
+            case 'createTask':
+            case 'startTask':
+            case 'activateTask':
+            case 'finishTask':
+            case 'cancelTask':
+            case 'closeTask':
+            case 'editTask':
+            case 'deleteTask':
+            case 'undeleteTask':
+                $task = $this->fetchObjectInfoByID(TABLE_TASK, (int)$triggerObjectID, 'name,type');
+                if($task && $task->name)
+                {
+                    $taskTypeName = zget($this->lang->task->typeList, $task->type, $task->type);
+                    $actionText   = sprintf($actionText, $taskTypeName);
+                    $objectLink   = common::hasPriv('task', 'view') ? html::a(helper::createLink('task', 'view', "taskID={$triggerObjectID}"), $task->name) : $task->name;
+                }
+                break;
+            case 'recordEffort':
+            case 'editEffort':
+            case 'deleteEffort':
+                $task = $this->fetchObjectInfoByID(TABLE_TASK, (int)$triggerObjectID, 'name,type');
+                if($task && $task->name)
+                {
+                    $taskLink   = common::hasPriv('task', 'view') ? html::a(helper::createLink('task', 'view', "taskID={$triggerObjectID}"), $task->name) : $task->name;
+                    $actionText = sprintf($actionText, "<strong>{$taskLink}</strong>");
+                }
+                break;
             case 'linkRelease':
             case 'unlinkRelease':
                 $release = $this->fetchObjectInfoByID(TABLE_RELEASE, (int)$triggerObjectID, 'name');

@@ -451,8 +451,8 @@ class releaseModel extends model
             foreach($storyIdList as $storyID)
             {
                 $storyID = (int)$storyID;
-                $this->story->setStage($storyID);
                 $this->action->create('story', $storyID, 'linked2release', '', $releaseID);
+                $this->story->setStage($storyID, array('type' => 'linkRelease', 'objectID' => $releaseID));
             }
         }
 
@@ -704,9 +704,8 @@ class releaseModel extends model
                 $this->dao->update(TABLE_STORY)->set('stagedBy')->eq('')->where('id')->eq($storyID)->exec();
                 if($product->type != 'normal') $this->dao->update(TABLE_STORYSTAGE)->set('stagedBy')->eq('')->where('story')->eq($storyID)->andWhere('branch')->in(explode(',', (string)$release->branch))->exec();
 
-                if($release->status == 'normal') $this->story->setStage($storyID);
-
                 $this->action->create('story', $storyID, 'linked2release', '', $releaseID);
+                if($release->status == 'normal') $this->story->setStage($storyID, array('type' => 'linkRelease', 'objectID' => $releaseID));
             }
 
             $this->updateRelated($releaseID, 'story', $release->stories);
@@ -733,7 +732,7 @@ class releaseModel extends model
         $this->dao->update(TABLE_RELEASE)->set('stories')->eq($release->stories)->where('id')->eq((int)$releaseID)->exec();
 
         $this->loadModel('action')->create('story', $storyID, 'unlinkedfromrelease', '', $releaseID);
-        $this->loadModel('story')->setStage($storyID);
+        $this->loadModel('story')->setStage($storyID, array('type' => 'unlinkRelease', 'objectID' => $releaseID));
 
         $this->deleteRelated($releaseID, 'story', $storyID);
 
@@ -766,7 +765,7 @@ class releaseModel extends model
         {
             $unlinkStoryID = (int)$unlinkStoryID;
             $this->action->create('story', $unlinkStoryID, 'unlinkedfromrelease', '', $releaseID);
-            $this->loadModel('story')->setStage($unlinkStoryID);
+            $this->loadModel('story')->setStage($unlinkStoryID, array('type' => 'unlinkRelease', 'objectID' => $releaseID));
         }
 
         $this->deleteRelated($releaseID, 'story', $storyIdList);

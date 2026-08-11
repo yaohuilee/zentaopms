@@ -238,6 +238,7 @@ class actionModel extends model
             if($actionName == 'buildopened') $this->actionTao->processActionExtra(TABLE_BUILD, $action, 'name', 'build', 'view');
             if($actionName == 'fromlib' && $action->objectType == 'case') $this->actionTao->processActionExtra(TABLE_TESTSUITE, $action, 'name', 'caselib', 'browse', false, helper::hasFeature('caselib'));
             if($actionName == 'changedbycharter' && $action->objectType == 'story') $this->actionTao->processActionExtra(TABLE_CHARTER, $action, 'name', 'charter', 'view');
+            if($actionName == 'changedstorystage' && $action->objectType == 'story') $this->actionTao->processChangedStoryStageActionExtra($action);
             if(($actionName == 'finished' && $objectType == 'todo') || ($actionName == 'closed' && in_array($action->objectType, array('story', 'demand'))) || ($actionName == 'resolved' && $action->objectType == 'bug')) $this->actionTao->processAppendLinkByExtra($action);
             if($actionName == 'distributed' && $objectType == 'story') $this->actionTao->processActionExtra(TABLE_DEMAND, $action, 'title', 'demand', 'view', false, $this->config->vision != 'or' ? false : true);
 
@@ -1903,6 +1904,7 @@ class actionModel extends model
             $this->loadModel('story')->setStage($action->objectID);
             $this->story->updateParentStatus($action->objectID);
         }
+        if($action->objectType == 'task' && !empty($object->story)) $this->loadModel('story')->setStage($object->story, array('type' => 'undeleteTask', 'objectID' => $action->objectID));
         if($action->objectType == 'demand' && !empty($object->parent)) $this->loadModel('demand')->updateParentDemandStage($object->parent);
         if($action->objectType == 'release' && !empty($object->system)) $this->loadModel('system')->setSystemRelease((int)$object->system, $action->objectID);
         if(in_array($action->objectType, array('release', 'build')) && !empty($object->system))
