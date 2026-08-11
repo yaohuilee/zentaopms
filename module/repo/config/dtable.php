@@ -247,7 +247,7 @@ $config->repo->taskDtable->fieldList['status']['group']     = 1;
 $config->repo->reviewDtable = new stdclass();
 
 $config->repo->reviewDtable->fieldList['id']['title'] = $lang->idAB;
-$config->repo->reviewDtable->fieldList['id']['type']  = 'id';
+$config->repo->reviewDtable->fieldList['id']['type']  = 'checkID';
 
 $config->repo->reviewDtable->fieldList['title']['type']     = 'title';
 $config->repo->reviewDtable->fieldList['title']['data-app'] = $app->tab;
