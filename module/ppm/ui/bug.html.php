@@ -10,11 +10,15 @@ declare(strict_types=1);
  */
 namespace zin;
 
-$domBox = dtable
+$domBox = div
 (
-    set::id('bugs'),
-    set::cols($config->ppm->bug->dtable->fieldList),
-    set::data(array_values($bugs)),
-    set::loadPartial(true),
-    set::footPager(usePager('bugPager', '', array('recPerPage' => $bugPager->recPerPage, 'recTotal' => $bugPager->recTotal, 'linkCreator' => createLink('ppm', 'view', "id={$ppm->id}&type=bug&param=&recTotal={$bugPager->recTotal}&recPerPage={recPerPage}&page={page}"))))
+    setID('staticBugs'),
+    dtable
+    (
+        set::id('bugs'),
+        set::cols($config->ppm->bug->dtable->fieldList),
+        set::data(array_values($bugs)),
+        set::loadPartial(true),
+        set::footPager(usePager('bugPager', '', array('recPerPage' => $bugPager->recPerPage, 'recTotal' => $bugPager->recTotal, 'linkCreator' => createLink('ppm', 'view', "id={$ppm->id}&type=bug&param=&recTotal={$bugPager->recTotal}&recPerPage={recPerPage}&page={page}"))))
+    )
 );
