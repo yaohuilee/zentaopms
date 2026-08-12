@@ -511,18 +511,18 @@ class actionTaoTest extends baseTest
     }
 
     /**
-     * Test processChangedStageActionExtra method.
+     * Test processChangedStoryStageActionExtra method.
      *
      * @param  string $extra triggerType|triggerObjectID|newStage
      * @access public
      * @return string
      */
-    public function processChangedStageActionExtraTest(string $extra): string
+    public function processChangedStoryStageActionExtraTest(string $extra): string
     {
         $action = new stdclass();
         $action->extra = $extra;
 
-        $this->instance->processChangedStageActionExtra($action);
+        $this->instance->processChangedStoryStageActionExtra($action);
         if(dao::isError()) return dao::getError();
 
         return $action->extra;
