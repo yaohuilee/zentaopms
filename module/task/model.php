@@ -67,7 +67,7 @@ class taskModel extends model
         if($task->left != $oldTask->left) $this->loadModel('program')->refreshProjectStats($oldTask->project);
 
         if($oldTask->parent > 0) $this->updateParentStatus($taskID);
-        if($oldTask->story)  $this->loadModel('story')->setStage($oldTask->story);
+        if($oldTask->story)  $this->loadModel('story')->setStage($oldTask->story, array('type' => 'activateTask', 'objectID' => $taskID));
         $changes = common::createChanges($oldTask, $task);
         if($this->post->comment != '' || !empty($changes))
         {
@@ -176,7 +176,7 @@ class taskModel extends model
             }
 
             /* Update Kanban and story stage. */
-            if($oldTask->story) $this->story->setStage($oldTask->story);
+            if($oldTask->story) $this->story->setStage($oldTask->story, array('type' => 'editTask', 'objectID' => $taskID));
             if($task->status != $oldTask->status) $this->kanban->updateLane($oldTask->execution, 'task', $taskID);
 
             /* Update parent task's status, date and hour. */
@@ -246,7 +246,9 @@ class taskModel extends model
         /* Process other data. */
         if($task->parent > 0) $this->updateParentStatus($task->id);
         if($task->isParent)   $this->updateChildrenStatus($task->id, $task->status);
-        if($task->story) $this->loadModel('story')->setStage($task->story);
+        $triggerMap = array('Started' => 'startTask', 'Finished' => 'finishTask', 'Canceled' => 'cancelTask', 'Closed' => 'closeTask');
+        $trigger    = array('type' => zget($triggerMap, $action, ''), 'objectID' => $task->id);
+        if($task->story) $this->loadModel('story')->setStage($task->story, $trigger);
 
         if(!empty($output)) $this->updateKanbanCell($task->id, $output, $task->execution);
 
@@ -313,7 +315,7 @@ class taskModel extends model
             }
 
             /* If the task comes from a story, update the stage of the story. */
-            if($task->story) $this->loadModel('story')->setStage($task->story);
+            if($task->story) $this->loadModel('story')->setStage($task->story, array('type' => 'createTask', 'objectID' => $task->id));
         }
         return !dao::isError();
     }
@@ -463,8 +465,8 @@ class taskModel extends model
         }
 
         /* Compute task's story stage. */
-        $this->loadModel('story')->setStage($task->story);
-        if(($task->story != $oldTask->story) || !empty($oldParentTask->story)) $this->story->setStage(!empty($oldParentTask->story) ? $oldParentTask->story : $oldTask->story);
+        $this->loadModel('story')->setStage($task->story, array('type' => 'editTask', 'objectID' => $task->id));
+        if(($task->story != $oldTask->story) || !empty($oldParentTask->story)) $this->story->setStage(!empty($oldParentTask->story) ? $oldParentTask->story : $oldTask->story, array('type' => 'editTask', 'objectID' => $task->id));
 
         if($this->config->edition != 'open' && $oldTask->feedback) $this->loadModel('feedback')->updateStatus('task', $oldTask->feedback, $task->status, $oldTask->status, $oldTask->id);
         if(!empty($oldTask->mode) && empty($task->mode)) $this->dao->delete()->from(TABLE_TASKTEAM)->where('task')->eq($task->id)->exec();
@@ -625,7 +627,7 @@ class taskModel extends model
             /* Update Kanban and story stage. */
             if(!empty($task->story))
             {
-                $this->story->setStage($task->story);
+                $this->story->setStage($task->story, array('type' => 'createTask', 'objectID' => $taskID));
 
                 if($this->config->edition != 'open')
                 {
@@ -1354,7 +1356,7 @@ class taskModel extends model
 
         if($task->consumed != $data->consumed || $task->left != $data->left) $this->loadModel('program')->refreshProjectStats($task->project);
         if($task->parent > 0) $this->updateParentStatus($task->id);
-        if($task->story)  $this->loadModel('story')->setStage($task->story);
+        if($task->story)  $this->loadModel('story')->setStage($task->story, array('type' => 'deleteEffort', 'objectID' => $task->id));
 
         /* 计算此工时所对应任务的变更。*/
         $oldTask = new stdclass();
@@ -3089,7 +3091,7 @@ class taskModel extends model
             $this->dao->update(TABLE_TASK)->data($task, 'team')->where('id')->eq($taskID)->exec();
 
             if($task->parent > 0) $this->updateParentStatus($task->id);
-            if($task->story)  $this->loadModel('story')->setStage($task->story);
+            if($task->story)  $this->loadModel('story')->setStage($task->story, array('type' => 'recordEffort', 'objectID' => $taskID));
             if($task->status != $oldStatus)
             {
                 $this->loadModel('kanban')->updateLane($task->execution, 'task', $taskID);
@@ -3384,7 +3386,7 @@ class taskModel extends model
         if($task->consumed != $data->consumed || $task->left != $data->left) $this->loadModel('program')->refreshProjectStats($task->project);
 
         if($task->parent > 0) $this->updateParentStatus($task->id);
-        if($task->story)      $this->loadModel('story')->setStage($task->story);
+        if($task->story)      $this->loadModel('story')->setStage($task->story, array('type' => 'editEffort', 'objectID' => $task->id));
 
         $oldTask = new stdclass();
         $oldTask->consumed = $task->consumed;
@@ -3713,10 +3715,13 @@ class taskModel extends model
             $this->taskTao->autoUpdateTaskByStatus($parentTask, $childTask, $status);
             if(dao::isError() || !$createAction) return;
 
-            if($parentTask->story) $this->story->setStage($parentTask->story);
-
             /* Create action record. */
-            $this->taskTao->createAutoUpdateTaskAction($parentTask, 'child');
+            $parentAction = $this->taskTao->createAutoUpdateTaskAction($parentTask, 'child');
+            if($parentTask->story && $parentAction)
+            {
+                $triggerMap = array('Started' => 'startTask', 'Finished' => 'finishTask', 'Canceled' => 'cancelTask', 'Closed' => 'closeTask');
+                $this->story->setStage($parentTask->story, array('type' => zget($triggerMap, $parentAction, ''), 'objectID' => $parentID));
+            }
             if($this->config->edition != 'open' && $parentTask->feedback) $this->loadModel('feedback')->updateStatus('task', $parentTask->feedback, $status, $parentTask->status, $parentID);
         }
     }
@@ -3758,7 +3763,7 @@ class taskModel extends model
             $this->taskTao->autoUpdateTaskByStatus($childTask, null, $parentStatus);
             if(dao::isError()) return;
 
-            if($childTask->story) $this->story->setStage($childTask->story);
+            if($childTask->story) $this->story->setStage($childTask->story, array('type' => 'createTask', 'objectID' => $childID));
 
             /* Create action record. */
             $this->taskTao->createAutoUpdateTaskAction($childTask, 'parent');
