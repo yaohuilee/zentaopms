@@ -246,9 +246,12 @@ class taskModel extends model
         /* Process other data. */
         if($task->parent > 0) $this->updateParentStatus($task->id);
         if($task->isParent)   $this->updateChildrenStatus($task->id, $task->status);
-        $triggerMap = array('Started' => 'startTask', 'Finished' => 'finishTask', 'Canceled' => 'cancelTask', 'Closed' => 'closeTask');
-        $trigger    = array('type' => zget($triggerMap, $action, ''), 'objectID' => $task->id);
-        if($task->story) $this->loadModel('story')->setStage($task->story, $trigger);
+        if($task->story)
+        {
+            $triggerMap = array('Started' => 'startTask', 'Finished' => 'finishTask', 'Canceled' => 'cancelTask', 'Closed' => 'closeTask');
+            $trigger    = array('type' => zget($triggerMap, $action, ''), 'objectID' => $task->id);
+            $this->loadModel('story')->setStage($task->story, $trigger);
+        }
 
         if(!empty($output)) $this->updateKanbanCell($task->id, $output, $task->execution);
 
