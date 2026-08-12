@@ -42,6 +42,7 @@ class runnerModel extends model
     {
         $action = strtolower($action);
 
+        if(!empty($runner->isDefault)) return false;
         if($action == 'edit')    return $runner->online == 'online';
         if($action == 'delete')  return $runner->online == 'offline';
         if($action == 'enable')  return $runner->online == 'online' && $runner->status == 'disable';
