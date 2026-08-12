@@ -392,6 +392,7 @@ class ai extends control
         if(!isset($prompt->displayPosition)) $prompt->displayPosition = '';
         if(!isset($prompt->model)) $prompt->model = '';
         if(!isset($prompt->desc)) $prompt->desc = '';
+        if(!isset($prompt->type)) $prompt->type = '';
 
         $this->view->prompt         = $prompt;
         $this->view->promptID       = $promptID;
