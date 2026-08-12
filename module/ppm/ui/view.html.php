@@ -43,6 +43,7 @@ $encoding      = empty($encoding) ? '' : $encoding;
 $checkMessage  = zget($checkResult, 'message', '');
 $conflictFiles = zget($checkResult, 'conflictFiles', array());
 $minReviewers  = empty($flow) ? 0 : $flow->definition->reviewFlow->approvals->minReviewers;
+$issueListTotal = $bugPager->recTotal + (int)data('aiIssueCount');
 
 $basicItems = array();
 $basicItems[] = item(set::name($lang->ppm->author),       zget($users, $ppm->createdBy));
@@ -123,7 +124,7 @@ div
                             setClass('nav-item'),
                             a
                             (
-                                $lang->ppm->issueList . " ({$bugPager->recTotal})",
+                                $lang->ppm->issueList . " ({$issueListTotal})",
                                 setClass('font-medium font-bold text-md'),
                                 set::href(createLink('ppm', 'view', "id={$ppm->id}&type=bug")),
                                 set('data-app', $app->tab),
