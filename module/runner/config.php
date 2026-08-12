@@ -1,6 +1,6 @@
 <?php
 global $lang;
-$config->runner->packageURL  = 'https://pkg.zentao.net/gitfox-runner/2.1.0/';
+$config->runner->packageURL  = 'https://pkg.zentao.net/gitfox-runner/' . $config->devops->gitfoxVersion . '/';
 $config->runner->cmdList     = $lang->runner->cmdList;
 
 $config->runner->actionList = array();
