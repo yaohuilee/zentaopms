@@ -56,7 +56,8 @@ window.initCmd = function(event)
     /* Merge selected labels and new labels, deduplicate, and join as comma-separated string. */
     const allLabels = [...new Set([...selectedLabels, ...newLabelValues])];
     let labelsStr  = allLabels.join(',');
-    if(plat != 'window' && labelsStr != '')
+    console.log(plat);
+    if(plat != 'windows' && labelsStr != '')
     {
         labelsStr = '--labels=' + labelsStr;
     }

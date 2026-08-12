@@ -41,7 +41,7 @@ $lang->runner->archList['arm64'] = 'arm64';
 $lang->runner->cmdList = array();
 $lang->runner->cmdList['windows'] = <<<EOF
 # 1. Download runner executable file
-curl  --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
+powershell -command "Invoke-WebRequest -Uri '%PACKAGE_URL%' -OutFile 'gitfox-runner.tar.gz'"
 
 # 2. Uncompress executable file
 
