@@ -1188,4 +1188,37 @@ class pipeline extends control
         }
         $this->send(array('result' => 'success', 'data' => $runnerList));
     }
+
+    /**
+     * 编排一个流水线。
+     * Arrange a pipeline.
+     *
+     * @param  int    $pipelineID
+     * @access public
+     * @return void
+     */
+    public function arrange(int $id, int $space = 0, int $repoID = 0, $type = 'space')
+    {
+        $this->commonAction($space);
+        if($repoID)
+        {
+            $this->checkRepoEmpty();
+            $repoID = $this->loadModel('repo')->saveState($repoID);
+
+            /* Set session. */
+            $this->loadModel('ci')->setMenu($repoID);
+        }
+        else
+        {
+            $this->session->set('repoID', '');
+        }
+
+        $this->view->title    = $this->lang->pipeline->pipeline . $this->lang->hyphen . $this->lang->pipeline->edit;
+        $this->view->pipeline = $this->pipeline->getByID($id);
+        $this->view->repoID   = $repoID;
+        $this->view->type     = $type;
+        $this->view->repo     = $this->loadModel('repo')->getByID($repoID);
+
+        $this->display();
+    }
 }

@@ -253,7 +253,7 @@ class artifactModel extends model
     public function isClickable(object $artifact, string $action): bool
     {
         $action = strtolower($action);
-        if($action == 'downloadartifact') return !empty($artifact->format) && $artifact->format == 'file';
+        if($action == 'downloadartifact') return (!empty($artifact->format) && $artifact->format == 'file') || !empty($artifact->url);
         if($action == 'copycmd')          return !empty($artifact->format) && $artifact->format == 'container';
         if($action == 'editartifact')     return !empty($artifact->format) && $artifact->format == 'file';
         if($action == 'moveartifact')     return !empty($artifact->format) && $artifact->format == 'file';
