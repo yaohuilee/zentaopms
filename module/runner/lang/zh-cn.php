@@ -42,7 +42,7 @@ $lang->runner->archList['arm64'] = 'arm64';
 $lang->runner->cmdList = array();
 $lang->runner->cmdList['windows'] = <<<EOF
 # 1. 下载runner可执行文件
-curl  --output "gitfox-runner.tar.gz" "%PACKAGE_URL%"
+powershell -command "Invoke-WebRequest -Uri '%PACKAGE_URL%' -OutFile 'gitfox-runner.tar.gz'"
 
 # 2. 解压缩可执行文件包
 
