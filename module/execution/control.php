@@ -668,7 +668,6 @@ class execution extends control
         $pager = pager::init($recTotal, $recPerPage, $pageID);
 
         unset($this->config->testcase->dtable->fieldList['title']['nestedToggle']);
-        if($productID && $products[$productID]->type == 'normal') unset($this->config->testcase->dtable->fieldList['branch']);
 
         /* Build the search form. */
         $actionURL = $this->createLink('execution', 'testcase', "executionID=$executionID&productID=$productID&branchID=$branchID&browseType=bysearch&queryID=myQueryID&moduleID=0&orderBy=$orderBy");
