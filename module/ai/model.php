@@ -2833,6 +2833,15 @@ class aiModel extends model
         if(is_numeric($prompt)) $prompt = $this->getByID($prompt);
         if(empty($prompt)) return false;
 
+        if($prompt->type== 'timer')
+        {
+            foreach(array('name', 'module', 'purpose', 'operation', 'cycleType') as $field)
+            {
+                if(empty($prompt->$field) || $prompt->$field == ',,') return false;
+            }
+            return true;
+        }
+
         $executable      = true;
         $displayPosition = $prompt->displayPosition ?? '';
         if(empty($displayPosition)) return false;
@@ -3422,6 +3431,15 @@ class aiModel extends model
     {
         if(empty($prompt)) return 'basicinfo';
 
+        if($prompt->type == 'timer')
+        {
+            $basicInfoComplete = !empty($prompt->name) && !empty($prompt->module) && !empty($prompt->operation) && !empty($prompt->cycleType);
+            if(!$basicInfoComplete) return 'basicinfo';
+            if(!empty($prompt->status) && $prompt->status == 'active') return 'preview';
+            if(!empty($prompt->purpose)) return 'setprompt';
+            return 'basicinfo';
+        }
+
         $basicInfoComplete = !empty($prompt->name) && !empty($prompt->module) && !empty($prompt->actionPurpose) && !empty($prompt->displayPosition);
         if($basicInfoComplete)
         {
@@ -3469,7 +3487,8 @@ class aiModel extends model
         $prompts = $this->dao->select('*')->from(TABLE_AI_AGENT)
             ->where('deleted')->eq(0)
             ->andWhere('status')->eq('active')
-            ->andWhere('displayPosition')->eq($displayPosition);
+            ->andWhere('displayPosition')->eq($displayPosition)
+            ->andWhere('type')->ne('timer');
 
         if($displayPosition === 'detail')
         {
@@ -3501,6 +3520,9 @@ class aiModel extends model
 
         /* Remove the unexecutable ones. */
         $prompts = array_filter($prompts, array($this, 'isExecutable'));
+
+        /* Timer agents are executed by scheduler, not page entry. */
+        $prompts = array_filter($prompts, function($prompt){return $prompt->type != 'timer';});
 
         $moduleMap        = $this->config->ai->moduleNameMap ?? array();
         $reverseModuleMap = array_flip($moduleMap);
