@@ -1176,6 +1176,7 @@ class productZen extends product
      */
     protected function buildSearchFormForBrowse(object|null $project, int $projectID, int &$productID, string $branch, int $param, string $storyType, string $browseType, bool $isProjectStory, string $from, int $blockID): void
     {
+        $originProductID = $productID;
         if($isProjectStory && !$productID && !empty($this->products)) $productID = (int)key($this->products); // If toggle a project by the #swapper component on the story page of the projectstory module, the $productID may be empty. Make sure it has value.
 
         if($this->config->edition == 'ipd' && $storyType == 'story') unset($this->config->product->search['fields']['roadmap']);
@@ -1208,7 +1209,7 @@ class productZen extends product
         $this->config->product->search['module']    = $storyType;
         if($this->app->rawModule != 'product') $this->config->product->search['module'] = $this->app->rawModule;
         $queryID = ($browseType == 'bysearch') ? $param : 0;
-        $this->product->buildSearchForm($productID, $this->products, $queryID, $actionURL, $storyType, $branch, $projectID);
+        $this->product->buildSearchForm($originProductID, $this->products, $queryID, $actionURL, $storyType, $branch, $projectID);
     }
 
     /**
