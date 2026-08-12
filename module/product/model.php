@@ -800,7 +800,7 @@ class productModel extends model
         if(isset($searchConfig['fields']['release']))
         {
             $productParam = $this->app->rawMethod == 'relateobject' ? 0 : $productID;
-            $projectParam = $this->app->tab == 'project' && empty($productID) ? $this->session->project : 0;
+            $projectParam = $this->app->tab == 'project' ? $this->session->project : 0;
             $searchConfig['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), $productParam, (empty($branchParam) || $branchParam == 'all') ? '' : $branchParam, $projectParam);
         }
 
