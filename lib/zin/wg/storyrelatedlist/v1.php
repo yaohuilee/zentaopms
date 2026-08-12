@@ -68,14 +68,14 @@ class storyRelatedList extends relatedList
                     'url'      => hasPriv('testcase', 'view') ? createLink('testcase', 'view', 'caseID={id}') : false,
                     'onRender' => function($item, $case) use($lang)
                     {
-                        $resultClass = ' text-gray-900';
+                        $resultClass = 'text-gray-900';
                         $resultText  = $lang->testcase->unexecuted;
                         if(!empty($case->lastRunResult))
                         {
                             $resultText  = zget($lang->testcase->resultList, $case->lastRunResult);
-                            $resultClass = " status-{$case->lastRunResult}";
+                            $resultClass = "status-{$case->lastRunResult}";
                         }
-                        $item['content'] = array('html' => '<span class="ml-2' . $resultClass . '">' . $resultText . '</span>');
+                        $item['content'] = array('html' => '<span class="flex w-10 ' . $resultClass . '">' . $resultText . '</span>');
                         return $item;
                     }
                 );
