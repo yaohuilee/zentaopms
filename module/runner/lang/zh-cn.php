@@ -1,13 +1,13 @@
 <?php
-$lang->runner->manageRunner = '执行节点管理';
-$lang->runner->browse       = '执行节点列表';
-$lang->runner->create       = '添加执行节点';
-$lang->runner->createGuide  = '添加执行节点引导页';
-$lang->runner->edit         = '编辑执行节点';
+$lang->runner->manageRunner = 'Runner管理';
+$lang->runner->browse       = 'Runner列表';
+$lang->runner->create       = '添加Runner';
+$lang->runner->createGuide  = '添加Runner引导页';
+$lang->runner->edit         = '编辑Runner';
 $lang->runner->enable       = '启用';
 $lang->runner->disable      = '停用';
-$lang->runner->delete       = '删除执行节点';
-$lang->runner->changeState  = '启用/停用执行节点';
+$lang->runner->delete       = '删除Runner';
+$lang->runner->changeState  = '启用/停用Runner';
 
 $lang->runner->name       = '名称';
 $lang->runner->status     = '状态';
@@ -77,9 +77,9 @@ helm install --namespace <NAMESPACE> --name gitfox-runner -f <CONFIG_VALUES_FILE
 EOF;
 
 $lang->runner->notice = new stdclass();
-$lang->runner->notice->confirmDelete    = '您确定要删除该执行节点吗？';
-$lang->runner->notice->confirmDisable   = '您确定要停用该执行节点吗？';
-$lang->runner->notice->disableDelete    = '在线状态的执行节点不可删除';
+$lang->runner->notice->confirmDelete    = '您确定要删除该Runner吗？';
+$lang->runner->notice->confirmDisable   = '您确定要停用该Runner吗？';
+$lang->runner->notice->disableDelete    = '在线状态的Runner不可删除';
 $lang->runner->notice->nameLength       = '名称不能超过200个字符。';
 $lang->runner->notice->descLength       = '描述不能超过500个字符。';
 $lang->runner->notice->newLabelsInvalid = '只允许输入英文、数字、下划线、点、中横线、中文';

@@ -20,6 +20,7 @@ $lang->runner->package    = 'Package';
 $lang->runner->cmd        = 'Command';
 $lang->runner->desc       = 'Description';
 $lang->runner->labels     = 'Labels';
+$lang->runner->runtime    = 'Runtime';
 
 $lang->runner->statusList = array();
 $lang->runner->statusList['online']  = 'Online';
