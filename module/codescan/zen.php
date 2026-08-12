@@ -547,16 +547,31 @@ class codescanZen extends codescan
      * Process issue data.
      *
      * @param  object    $issue
-     * @access protected
+     * @access public
      * @return object
      */
-    protected function processIssueData(object $issue): object
+    public function processIssueData(object $issue): object
     {
-        $issue->content    = zget($issue, 'title', '');
+        $issue->title    = zget($issue, 'title', '');
         $issue->file       = zget($issue, 'path', '');
         $issue->priority   = zget($issue, 'rulePriority', '');
         $issue->type       = zget($issue, 'ruleType', '');
         $issue->rulePlugin = zget($issue->payload, 'tool', '');
+
+        /* 新增字段：AI 扫描 + API v2.0 字段 */
+        $issue->scanMethod  = zget($issue, 'scanMethod', '');
+        $issue->category    = zget($issue, 'category', '');
+        $issue->severity    = zget($issue, 'severity', '');
+        $issue->content     = zget($issue, 'content', '');
+        $issue->startLine   = (int)zget($issue, 'startLine', 0);
+        $issue->endLine     = (int)zget($issue, 'endLine', 0);
+        $issue->oldCode     = zget($issue, 'oldCode', '');
+        $issue->newCode     = zget($issue, 'newCode', '');
+        $issue->ppmID       = (int)zget($issue, 'ppmID', 0);
+        $issue->oldFilePath = zget($issue, 'oldFilePath', '');
+        $issue->createdBy   = zget($issue, 'createdBy', '');
+        $issue->editedBy    = zget($issue, 'editedBy', '');
+
         return $issue;
     }
 
