@@ -16064,7 +16064,7 @@ CREATE TABLE IF NOT EXISTS `ops_scan_issues` (
   `resolution` varchar(50) NOT NULL DEFAULT '' COMMENT '问题解决方案（bydesign/duplicate/external/fixed/notrepro/postponed/willnotfix/tostory）',
   `resolvedDate` datetime DEFAULT NULL COMMENT '问题解决时间',
   `closedDate` datetime DEFAULT NULL COMMENT '问题关闭时间',
-  `ignoredDate` bigint unsigned NOT NULL DEFAULT 0 COMMENT '问题忽略到期时间',
+  `ignoredDate` bigint NOT NULL DEFAULT 0 COMMENT '问题忽略到期时间',
   `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB COMMENT='扫描问题表';
