@@ -347,7 +347,7 @@ class artifact extends control
             if(!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z0-9\-_.]+$/u', $formData->name)) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameFormatError));
             if(mb_strlen($formData->name) > 15) return $this->sendError(array('name' => $this->lang->artifact->notice->dirNameTooLong));
 
-            $targetGroupID = $formData->parent == '/' ? 0 : explode('/', $formData->parent)[1];
+            $targetGroupID = $formData->parent == '.' ? 0 : explode('.', $formData->parent)[1];
             $params = array();
             $params['entityID']         = $node->entityID;
             $params['newName']          = $formData->name;
