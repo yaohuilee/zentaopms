@@ -70,6 +70,14 @@ $fnBuildPublishInfo = function() use ($actions, $prompt, $users, $lang)
 };
 
 if($prompt->status != 'draft' || !$this->ai->isExecutable($prompt)) unset($config->ai->actions->promptview['mainActions'][1]);
+$designAction = $this->ai->getPromptDesignAction($prompt);
+foreach($config->ai->actions->promptview as $menu => $actions)
+{
+    foreach($actions as $i => $actionName)
+    {
+        if($actionName == 'promptbasicinfo') $config->ai->actions->promptview[$menu][$i] = $designAction;
+    }
+}
 $actionList = $this->loadModel('common')->buildOperateMenu($prompt);
 
 $promptContent = $prompt->purpose;
