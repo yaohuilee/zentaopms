@@ -109,7 +109,7 @@ class messageModel extends model
                 /* If it is an api call, get the request method set by the user. */
                 global $config;
                 $requestType = $config->requestType;
-                if(defined('RUN_MODE') && RUN_MODE == 'api')
+                if(helper::isApiRequest())
                 {
                     $configRoot = $this->app->getConfigRoot();
                     include file_exists($configRoot . 'my.php') ? $configRoot . 'my.php' : $configRoot . 'config.php';
@@ -124,7 +124,7 @@ class messageModel extends model
                     $this->loadModel('mail')->sendmail($objectID, $actionID);
                 }
 
-                if(defined('RUN_MODE') && RUN_MODE == 'api') $config->requestType = $requestType;
+                if(helper::isApiRequest()) $config->requestType = $requestType;
             }
         }
 
@@ -461,7 +461,8 @@ class messageModel extends model
      */
     public function getMentionUsersFromHtml(string $html): array
     {
-        $pattern = '/<span[^>]*?\bmention-label\b[^>]*?data-type=["\']mention["\'][^>]*?data-id=["\']([^"\']+)["\'][^>]*>/is';
+        /* TipTap may output data-type before class; do not rely on attribute order. */
+        $pattern = '/<span(?=[^>]*\bmention-label\b)(?=[^>]*\bdata-type=["\']mention["\'])[^>]*\bdata-id=["\']([^"\']+)["\'][^>]*>/i';
 
         $accounts = array();
         if(preg_match_all($pattern, $html, $matches))
@@ -548,16 +549,19 @@ class messageModel extends model
      */
     public function sendMentionNotice(string $objectType, string $method, int $actionID, object $object, ?object $oldObject = null)
     {
-        $isBlocksuite = $objectType == 'doc';
+        /* 文档正文用 rawContent 提取 @；备注等场景没有 rawContent，走表单提取。 */
+        $isBlocksuite = $objectType == 'doc' && isset($object->rawContent);
         if($isBlocksuite)
         {
             $mentionUsers = $this->getMentionUsersFromDoc($object->rawContent);
-            if($oldObject) $oldMentionUsers = $this->getMentionUsersFromDoc($oldObject->rawContent);
+            if($oldObject) $oldMentionUsers = $this->getMentionUsersFromDoc(isset($oldObject->rawContent) ? $oldObject->rawContent : '');
         }
         else
         {
             $module = $method == 'comment' ? 'action' : $objectType;
             if(empty($this->config->{$module}->form->{$method})) return;
+
+            if($method == 'comment' && $objectType == 'story' && !empty($object->type)) $objectType = $object->type;
 
             $formConfig = $this->config->{$module}->form->{$method};
 
@@ -576,20 +580,37 @@ class messageModel extends model
         $action = $this->loadModel('action')->getByID($actionID);
         if(!$action) return;
 
+
+        if($objectType == 'testcase') $objectType = 'case';
+        if($objectType == 'kanban')   $objectType = 'kanbancard';
+
+        $settingObjectType = in_array($objectType, array('review', 'projectchange')) ? 'waterfall' : $objectType;
+
+        $linkModule = $objectType;
+        if($objectType == 'case')       $linkModule = 'testcase';
+        if($objectType == 'kanbancard') $linkModule = 'kanban';
+
         $actor           = zget($action, 'actor', '');
         $user            = $this->loadModel('user')->getByID($actor);
         $actorRealname   = zget($user, 'realname', $actor);
         $objectNameField = zget($this->config->action->objectNameFields, $objectType, 'title');
-        $objectTitle     = strtoupper($objectType) . '#' . sprintf("%03d", $object->id) . zget($object, $objectNameField, '');
-        $viewLink        = helper::createLink($objectType, 'view', "id={$object->id}");
+        $objectTypeName  = zget($this->lang->action->objectTypes, $settingObjectType, zget($this->lang->action->objectTypes, $objectType, strtoupper($objectType)));
+        $objectTitle     = $objectTypeName . '#' . sprintf("%03d", $object->id) . ($objectType != 'auditplan' ? zget($object, $objectNameField, '') : '');
+        $viewLink        = $objectType == 'kanbancard' ? helper::createLink('kanban', 'viewCard', "cardID={$object->id}") : helper::createLink($linkModule, 'view', "id={$object->id}");
 
         if(isset($messageSetting['mail']))
         {
             $actions = $messageSetting['mail']['setting'];
-            if(isset($actions[$objectType]) && in_array('mentioned', $actions[$objectType]))
+            if(isset($actions[$settingObjectType]) && in_array('mentioned', $actions[$settingObjectType]))
             {
+                $mailModule = in_array($objectType, array('story', 'requirement', 'epic')) ? 'story' : $linkModule;
+
+                $mailObjectType = $objectType == 'kanbancard' ? 'kanbancard' : $mailModule;
+                $mailObject     = $this->loadModel('mail')->getObjectForMail($mailObjectType, (int)$object->id);
+                if($mailObject) $object = $mailObject;
+
                 $subject     = sprintf($this->lang->message->mention, $actorRealname, $objectTitle);
-                $mailContent = $this->loadModel('mail')->getMailContent($objectType, $object, $action);
+                $mailContent = $this->mail->getMailContent($mailModule, $object, $action);
                 $this->mail->send(implode(',', $mentionUsers), $subject, $mailContent);
             }
         }
@@ -597,7 +618,7 @@ class messageModel extends model
         if(isset($messageSetting['message']))
         {
             $actions = $messageSetting['message']['setting'];
-            if(isset($actions[$objectType]) && in_array('mentioned', $actions[$objectType]))
+            if(isset($actions[$settingObjectType]) && in_array('mentioned', $actions[$settingObjectType]))
             {
                 $data = sprintf($this->lang->message->mention, $actorRealname, html::a($viewLink, "[{$objectTitle}]"));
                 $now  = helper::now();
@@ -623,7 +644,7 @@ class messageModel extends model
         if(isset($messageSetting['webhook']))
         {
             $actions = $messageSetting['webhook']['setting'];
-            if(isset($actions[$objectType]) && in_array('mentioned', $actions[$objectType]))
+            if(isset($actions[$settingObjectType]) && in_array('mentioned', $actions[$settingObjectType]))
             {
                 $webhooks = $this->loadModel('webhook')->getList();
                 if(!$webhooks) return true;
@@ -631,9 +652,11 @@ class messageModel extends model
                 $title = sprintf($this->lang->message->mention, $actorRealname, $objectTitle);
                 foreach($webhooks as $id => $webhook)
                 {
+                    if(strpos($webhook->type, 'group') !== false)  continue;
+
                     $host = empty($webhook->domain) ? common::getSysURL() : $webhook->domain;
                     $text = sprintf($this->lang->message->mention, $actorRealname, "[{$objectTitle}]({$host}{$viewLink})");
-                    $data = $this->webhook->getDataByType($webhook, $action, $title, $text, '', '', $objectType, $object->id);
+                    $data = $this->webhook->getDataByType($webhook, $action, $title, $text, '', '', $objectType, (int)$object->id);
                     if(!$data) continue;
 
                     if($webhook->sendType == 'async')

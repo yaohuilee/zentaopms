@@ -43,7 +43,7 @@ class execution extends control
         if($this->app->upgrading || !isset($this->app->user)) return false;
 
         $mode = $this->app->tab == 'execution' ? 'multiple' : '';
-        if((defined('RUN_MODE') and RUN_MODE == 'api') or $this->viewType == 'json') $mode = '';
+        if((helper::isApiRequest()) or $this->viewType == 'json') $mode = '';
 
         $this->executions = $this->execution->getPairs(0, 'all', "nocode,noprefix,{$mode}");
         $skipCreateStep   = array('computeburn', 'ajaxgetdropmenu', 'executionkanban', 'ajaxgetteammembers', 'all', 'ajaxgetcopyprojectexecutions');
@@ -1105,7 +1105,9 @@ class execution extends control
             $executionID = $this->execution->create($execution, isset($_POST['teamMembers']) ? $_POST['teamMembers'] : array());
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
-            $this->loadModel('action')->create($this->objectType, $executionID, 'opened', '', $project->hasProduct ? implode(',', $_POST['products']) : '');
+            $actionID = $this->loadModel('action')->create($this->objectType, $executionID, 'opened', '', $project->hasProduct ? implode(',', $_POST['products']) : '');
+            $execution->id = $executionID;
+            $this->loadModel('message')->sendMentionNotice('execution', 'create', $actionID, $execution);
             if(!empty($projectID) and strpos(',kanban,agileplus,waterfallplus,ipd,', ",$project->model,") !== false and $execution->type == 'kanban')
             {
                 $execution = $this->execution->fetchByID($executionID);
@@ -1253,6 +1255,9 @@ class execution extends control
             {
                 $actionID = $this->action->create($this->objectType, $executionID, 'edited', '', $products);
                 $this->action->logHistory($actionID, $changes);
+
+                $formData->id = $executionID;
+                $this->loadModel('message')->sendMentionNotice('execution', 'edit', $actionID, $formData, $oldExecution);
             }
 
             if(in_array($project->model, array('waterfall', 'waterfallplus', 'ipd'))) $this->programplan->computeProgress($executionID, 'edit');
@@ -1753,6 +1758,7 @@ class execution extends control
                 ->setDefault('lastEditedBy', $this->app->user->account)
                 ->setDefault('lastEditedDate', $now)
                 ->stripTags($this->config->execution->editor->close['id'], $this->config->allowedTags)
+                ->remove('verifyPassword')
                 ->get();
 
             $this->execution->computeBurn($executionID);
@@ -1807,7 +1813,7 @@ class execution extends control
 
         if(empty($execution) || strpos($type, $execution->type) === false) return $this->send(array('result' => 'success', 'load' => array('alert' => $this->lang->notFound, 'locate' => $this->config->vision == 'lite' ? $this->createLink('project', 'index') : $this->createLink('execution', 'all'))));
 
-        if($execution->type == 'kanban' and defined('RUN_MODE') and RUN_MODE == 'api') return print($this->fetch('execution', 'kanban', "executionID=$executionID"));
+        if($execution->type == 'kanban' and helper::isApiRequest()) return print($this->fetch('execution', 'kanban', "executionID=$executionID"));
 
         /* Load lang and set session. */
         $this->app->loadLang('program');
