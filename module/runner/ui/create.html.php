@@ -19,6 +19,8 @@ h::css('.codeBody {background: #eee; border: 1px solid #aaa; padding: 0.4em 0.8e
 jsVar('runnerConfig', $config->runner);
 jsVar('token', $token);
 jsVar('newLabelsInvalidMsg', $lang->runner->notice->newLabelsInvalid);
+jsVar('copySuccess', $lang->runner->copySuccess);
+jsVar('copyFail', $lang->runner->copyFail);
 
 form
 (
@@ -82,9 +84,16 @@ form
     (
         setID('cmd'),
         set::label($lang->runner->cmd),
+        btn
+        (
+            setClass('absolute top-2 right-2 z-10 ghost'),
+            set::icon('copy'),
+            set::hint($lang->runner->copyCmd),
+            on::click()->call('copyCmd')
+        ),
         h::pre
         (
-            setClass('codeBody'),
+            setClass('codeBody pr-10'),
             h::code()
         )
     )

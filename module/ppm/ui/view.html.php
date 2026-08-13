@@ -46,11 +46,14 @@ $minReviewers  = empty($flow) ? 0 : $flow->definition->reviewFlow->approvals->mi
 $issueListTotal = $bugPager->recTotal + (int)data('aiIssueCount');
 
 $basicItems = array();
-$basicItems[] = item(set::name($lang->ppm->author),       zget($users, $ppm->createdBy));
-$basicItems[] = item(set::name($lang->ppm->createdDate),  $ppm->createdDate);
-$basicItems[] = item(set::name($lang->ppm->targetBranch), $ppm->targetBranch);
-$basicItems[] = item(set::name($lang->ppm->sourceBranch), $ppm->sourceBranch);
-$basicItems[] = item(set::name($lang->ppm->description),  !empty($ppm->desc) ? strip_tags($ppm->desc) : $lang->noData);
+if($type != 'files')
+{
+    $basicItems[] = item(set::name($lang->ppm->author),       zget($users, $ppm->createdBy));
+    $basicItems[] = item(set::name($lang->ppm->createdDate),  $ppm->createdDate);
+    $basicItems[] = item(set::name($lang->ppm->targetBranch), $ppm->targetBranch);
+    $basicItems[] = item(set::name($lang->ppm->sourceBranch), $ppm->sourceBranch);
+    $basicItems[] = item(set::name($lang->ppm->description),  !empty($ppm->desc) ? strip_tags($ppm->desc) : $lang->noData);
+}
 
 $canMerge = zget($checkResult, 'canMerge', false);
 
@@ -195,12 +198,12 @@ div
             )
         ),
     ),
-    div
+    $type == 'files' ? null : div
     (
         setClass('w-2'),
         setStyle('background', 'var(--zt-page-bg)')
     ),
-    div
+    $type == 'files' ? null : div
     (
         setStyle(array('width' => '370px')),
         setClass('detail-side flex-none relative'),

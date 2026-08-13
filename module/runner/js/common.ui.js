@@ -77,3 +77,67 @@ window.initCmd = function(event)
     $('#cmd code').empty();
     $('#cmd code').text(cmd);
 };
+
+window.copyCmd = function()
+{
+    const command = $('#cmd code').text();
+    if(!command) return;
+
+    if(navigator.clipboard && window.isSecureContext)
+    {
+        navigator.clipboard.writeText(command).then(function()
+        {
+            zui.Messager.show({type: 'success', message: copySuccess, timeout: 1000});
+        }).catch(function(err)
+        {
+            console.warn('Clipboard API failed:', err);
+            copyTextToClipboard(command);
+        });
+    }
+    else
+    {
+        copyTextToClipboard(command);
+    }
+};
+
+function copyTextToClipboard(text)
+{
+    const $textArea = $('<textarea>', {
+        css: {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '2em',
+            height: '2em',
+            padding: '0',
+            border: 'none',
+            outline: 'none',
+            boxShadow: 'none',
+            background: 'transparent'
+        }
+    });
+
+    $('body').append($textArea);
+
+    $textArea.val(text);
+    $textArea[0].focus();
+    $textArea[0].select();
+
+    try
+    {
+        const successful = document.execCommand('copy');
+        if(successful)
+        {
+            zui.Messager.show({type: 'success', message: copySuccess, timeout: 1000});
+        }
+        else
+        {
+            zui.Messager.show({type: 'danger', message: copyFail, timeout: 1000});
+        }
+    }
+    catch(err)
+    {
+        zui.Messager.show({type: 'danger', message: copyFail, timeout: 1000});
+    }
+    $textArea.remove();
+}
