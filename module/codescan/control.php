@@ -1285,6 +1285,7 @@ class codescan extends control
 
         $conditions = $this->codescanZen->buildParams($type, $condition, (int)$queryID, $orderBy, $pager->recPerPage, $pager->pageID);
         $conditions = $type == 'bySearch' && $repoID ? array_merge($conditions, array('repoID' => $serviceRepoID)) : array_merge($conditions, array('taskID' => $taskID));
+        $conditions['scanMethods'] = array('check', 'smell');
         $issueList  = $this->codescan->getScanIssueList((int)$taskID, $conditions);
         $pager->recTotal = zget(zget($issueList, 'pager', array()), 'total', 0);
 
