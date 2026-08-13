@@ -14,7 +14,7 @@ cid=0
 - 测试步骤6：finishTask触发类型，验证输出包含"完成了任务" >> 包含完成了任务文案
 - 测试步骤7：linkRelease触发类型，验证输出包含"关联到发布" >> 包含关联到发布文案
 - 测试步骤8：unlinkRelease触发类型，验证输出包含"移除了发布" >> 包含移除了发布文案
-- 测试步骤9：edit触发类型，验证输出包含"编辑需求后" >> 包含编辑需求后文案
+- 测试步骤9：editStory触发类型，验证输出包含"编辑需求后" >> 包含编辑需求后文案
 - 测试步骤10：无效触发类型，验证actionText为空 >> 无效类型actionText为空
 
 */
@@ -24,6 +24,7 @@ include dirname(__FILE__, 5) . '/test/lib/init.php';
 include dirname(__FILE__, 2) . '/lib/tao.class.php';
 
 // 2. zendata数据准备
+zenData('action')->gen(100);
 $productplanTable = zenData('productplan');
 $productplanTable->id->range('10001');
 $productplanTable->title->range('测试计划');
@@ -67,5 +68,5 @@ r(strpos($actionTest->processChangedStoryStageActionExtraTest('startTask|10001|d
 r(strpos($actionTest->processChangedStoryStageActionExtraTest('finishTask|10002|developed'), '完成了任务') !== false)    && p() && e('1'); // 步骤6：finishTask触发开发任务，验证包含"完成了任务"
 r(strpos($actionTest->processChangedStoryStageActionExtraTest('linkRelease|10001|released'), '关联到发布') !== false)    && p() && e('1'); // 步骤7：linkRelease触发，验证包含"关联到发布"
 r(strpos($actionTest->processChangedStoryStageActionExtraTest('unlinkRelease|10001|projected'), '移除了发布') !== false) && p() && e('1'); // 步骤8：unlinkRelease触发，验证包含"移除了发布"
-r(strpos($actionTest->processChangedStoryStageActionExtraTest('edit|0|testing'), '编辑需求后') !== false)                && p() && e('1'); // 步骤9：edit触发，验证包含"编辑需求后"
+r(strpos($actionTest->processChangedStoryStageActionExtraTest('editStory|0|testing'), '编辑需求后') !== false)           && p() && e('1'); // 步骤9：editStory触发，验证包含"编辑需求后"
 r(strpos($actionTest->processChangedStoryStageActionExtraTest('invalid|0|wait'), '关联到') === false && strpos($actionTest->processChangedStoryStageActionExtraTest('invalid|0|wait'), '移除了') === false && strpos($actionTest->processChangedStoryStageActionExtraTest('invalid|0|wait'), '开始了') === false && strpos($actionTest->processChangedStoryStageActionExtraTest('invalid|0|wait'), '完成了') === false) && p() && e('1'); // 步骤10：无效触发类型，验证不包含任何有效actionText

@@ -39,8 +39,8 @@ $projectTable->gen(1);
 
 $storyTest = new storyModelTest();
 
-r($storyTest->createStageChangeActionTest(1, 'wait', 'planned', array('type' => 'linkPlan', 'objectID' => 1)))      && p() && e('0'); // 步骤1：关联计划，wait→planned，应创建action
-r($storyTest->createStageChangeActionTest(2, 'wait', 'wait', array('type' => 'linkPlan', 'objectID' => 1)))         && p() && e('0'); // 步骤2：阶段未变，不创建action
-r($storyTest->createStageChangeActionTest(3, 'wait', 'planned', array('objectID' => 1)))                            && p() && e('0'); // 步骤3：无trigger type，不创建action
-r($storyTest->createStageChangeActionTest(5, 'wait', 'projected', array('type' => 'linkProject', 'objectID' => 1))) && p() && e('0'); // 步骤4：关联项目，wait→projected，应创建action
-r($storyTest->createStageChangeActionTest(7, 'planned', 'developing', array('type' => 'edit', 'objectID' => 0)))    && p() && e('0'); // 步骤5：编辑需求，planned→developing，应创建action
+r($storyTest->createStageChangeActionTest(1, 'wait', 'planned', array('type' => 'linkPlan', 'objectID' => 1)))        && p() && e('0'); // 步骤1：关联计划，wait→planned，应创建action
+r($storyTest->createStageChangeActionTest(2, 'wait', 'wait', array('type' => 'linkPlan', 'objectID' => 1)))           && p() && e('0'); // 步骤2：阶段未变，不创建action
+r($storyTest->createStageChangeActionTest(3, 'wait', 'planned', array('objectID' => 1)))                              && p() && e('0'); // 步骤3：无trigger type，不创建action
+r($storyTest->createStageChangeActionTest(5, 'wait', 'projected', array('type' => 'linkProject', 'objectID' => 1)))   && p() && e('0'); // 步骤4：关联项目，wait→projected，应创建action
+r($storyTest->createStageChangeActionTest(7, 'planned', 'developing', array('type' => 'editStory', 'objectID' => 0))) && p() && e('0'); // 步骤5：编辑需求，planned→developing，应创建action

@@ -1010,7 +1010,7 @@ class storyModel extends model
             $this->loadModel('message')->sendMentionNotice($oldStory->type, 'edit', $actionID, $story, $oldStory);
 
             /* 如果阶段发生变化，记录阶段变动动态。 */
-            if($oldStory->type == 'story' && isset($story->stage) && $oldStory->stage != $story->stage) $this->createStageChangeAction($storyID, $oldStory->stage, $story->stage, array('type' => 'edit', 'objectID' => 0));
+            if($oldStory->type == 'story' && isset($story->stage) && $oldStory->stage != $story->stage) $this->createStageChangeAction($storyID, $oldStory->stage, $story->stage, array('type' => 'editStory', 'objectID' => 0));
 
             if(isset($story->finalResult))
             {
@@ -1273,7 +1273,7 @@ class storyModel extends model
             if($oldStory->type == 'story' && $story->stage != $oldStory->stage) $this->batchChangeStage(array($storyID), $story->stage);
 
             /* 如果阶段发生变化，记录阶段变动动态。 */
-            if($oldStory->type == 'story' && $oldStory->stage != $story->stage) $this->createStageChangeAction($storyID, $oldStory->stage, $story->stage, array('type' => 'edit', 'objectID' => 0));
+            if($oldStory->type == 'story' && $oldStory->stage != $story->stage) $this->createStageChangeAction($storyID, $oldStory->stage, $story->stage, array('type' => 'editStory', 'objectID' => 0));
 
             if($story->closedReason == 'done') $this->loadModel('score')->create('story', 'close');
             if($story->roadmap != $oldStory->roadmap) $this->storyTao->computeParentStage($oldStory);
