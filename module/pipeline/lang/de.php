@@ -282,6 +282,15 @@ $lang->pipeline->flowApp->labels['repo']                   = 'Repo';
 $lang->pipeline->flowApp->labels['branch']                 = 'Branch';
 $lang->pipeline->flowApp->labels['execution-trigger']      = 'Trigger';
 $lang->pipeline->flowApp->labels['execution-duration']     = 'Duration';
+$lang->pipeline->flowApp->labels['stage-section-basic']    = 'Basic Info';
+$lang->pipeline->flowApp->labels['stage-section-runtime']  = 'Runtime';
+$lang->pipeline->flowApp->labels['stage-section-runners']  = 'Available Runners';
+$lang->pipeline->flowApp->labels['stage-no-runners']       = 'No Available Runners';
+$lang->pipeline->flowApp->labels['stage-os']               = 'OS';
+$lang->pipeline->flowApp->labels['stage-os-required']      = 'Please select OS';
+$lang->pipeline->flowApp->labels['stage-arch']             = 'CPU Architecture';
+$lang->pipeline->flowApp->labels['stage-arch-required']    = 'Please select CPU Architecture';
+$lang->pipeline->flowApp->labels['stage-tags']             = 'Tags';
 $lang->pipeline->flowApp->labels['stage-name-duplicated']  = 'Stage name already exists';
 $lang->pipeline->flowApp->labels['task-name-duplicated']   = 'Task name already exists';
 
@@ -293,6 +302,7 @@ $lang->pipeline->flowApp->labels['execution-status-error']    = 'Error';
 $lang->pipeline->flowApp->labels['execution-status-skipped']  = 'Skipped';
 $lang->pipeline->flowApp->labels['execution-status-blocked']  = 'Blocked';
 $lang->pipeline->flowApp->labels['execution-status-declined'] = 'Declined';
+$lang->pipeline->flowApp->labels['view-error']                = 'View Error';
 
 $lang->pipeline->flowApp->labels['event-branch_created']         = 'Create Branch';
 $lang->pipeline->flowApp->labels['event-branch_updated']         = 'Branch Update';
