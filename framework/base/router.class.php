@@ -1247,6 +1247,9 @@ class baseRouter
             }
         }
 
+        $sessionLife = !empty($this->config->sessionLife) ? $this->config->sessionLife : 86400;
+        ini_set('session.gc_maxlifetime', (string)$sessionLife);
+
         $sessionName = $this->config->sessionVar;
         session_name($sessionName);
         session_set_cookie_params(0, $this->config->webRoot, '', $this->config->cookieSecure, true);
@@ -3135,6 +3138,7 @@ class baseRouter
         $slaveDB->encoding   = $config->db->encoding;
         $slaveDB->strictMode = $config->db->strictMode;
         $slaveDB->prefix     = $config->db->prefix;
+        $slaveDB->schema     = $config->db->schema ?? 'public';
 
         return $slaveDB;
     }
@@ -3974,7 +3978,7 @@ class ztSessionHandler implements SessionHandlerInterface
     {
         /* API session never expires. */
         global $config;
-        if((defined('RUN_MODE') && RUN_MODE == 'api') || isset($_GET[$config->sessionVar])) return 0;
+        if((helper::isApiRequest()) || isset($_GET[$config->sessionVar])) return 0;
 
         $time  = time();
         $count = 0;

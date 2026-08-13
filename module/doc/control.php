@@ -951,9 +951,13 @@ class doc extends control
                 $docData->module = $parentDoc->module;
             }
 
+            /* create 会 unset rawContent，克隆一份供 @ 通知解析。 */
+            /* create() unsets rawContent, clone one copy for parsing @ mentions. */
+            $docForMention = clone $docData;
+
             $docResult = $this->doc->create($docData);
             if(!$docResult || dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
-            return $this->docZen->responseAfterCreate($docResult, '', $from);
+            return $this->docZen->responseAfterCreate($docResult, 'doc', $from, $docForMention);
         }
 
         $this->docZen->assignVarsForCreate($objectType, $objectID, $libID, $moduleID, $docType);
@@ -1412,7 +1416,7 @@ class doc extends control
         if($isApi) $docParam = 'api.' . $docParam;
         if(!$doc || !isset($doc->id))
         {
-            if(defined('RUN_MODE') && RUN_MODE == 'api') return $this->send(array('status' => 'fail', 'code' => 404, 'message' => '404 Not found'));
+            if(helper::isApiRequest()) return $this->send(array('status' => 'fail', 'code' => 404, 'message' => '404 Not found'));
             return $this->sendError($this->lang->notFound, $this->inlink('index'));
         }
 
@@ -2638,6 +2642,7 @@ class doc extends control
         {
             $editTitle = $docType == 'url' ? $this->lang->doc->edit : $this->lang->settings;
             $title     = $isCreate ? $this->lang->doc->create : $editTitle;
+            if($objectType == 'template' && $isCreate) $title = $this->lang->docTemplate->create;
         }
         elseif($modalType == 'doc' && $isDraft != 'no')
         {

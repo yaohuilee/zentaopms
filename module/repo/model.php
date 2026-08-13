@@ -1247,7 +1247,7 @@ class repoModel extends model
      */
     public function createLink(string $method, string $params = '', string $viewType = 'html')
     {
-        if(defined('RUN_MODE') && RUN_MODE == 'api' && isset($this->config->originRequestType)) $this->config->requestType = $this->config->originRequestType;
+        if(helper::isApiRequest() && isset($this->config->originRequestType)) $this->config->requestType = $this->config->originRequestType;
         if($this->config->requestType == 'GET') return helper::createLink('repo', $method, $params, $viewType);
 
         $parsedParams = array();
@@ -2235,7 +2235,7 @@ class repoModel extends model
             if($deletedBranch == 'master') continue;
 
             $revisionIds       = $this->dao->select('revision')->from(TABLE_REPOBRANCH)->where('repo')->eq($repoID)->andWhere('branch')->eq($deletedBranch)->fetchPairs('revision');
-            $branchRevisionIds = $this->dao->select('revision,count(branch) as count')->from(TABLE_REPOBRANCH)->where('revision')->in($revisionIds)->groupBy('revision')->having('count')->eq(1)->fetchPairs('revision', 'revision');
+            $branchRevisionIds = $this->dao->select('revision,count(branch) as count')->from(TABLE_REPOBRANCH)->where('revision')->in($revisionIds)->groupBy('revision')->having('count(branch)')->eq(1)->fetchPairs('revision', 'revision');
             $fileIds           = $this->dao->select('id')->from(TABLE_REPOFILES)->where('revision')->in($branchRevisionIds)->fetchPairs('id');
 
             $this->dao->delete()->from(TABLE_REPOHISTORY)->where('id')->in($branchRevisionIds)->exec();
@@ -2878,7 +2878,7 @@ class repoModel extends model
      */
     public function getLinkedBranch(int $objectID = 0, string $objectType = '', int $repoID = 0): array
     {
-        return $this->dao->select('BID,BType,AType')->from(TABLE_RELATION)
+        return $this->dao->select('`BID`,`BType`,`AType`')->from(TABLE_RELATION)
             ->where('relation')->eq('linkrepobranch')
             ->beginIF($objectType)->andWhere('AType')->eq($objectType)->fi()
             ->beginIF($repoID)->andWhere('BID')->eq($repoID)->fi()
@@ -3074,8 +3074,8 @@ class repoModel extends model
     public function getListBySpaces(array $spaceIdList): array
     {
         return $this->dao->select('t1.*')->from(TABLE_REPO)->alias('t1')
-            ->leftJoin(TABLE_SPACE)->alias('t2')->on('t1.spaceID = t2.id')
-            ->where('t1.spaceID')->in($spaceIdList)
+            ->leftJoin(TABLE_SPACE)->alias('t2')->on('t1.`spaceID` = t2.id')
+            ->where('t1.`spaceID`')->in($spaceIdList)
             ->andWhere('t1.deleted')->eq(0)
             ->andWhere('t1.status')->ne('importing')
             ->fetchAll('id');
@@ -3095,7 +3095,7 @@ class repoModel extends model
         $reviews = array();
         $bugs    = $this->dao->select('t1.*, t2.realname')->from(TABLE_BUG)->alias('t1')
             ->leftJoin(TABLE_USER)->alias('t2')
-            ->on('t1.openedBy = t2.account')
+            ->on('t1.`openedBy` = t2.account')
             ->where('t1.repo')->eq($repoID)
             ->beginIF($entry)->andWhere('t1.entry')->eq($entry)->fi()
             ->beginIF($revision)->andWhere('t1.v2')->eq($revision)->fi()
@@ -3170,21 +3170,21 @@ class repoModel extends model
 
         dao::$filterTpl = 'never';
         return $this->dao->select('t1.*, t2.name AS executionName, t3.name as productName')->from(TABLE_BUG)->alias('t1')
-            ->leftJoin(TABLE_EXECUTION)->alias('t2')->on("t1.execution = t2.id and t2.isTpl = '0'")
+            ->leftJoin(TABLE_EXECUTION)->alias('t2')->on("t1.execution = t2.id and t2.`isTpl` = '0'")
             ->leftJoin(TABLE_PRODUCT)->alias('t3')->on('t1.product = t3.id')
             ->where('t1.deleted')->eq('0')
-            ->andWhere('t1.issueKey')->eq('')
+            ->andWhere('t1.`issueKey`')->eq('')
             ->beginIF($repoID)->andWhere('t1.repo')->eq($repoID)->fi()
             ->beginIF($executionID)
             ->andWhere('t1.execution')->in($executionID)
             ->andWhere('t1.repo')->gt('0')
             ->fi()
             ->beginIF(!$this->app->user->admin)->andWhere('t1.product')->in($this->app->user->view->products)->fi()
-            ->beginIF($browseType == 'assigntome')->andWhere('t1.assignedTo')->eq($this->app->user->account)->fi()
-            ->beginIF($browseType == 'openedbyme')->andWhere('t1.openedBy')->eq($this->app->user->account)->fi()
-            ->beginIF($browseType == 'resolvedbyme')->andWhere('t1.resolvedBy')->eq($this->app->user->account)->fi()
-            ->beginIF($browseType == 'assigntonull')->andWhere('t1.assignedTo')->eq('')->fi()
-            ->beginIF($browseType == 'unresolved')->andWhere('t1.resolvedBy')->eq('')->fi()
+            ->beginIF($browseType == 'assigntome')->andWhere('t1.`assignedTo`')->eq($this->app->user->account)->fi()
+            ->beginIF($browseType == 'openedbyme')->andWhere('t1.`openedBy`')->eq($this->app->user->account)->fi()
+            ->beginIF($browseType == 'resolvedbyme')->andWhere('t1.`resolvedBy`')->eq($this->app->user->account)->fi()
+            ->beginIF($browseType == 'assigntonull')->andWhere('t1.`assignedTo`')->eq('')->fi()
+            ->beginIF($browseType == 'unresolved')->andWhere('t1.`resolvedBy`')->eq('')->fi()
             ->beginIF($browseType == 'unclosed')->andWhere('t1.status')->ne('closed')->fi()
             ->beginIF(!empty($bugs))->andWhere('t1.id')->in($bugs)->fi()
             ->orderBy($orderBy)
@@ -3359,7 +3359,7 @@ class repoModel extends model
     public function getSystemList(string $systemQuery = '', int $space = 0): array
     {
         $spaceProducts = $this->loadModel('space')->getProductsBySpace($space);
-        return $this->dao->select('t1.`id` as id, t1.`name` as name, t1.`latestRelease` as latestRelease, t1.`product` as product, t1.`status` as status, t3.`status` as deployStatus, t3.`createdDate` as deployCreatedDate')->from(TABLE_SYSTEM)->alias('t1')
+        return $this->dao->select('t1.`id` as id, t1.`name` as name, t1.`latestRelease` as `latestRelease`, t1.`product` as product, t1.`status` as status, t3.`status` as deployStatus, t3.`createdDate` as deployCreatedDate')->from(TABLE_SYSTEM)->alias('t1')
             ->leftJoin(TABLE_DEPLOYPRODUCT)->alias('t2')->on('t1.`latestRelease` = t2.`release`')
             ->leftJoin(TABLE_DEPLOY)->alias('t3')->on('t2.`deploy` = t3.`id` and t2.`release` > 0')
             ->where('t1.deleted')->eq('0')
@@ -3647,7 +3647,7 @@ class repoModel extends model
             ->fetchAll('', false);
         if(empty($oldRepos)) return true;
 
-        $products = $this->dao->select('id, PO, QD, RD, whitelist, acl')
+        $products = $this->dao->select('id, `PO`, `QD`, `RD`, whitelist, acl')
             ->from(TABLE_PRODUCT)
             ->fetchAll('id');
 
@@ -3666,7 +3666,7 @@ class repoModel extends model
             if(!empty($productMembers)) $productMembersMap[$productID] = array_values(array_unique($productMembers));
         }
 
-        $userGroup = $this->dao->select('`group` AS groupID, account')
+        $userGroup = $this->dao->select('`group` AS `groupID`, account')
             ->from(TABLE_USERGROUP)
             ->fetchAll();
 

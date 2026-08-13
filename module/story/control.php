@@ -351,7 +351,7 @@ class story extends control
 
             $message = $this->executeHooks($storyID);
             if(empty($message)) $message = $this->lang->saveSuccess;
-            if(defined('RUN_MODE') && RUN_MODE == 'api') return $this->send(array('status' => 'success', 'data' => $storyID));
+            if(helper::isApiRequest()) return $this->send(array('status' => 'success', 'data' => $storyID));
 
             $response = $this->storyZen->getResponseInModal($message);
             if($response) return $this->send($response);
@@ -459,7 +459,7 @@ class story extends control
 
             $message = $this->executeHooks($storyID);
             if(empty($message)) $message = $this->lang->saveSuccess;
-            if(defined('RUN_MODE') and RUN_MODE == 'api') return $this->send(array('status' => 'success', 'data' => $storyID));
+            if(helper::isApiRequest()) return $this->send(array('status' => 'success', 'data' => $storyID));
 
             $response = $this->storyZen->getResponseInModal($message);
             if($response) return $this->send($response);
@@ -546,7 +546,7 @@ class story extends control
         $story   = $this->story->getById($storyID, $version, true);
         $product = $this->product->getByID((int)$story->product);
 
-        $isAPI = defined('RUN_MODE') && RUN_MODE == 'api';
+        $isAPI = helper::isApiRequest();
         if(!isInModal() && $tab == 'product' && !empty($product->shadow) && !$isAPI) return $this->send(array('result' => 'success', 'open' => array('url' => $uri, 'app' => 'project')));
 
         if(!$story || (isset($story->type) && $story->type != $storyType))
@@ -710,7 +710,7 @@ class story extends control
 
             $this->executeHooks($storyID);
 
-            if(defined('RUN_MODE') && RUN_MODE == 'api') return $this->send(array('status' => 'success'));
+            if(helper::isApiRequest()) return $this->send(array('status' => 'success'));
             if($this->app->tab == 'execution' and $from == 'taskkanban') return $this->send(array('result' => 'success', 'closeModal' => true, 'callback' => "refreshKanban()"));
 
             $locateLink = $this->session->storyList ? $this->session->storyList : $this->createLink('product', 'browse', "productID={$story->product}");
@@ -746,7 +746,7 @@ class story extends control
                 if($this->app->tab == 'execution') $this->loadModel('kanban')->updateLane($this->session->execution, 'story', $storyID);
                 return $this->send($this->storyZen->getResponseInModal($message));
             }
-            if(defined('RUN_MODE') and RUN_MODE == 'api') return $this->send(array('status' => 'success', 'data' => $storyID));
+            if(helper::isApiRequest()) return $this->send(array('status' => 'success', 'data' => $storyID));
 
             $location = $this->storyZen->getAfterReviewLocation($storyID, $storyType, $from);
             return $this->send(array('result' => 'success', 'message' => $message, 'load' => $location));
@@ -935,21 +935,35 @@ class story extends control
         $storyIdList = $storyIdList ? explode(',', $storyIdList) : array();
         if(empty($storyIdList)) return $this->send(array('result' => 'success', 'load' => $this->session->storyList));
 
-        /* Get reviewers. */
-        $product   = $this->product->getById($productID);
-        $reviewers = '';
-        if($product)
+        $stories = $this->story->getByList($storyIdList);
+
+        /* 产品入口 productID 有效取当前产品；项目入口当productID 为 0 时遍历选中需求所属产品，为每行按其所属产品取评审人，与单个提交评审保持一致。 */
+        $productIdList = $productID ? array($productID) : array_unique(array_column($stories, 'product'));
+
+        $productList = array();
+        foreach($productIdList as $pid)
         {
-            $reviewers = $product->reviewer;
-            if(!$reviewers and $product->acl != 'open') $reviewers = $this->loadModel('user')->getProductViewListUsers($product);
+            $productObj = $this->product->getById($pid);
+            if($productObj) $productList[$pid] = $productObj;
         }
 
-        $this->view->stories   = $this->story->getByList($storyIdList);
-        $this->view->product   = $product;
-        $this->view->productID = $productID;
-        $this->view->storyType = $storyType;
-        $this->view->message   = '';
-        $this->view->reviewers = $this->user->getPairs('noclosed|nodeleted', '', 0, $reviewers);
+        $product = $productID && isset($productList[$productID]) ? $productList[$productID] : null;
+
+        $productReviewers = array();
+        foreach($productList as $pid => $productObj)
+        {
+            $pReviewers = $productObj->reviewer;
+            if(!$pReviewers and $productObj->acl != 'open') $pReviewers = $this->loadModel('user')->getProductViewListUsers($productObj);
+
+            $productReviewers[$pid] = $this->user->getPairs('noclosed|nodeleted', '', 0, $pReviewers);
+        }
+        $reviewers = count($productList) == 1 ? reset($productReviewers) : $this->user->getPairs('noclosed|nodeleted');
+
+        $this->view->stories          = $stories;
+        $this->view->product          = $product;
+        $this->view->storyType        = $storyType;
+        $this->view->reviewers        = $reviewers;
+        $this->view->productReviewers = $productReviewers;
 
         $this->display();
     }
@@ -1057,7 +1071,7 @@ class story extends control
                 }
             }
 
-            if(defined('RUN_MODE') && RUN_MODE == 'api') return $this->send(array('status' => 'success', 'data' => $storyID));
+            if(helper::isApiRequest()) return $this->send(array('status' => 'success', 'data' => $storyID));
 
             $module = $this->app->tab == 'project' ? 'projectstory' : 'story';
             $params = $this->app->tab == 'project' ? "storyID=$storyID&project={$this->session->project}" : "storyID=$storyID&version=0&param=0&storyType=$storyType";
