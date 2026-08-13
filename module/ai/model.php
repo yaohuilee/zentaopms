@@ -240,7 +240,7 @@ class aiModel extends model
             $executable = $this->isExecutable($object);
             $published  = $object->status == 'active';
 
-            if($action == 'promptbasicinfo') return common::hasPriv('ai', 'designPrompt') && !$published;
+            if($action == 'promptbasicinfo' || $action == 'timerbasicinfo') return common::hasPriv('ai', 'designPrompt') && !$published;
             if($action == 'promptaudit')     return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
             if($action == 'promptedit')      return common::hasPriv('ai', 'promptedit');
             if($action == 'promptpublish')   return common::hasPriv('ai', 'promptpublish') && !$published && $executable;
@@ -260,6 +260,19 @@ class aiModel extends model
         }
 
         return true;
+    }
+
+    /**
+     * Get design action name by prompt type.
+     *
+     * @param  object|null $prompt
+     * @access public
+     * @return string
+     */
+    public function getPromptDesignAction($prompt): string
+    {
+        if(!empty($prompt) && !empty($prompt->type) && $prompt->type == 'timer') return 'timerbasicinfo';
+        return 'promptbasicinfo';
     }
 
     /**

@@ -42,13 +42,29 @@ toolbar
     ) : null
 );
 
+$timerType = isset($lang->ai->agentType->timer) ? $lang->ai->agentType->timer : 'timer';
+$timerTag  = isset($lang->ai->timer->tag) ? $lang->ai->timer->tag : '';
+jsVar('timerAgentType', $timerType);
+jsVar('timerAgentTag', $timerTag);
+
 $cols    = $config->ai->dtable->prompts;
+$cols['actions']['list'] = $config->ai->actionList;
 $prompts = initTableData($prompts, $cols, $this->ai);
 foreach($prompts as $prompt)
 {
     if($prompt->actionPurpose)
     {
         $prompt->targetFormLabel = $this->ai->getTargetFormLabel($prompt->actionPurpose, true, $prompt->module);
+    }
+
+    $designAction = $this->ai->getPromptDesignAction($prompt);
+    if(!empty($prompt->actions) && $designAction != 'promptbasicinfo')
+    {
+        foreach($prompt->actions as &$action)
+        {
+            if(is_array($action) && !empty($action['name']) && $action['name'] == 'promptbasicinfo') $action['name'] = $designAction;
+        }
+        unset($action);
     }
 }
 
@@ -149,11 +165,14 @@ $buildDropdown = function($prompt) use ($config)
     );
 };
 
-$promptCard = function($prompt) use ($lang, $buildDropdown, $userListMap)
+$promptCard = function($prompt) use ($lang, $buildDropdown, $userListMap, $timerType, $timerTag)
 {
     $creator = isset($userListMap[$prompt->createdBy]) ? $userListMap[$prompt->createdBy] : null;
     $creatorName = $creator ? $creator->realname : $prompt->createdBy;
 
+    $timerLabel = (!empty($prompt->type) && $prompt->type === $timerType && $timerTag !== '')
+        ? span(setClass('timer-tag'), $timerTag)
+        : null;
     $draftTag = $prompt->status === 'draft'
         ? span(
             setClass('draft-tag'),
@@ -168,6 +187,7 @@ $promptCard = function($prompt) use ($lang, $buildDropdown, $userListMap)
                 setClass('card-title'),
                 set::title($prompt->name),
                 span($prompt->name),
+                $timerLabel,
                 $draftTag
             ),
             div(
@@ -220,6 +240,7 @@ function renderListView($cols, $prompts, $users, $module, $status, $orderBy, $pa
         set::userMap($users),
         set::orderBy($orderBy),
         set::sortLink(inlink('prompts', "module={$module}&status={$status}&orderBy={name}_{sortType}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}")),
+        set::onRenderCell(jsRaw('window.onRenderPromptNameCell')),
         set::footPager(usePager()),
         set::emptyTip($lang->ai->prompts->emptyList)
     );
