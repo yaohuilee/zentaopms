@@ -7,7 +7,7 @@ CHANGE COLUMN `message` `title` varchar(500) NOT NULL DEFAULT '' COMMENT '问题
 CHANGE COLUMN `line` `startLine` int unsigned NOT NULL DEFAULT 0 COMMENT '问题起始行',
 CHANGE COLUMN `resolved` `resolvedDate` datetime DEFAULT NULL COMMENT '问题解决时间',
 CHANGE COLUMN `closed` `closedDate` datetime DEFAULT NULL COMMENT '问题关闭时间',
-CHANGE COLUMN `ignored` `ignoredDate` bigint unsigned NOT NULL DEFAULT 0 COMMENT '问题忽略到期时间',
+CHANGE COLUMN `ignored` `ignoredDate` bigint NOT NULL DEFAULT 0 COMMENT '问题忽略到期时间',
 MODIFY COLUMN `scanMethod` varchar(20) NOT NULL DEFAULT '' COMMENT '扫描方法（check/smell/ai）';
 
 ALTER TABLE `ops_scan_issues`
