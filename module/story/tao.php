@@ -2561,7 +2561,7 @@ class storyTao extends storyModel
         return $this->dao->select('t1.id,t1.title,t1.`addedBy`,t2.`AID`')->from(TABLE_DOC)->alias('t1')
             ->leftJoin(TABLE_RELATION)->alias('t2')->on("t1.`id`=t2.`BID` && t2.`BType`='doc'")
             ->where('t2.`AID`')->in($storyIdList)
-            ->andWhere('t2.`AType`')->eq('story')
+            ->andWhere('t2.`AType`')->in('story,epic,requirement')
             ->andWhere('t1.deleted')->eq(0)
             ->orderBy('t1.id')
             ->fetchGroup('AID', 'id');
