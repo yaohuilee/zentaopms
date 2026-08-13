@@ -1691,6 +1691,8 @@ class storyModel extends model
 
         if($oldStory->isParent == '1') $this->closeAllChildren($storyID, $story->closedReason);
         $this->setStage($storyID);
+        /* 记录阶段变动动态。 */
+        if($oldStory->type == 'story' && $oldStory->stage != 'closed') $this->createStageChangeAction($storyID, $oldStory->stage, 'closed', array('type' => 'closeStory', 'objectID' => 0));
         $this->loadModel('score')->create('story', 'close', $storyID);
 
         if($this->config->edition != 'open' && $oldStory->feedback) $this->loadModel('feedback')->updateStatus('story', $oldStory->feedback, $story->status, $oldStory->status, $storyID);
@@ -1750,6 +1752,9 @@ class storyModel extends model
 
                 if(!empty($oldStory->twins)) $this->syncTwins($storyID, $oldStory->twins, $changes, 'Closed');
             }
+
+            /* 记录阶段变动动态。 */
+            if($oldStory->type == 'story' && $oldStory->stage != 'closed') $this->createStageChangeAction($storyID, $oldStory->stage, 'closed', array('type' => 'closeStory', 'objectID' => 0));
 
             if($this->config->edition != 'open' && $oldStory->feedback && !isset($feedbacks[$oldStory->feedback]))
             {
@@ -1902,6 +1907,13 @@ class storyModel extends model
                         if(!$newPlanID) continue;
                         $link2Plans[$newPlanID] = empty($link2Plans[$newPlanID]) ? $storyID : "{$link2Plans[$newPlanID]},$storyID";
                     }
+                }
+
+                /* 记录阶段变动动态。 */
+                if($oldStory->type == 'story')
+                {
+                    $newStage = $this->dao->select('stage')->from(TABLE_STORY)->where('id')->eq($storyID)->fetch('stage');
+                    if($newStage && $oldStory->stage != $newStage) $this->createStageChangeAction((int)$storyID, $oldStory->stage, $newStage, array('type' => 'editStory', 'objectID' => 0));
                 }
             }
         }
@@ -2184,6 +2196,9 @@ class storyModel extends model
                 $action   = $stage == 'verified' ? 'Verified' : 'Edited';
                 $actionID = $this->action->create('story', (int)$storyID, $action);
                 $this->action->logHistory($actionID, $changes);
+
+                /* 记录阶段变动动态。 */
+                if($oldStory->stage != $stage) $this->createStageChangeAction((int)$storyID, $oldStory->stage, $stage, array('type' => 'editStory', 'objectID' => 0));
             }
 
             $oldStory->stage = $stage;
@@ -2351,6 +2366,11 @@ class storyModel extends model
             $actionID = $this->loadModel('action')->create('story', $storyID, 'Activated', $this->post->comment);
             $this->action->logHistory($actionID, $changes);
         }
+
+        /* 记录阶段变动动态。 */
+        $newStage = $this->dao->select('stage')->from(TABLE_STORY)->where('id')->eq($storyID)->fetch('stage');
+        if($oldStory->type == 'story' && $newStage && $oldStory->stage != $newStage) $this->createStageChangeAction($storyID, $oldStory->stage, $newStage, array('type' => 'activateStory', 'objectID' => 0));
+
         if(!empty($oldStory->twins)) $this->syncTwins($storyID, $oldStory->twins, $changes, 'Activated');
         if($this->config->edition != 'open' && $oldStory->feedback) $this->loadModel('feedback')->updateStatus('story', $oldStory->feedback, $story->status, $oldStory->status, $storyID);
 
