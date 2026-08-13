@@ -4076,7 +4076,7 @@ $config->group->package->browseRunner = new stdclass();
 $config->group->package->browseRunner->order  = 2390;
 $config->group->package->browseRunner->subset = 'configure';
 $config->group->package->browseRunner->privs  = array();
-$config->group->package->browseRunner->privs['runner-browse'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array('pipeline-browse'), 'recommend' => array('runner-create', 'runner-changeState', 'runner-edit', 'runner-delete'));
+$config->group->package->browseRunner->privs['runner-browse'] = array('edition' => 'biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array(), 'recommend' => array('runner-create', 'runner-changeState', 'runner-edit', 'runner-delete'));
 
 $config->group->package->manageRunner = new stdclass();
 $config->group->package->manageRunner->order  = 2395;
