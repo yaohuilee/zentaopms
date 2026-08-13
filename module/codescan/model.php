@@ -935,9 +935,11 @@ class codescanModel extends model
         $result->tool               = zget($result->payload, 'tool', '');
         $result->snippet            = zget($result->payload, 'snippet', '');
         $result->snippetWithContext = zget($result->payload, 'snippetWithContext', '');
-        $result->rangeStartLine     = (int)zget($result->payload->location->range, 'startLine', 0);
-        $result->rangeEndLine       = (int)zget($result->payload->location->range, 'endLine', 0);
-        $result->commit             = zget($result->payload->location, 'commit', array());
+        $location = !empty($result->payload) ? zget($result->payload, 'location', new stdclass()) : new stdclass();
+        $range    = !empty($location) ? zget($location, 'range', new stdclass()) : new stdclass();
+        $result->rangeStartLine     = (int)zget($range, 'startLine', 0);
+        $result->rangeEndLine       = (int)zget($range, 'endLine', 0);
+        $result->commit             = zget($location, 'commit', array());
         if($result->rangeStartLine < 1 && !empty($result->startLine))
         {
             $result->rangeStartLine = (int)$result->startLine;
