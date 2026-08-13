@@ -18,6 +18,11 @@ class storyRelatedList extends relatedList
         'story'         => '?object'           // 当前需求。
     );
 
+    public static function getPageCSS(): ?string
+    {
+        return file_get_contents(__DIR__ . DS . 'css' . DS . 'v1.css');
+    }
+
     protected function created()
     {
         $data = $this->prop('data');
