@@ -86,7 +86,7 @@ class gitfoxModel extends model
      * @access public
      * @return object|array|bool
      */
-    public function request($url, $method = 'GET', $data = array()): object|array|bool
+    public function request($url, $method = 'GET', $data = array(), $parseResponse = true): object|array|bool
     {
         $originURL = $url;
         if($method == 'GET')
@@ -102,6 +102,8 @@ class gitfoxModel extends model
 
         $url    = sprintf($apiRoot->url, $url);
         $result = json_decode(common::http($url, $data, $options, $apiRoot->header, 'json', $method));
+        if(!$parseResponse) return $result;
+
         $result = $this->getResponse($result);
         if(isset($result->pager) && $result->pager->total > 0 && empty($result->data))
         {
@@ -1086,5 +1088,26 @@ class gitfoxModel extends model
 
         $response = json_decode(common::http($url, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $apiRoot->header, 'json', 'PUT'));
         return $this->getResponse($response);
+    }
+
+    /**
+     * 获取仓库的差异。
+     * Get repo diffs.
+     *
+     * @param  int $repoID
+     * @param  string $from
+     * @param  string $to
+     * @access public
+     * @return string
+     */
+    public function apiGetRepoDiffs(int $repoID, string $from, string $to): string
+    {
+        $apiRoot = $this->getApiRoot();
+        $url     = sprintf($apiRoot->url, "/repos/{$repoID}/diff");
+
+        $result = common::http($url, array('range' => "{$from}...{$to}"), array(), $apiRoot->header, 'json');
+        if(empty($result)) return '';
+
+        return $result;
     }
 }
