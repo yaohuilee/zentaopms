@@ -64,7 +64,7 @@ class runnerModel extends model
     {
         $this->dao->update(TABLE_RUNNER)->data($formData)
             ->autoCheck()
-            ->batchCheck('name,labels', 'notempty')
+            ->batchCheck('name', 'notempty')
             ->where('`id`')->eq($runnerID)
             ->exec();
 

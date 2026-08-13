@@ -29,6 +29,11 @@ window.validateNewLabels = function(event)
     if(invalidPattern.test(value))
     {
         input.after('<span class="newLabels-error text-danger">' + newLabelsInvalidMsg + '</span>');
+        $('button[type="submit"]').prop('disabled', true);
+    }
+    else
+    {
+        $('button[type="submit"]').prop('disabled', false);
     }
 }
 
