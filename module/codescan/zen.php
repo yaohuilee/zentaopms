@@ -568,6 +568,7 @@ class codescanZen extends codescan
         $issue->oldCode     = zget($issue, 'oldCode', '');
         $issue->newCode     = zget($issue, 'newCode', '');
         $issue->ppmID       = (int)zget($issue, 'ppmID', 0);
+        $issue->ppmTitle     = zget($issue, 'ppmTitle', '');
         $issue->oldFilePath = zget($issue, 'oldFilePath', '');
         $issue->createdBy   = zget($issue, 'createdBy', '');
         $issue->editedBy    = zget($issue, 'editedBy', '');
@@ -637,12 +638,13 @@ class codescanZen extends codescan
     protected function getFileIssueList(string $file, int $serviceRepoID, int $taskID)
     {
         $params = array();
-        $params['repoID'] = $serviceRepoID;
-        $params['file']   = $file;
-        $params['sort']   = 'line';
-        $params['order']  = 'asc';
-        $params['limit']  = 100;
-        $params['page']   = 1;
+        $params['repoID']      = $serviceRepoID;
+        $params['file']        = $file;
+        $params['scanMethods'] = array('check', 'smell');
+        $params['sort']        = 'line';
+        $params['order']       = 'asc';
+        $params['limit']       = 100;
+        $params['page']        = 1;
 
         $list = array();
         while(true)
