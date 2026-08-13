@@ -281,6 +281,15 @@ $lang->pipeline->flowApp->labels['repo']                   = '代码库';
 $lang->pipeline->flowApp->labels['branch']                 = '分支';
 $lang->pipeline->flowApp->labels['execution-trigger']      = '触发器';
 $lang->pipeline->flowApp->labels['execution-duration']     = '运行时长';
+$lang->pipeline->flowApp->labels['stage-section-basic']    = '基本信息';
+$lang->pipeline->flowApp->labels['stage-section-runtime']  = '运行环境';
+$lang->pipeline->flowApp->labels['stage-section-runners']  = '可用 Runner';
+$lang->pipeline->flowApp->labels['stage-no-runners']       = '暂无可用 Runner';
+$lang->pipeline->flowApp->labels['stage-os']               = '运行方式';
+$lang->pipeline->flowApp->labels['stage-os-required']      = '请选择运行方式';
+$lang->pipeline->flowApp->labels['stage-arch']             = 'CPU 架构';
+$lang->pipeline->flowApp->labels['stage-arch-required']    = '请选择 CPU 架构';
+$lang->pipeline->flowApp->labels['stage-tags']             = '标签';
 $lang->pipeline->flowApp->labels['stage-name-duplicated']  = '已存在相同的阶段名称';
 $lang->pipeline->flowApp->labels['task-name-duplicated']   = '已存在相同的任务名称';
 
@@ -292,6 +301,7 @@ $lang->pipeline->flowApp->labels['execution-status-error']    = '错误';
 $lang->pipeline->flowApp->labels['execution-status-skipped']  = '跳过';
 $lang->pipeline->flowApp->labels['execution-status-blocked']  = '阻塞';
 $lang->pipeline->flowApp->labels['execution-status-declined'] = '拒绝';
+$lang->pipeline->flowApp->labels['view-error']                = '查看错误';
 
 $lang->pipeline->flowApp->labels['event-branch_created']         = '创建分支';
 $lang->pipeline->flowApp->labels['event-branch_updated']         = '分支更新';
