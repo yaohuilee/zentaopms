@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @link        https://www.zentao.net
  */
 namespace zin;
+jsVar('newLabelsInvalidMsg', $lang->runner->notice->newLabelsInvalid);
 
 formPanel
 (
@@ -17,7 +18,7 @@ formPanel
     set::submitBtnText($lang->save),
     on::click('.add-item', 'addItem'),
     on::click('.delete-item', 'removeItem'),
-    on::input('[name="newLabels[]"]', 'validateNewLabels'),
+    on::input('[name^="newLabels"]', 'validateNewLabels'),
     formGroup
     (
         set::name('name'),

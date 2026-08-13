@@ -78,8 +78,8 @@ class runner extends control
                 ->setDefault('editedBy', $this->app->user->account)
                 ->get();
 
-            $labels = array_unique(array_merge(explode(',', $formData->labels), explode(',', $formData->newLabels)));
-            $labels = implode(',', array_filter($labels));
+            $labels = array_filter(array_unique(array_merge(explode(',', $formData->labels), explode(',', $formData->newLabels))));
+            $labels = implode(',', $labels);
             $formData->labels = empty($labels) ? '' : ",{$labels},";
             unset($formData->newLabels);
 
