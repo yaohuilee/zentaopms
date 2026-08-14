@@ -1,45 +1,5 @@
-window.addItem = function(event)
-{
-    const obj     = $(event.target);
-    const newLine = $('.labelsRow').eq(0).clone();
-
-    newLine.addClass('newLine');
-    newLine.find('.labels').remove();
-    newLine.find('.newLabels').removeClass('hidden').val('');
-    newLine.find('.delete-item').removeClass('hidden');
-
-    obj.closest('.labelsRow').after(newLine);
-}
-
-window.removeItem = function(event)
-{
-    const obj = $(event.target);
-    obj.closest('.labelsRow').remove();
-    initCmd();
-}
-
-window.validateNewLabels = function(event)
-{
-    const input = $(event.target);
-    const value = input.val();
-    const invalidPattern = /[^a-zA-Z0-9_.\-一-龥]/g;
-
-    input.next('.newLabels-error').remove();
-
-    if(invalidPattern.test(value))
-    {
-        input.after('<span class="newLabels-error text-danger">' + newLabelsInvalidMsg + '</span>');
-        $('button[type="submit"]').prop('disabled', true);
-    }
-    else
-    {
-        $('button[type="submit"]').prop('disabled', false);
-    }
-}
-
 window.initCmd = function(event)
 {
-    if(event && event.type === 'input') validateNewLabels(event);
     const plat = $("[name='plat']").val();
     const arch = $("[name='arch']").val();
     if(!plat || !arch) return;
@@ -51,15 +11,18 @@ window.initCmd = function(event)
 
     /* Collect all non-empty and valid values from newLabels text inputs. */
     const invalidPattern = /[^a-zA-Z0-9_.\-一-龥]/;
-    const newLabelValues = [];
-    $('[name="newLabels[]"]').each(function()
-    {
-        const val = $(this).val();
-        if(val && val.trim() && !invalidPattern.test(val.trim())) newLabelValues.push(val.trim());
-    });
+    const allLabels = [];
+    $('#labels').next('.newLabels-error').remove();
+    selectedLabels.forEach((label) => {
+        if(label && label.trim() && invalidPattern.test(label.trim()))
+        {
+            $('#labels').after('<span class="newLabels-error text-danger">' + newLabelsInvalidMsg + '</span>');
+            return;
+        }
+        allLabels.push(label.trim());
+    })
 
     /* Merge selected labels and new labels, deduplicate, and join as comma-separated string. */
-    const allLabels = [...new Set([...selectedLabels, ...newLabelValues])];
     let labelsStr  = allLabels.join(',');
     if(plat != 'windows' && labelsStr != '')
     {

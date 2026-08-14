@@ -29,9 +29,6 @@ form
     on::change('#plat')->call('initCmd'),
     on::change('[name^="labels"]')->call('initCmd'),
     on::init('#arch')->do('$(function() {setTimeout(initCmd, 50); });'),
-    on::click('.add-item', 'addItem'),
-    on::click('.delete-item', 'removeItem'),
-    on::input('[name="newLabels[]"]', 'initCmd'),
     formGroup
     (
         set::width('1/2'),
@@ -52,33 +49,14 @@ form
         set::items($lang->runner->archList),
         set::value('amd64')
     ),
-    formRow
+    formGroup
     (
-        setClass('labelsRow'),
-        formGroup
-        (
-            setClass('labels'),
-            set::width('1/2'),
-            set::label($lang->runner->labels),
-            set::name('labels'),
-            set::items($labels),
-            set::multiple(true)
-        ),
-        formGroup
-        (
-            setClass('hidden newLabels'),
-            set::label(''),
-            set::width('1/2'),
-            set::name('newLabels[]')
-        ),
-        formGroup
-        (
-            btnGroup
-            (
-                item(set(array('icon' => 'plus',  'class' => 'add-item ghost'))),
-                item(set(array('icon' => 'trash', 'class' => 'delete-item hidden ghost'))),
-            )
-        )
+        setClass('labels'),
+        set::width('1/2'),
+        set::label($lang->runner->labels),
+        set::name('labels'),
+        set::items($labels),
+        set::control(array('type' => 'picker', 'creatable' => true, 'multiple' => true))
     ),
     formGroup
     (
