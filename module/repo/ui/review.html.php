@@ -55,6 +55,7 @@ if(hasPriv('bug', 'batchAssignTo'))
     $assignedToItems = array();
     foreach($users as $key => $value)
     {
+        if($key == 'closed') continue;
         $key = base64_encode((string)$key); // 编码用户名中的特殊字符
         $assignedToItems[] = array('text' => $value, 'keys' => zget($pinyinItems, $value, ''), 'innerClass' => 'batch-btn ajax-btn not-open-url', 'data-url' => helper::createLink('bug', 'batchAssignTo', "assignedTo=$key&productID=0&type=product"));
     }
