@@ -58,13 +58,17 @@ foreach($prompts as $prompt)
     }
 
     $designAction = $this->ai->getPromptDesignAction($prompt);
-    if(!empty($prompt->actions) && $designAction != 'promptbasicinfo')
+    $isTimerAgent = !empty($prompt->type) && $prompt->type === $timerType;
+    if(!empty($prompt->actions) && ($designAction != 'promptbasicinfo' || $isTimerAgent))
     {
-        foreach($prompt->actions as &$action)
+        foreach($prompt->actions as $actionKey => &$action)
         {
-            if(is_array($action) && !empty($action['name']) && $action['name'] == 'promptbasicinfo') $action['name'] = $designAction;
+            if(!is_array($action) || empty($action['name'])) continue;
+            if($action['name'] == 'promptbasicinfo' && $designAction != 'promptbasicinfo') $action['name'] = $designAction;
+            if($isTimerAgent && $action['name'] == 'promptaudit') unset($prompt->actions[$actionKey]);
         }
         unset($action);
+        if($isTimerAgent) $prompt->actions = array_values($prompt->actions);
     }
 }
 

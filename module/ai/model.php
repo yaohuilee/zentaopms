@@ -241,7 +241,11 @@ class aiModel extends model
             $published  = $object->status == 'active';
 
             if($action == 'promptbasicinfo' || $action == 'timerbasicinfo') return common::hasPriv('ai', 'designPrompt') && !$published;
-            if($action == 'promptaudit')     return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
+            if($action == 'promptaudit')
+            {
+                if(!empty($object->type) && $object->type == 'timer') return false;
+                return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
+            }
             if($action == 'promptedit')      return common::hasPriv('ai', 'promptedit');
             if($action == 'promptpublish')   return common::hasPriv('ai', 'promptpublish') && !$published && $executable;
             if($action == 'promptunpublish') return common::hasPriv('ai', 'promptunpublish') && $published;
@@ -3464,6 +3468,56 @@ class aiModel extends model
         }
 
         return 'basicinfo';
+    }
+
+    /**
+     * 获取智能体设计向导步骤按钮的状态。
+     * Get design wizard step status map.
+     *
+     * @param  array  $stepSequence
+     * @param  string $currentStep
+     * @param  string $lastActiveStep
+     * @param  int    $promptID
+     * @access public
+     * @return array
+     */
+    public function getPromptDesignStepStatus(array $stepSequence, string $currentStep, string $lastActiveStep, int $promptID = 0): array
+    {
+        $currentStepIndex    = array_search($currentStep, $stepSequence) ?? 0;
+        $lastActiveStepIndex = array_search($lastActiveStep, $stepSequence) ?? 0;
+
+        $stepStatus = array();
+        foreach($stepSequence as $index => $stepName)
+        {
+            if($index < $currentStepIndex)
+            {
+                $stepStatus[$stepName] = 'active';
+            }
+            elseif($index > $currentStepIndex && $index <= $lastActiveStepIndex + 1 && !empty($promptID))
+            {
+                $stepStatus[$stepName] = 'clickable';
+            }
+            else
+            {
+                $stepStatus[$stepName] = 'disabled';
+            }
+
+            if($index == $currentStepIndex) $stepStatus[$stepName] = 'current';
+        }
+
+        return $stepStatus;
+    }
+
+    /**
+     * Get the start method of prompt design wizard.
+     *
+     * @param  string $referer
+     * @access public
+     * @return string
+     */
+    public function getPromptDesignStartMethod(string $referer = ''): string
+    {
+        return stripos($referer, 'timerbasicinfo') !== false ? 'timerBasicInfo' : 'promptBasicInfo';
     }
 
     /**
