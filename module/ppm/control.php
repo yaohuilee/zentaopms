@@ -412,6 +412,7 @@ class ppm extends control
         $this->view->type             = $type;
         $this->view->encoding         = $encoding;
         $this->view->diffs            = $arrange == 'appose' ? $this->repo->getApposeDiff($diffs) : $diffs;
+        //$this->view->diffText         = $this->loadModel('gitfox')->apiGetRepoDiffs($ppm->repoID, $fromRevision, $toRevision);
         $this->view->users            = $this->loadModel('user')->getPairs('noletter');
         $this->view->oldRevision      = $ppm->targetBranch;
         $this->view->newRevision      = $ppm->sourceBranch;
