@@ -16,9 +16,6 @@ formPanel
     set::id('runnerEditForm'),
     set::title($title),
     set::submitBtnText($lang->save),
-    on::click('.add-item', 'addItem'),
-    on::click('.delete-item', 'removeItem'),
-    on::input('[name^="newLabels"]', 'validateNewLabels'),
     formGroup
     (
         set::name('name'),
@@ -27,34 +24,15 @@ formPanel
         set::required(true),
         set::value(zget($runner, 'name', ''))
     ),
-    formRow
+    formGroup
     (
-        setClass('labelsRow'),
-        formGroup
-        (
-            setClass('labels'),
-            set::width('1/2'),
-            set::label($lang->runner->labels),
-            set::name('labels'),
-            set::items($labels),
-            set::value(zget($runner, 'labels', '')),
-            set::multiple(true)
-        ),
-        formGroup
-        (
-            setClass('hidden newLabels'),
-            set::label(''),
-            set::width('1/2'),
-            set::name('newLabels[]')
-        ),
-        formGroup
-        (
-            btnGroup
-            (
-                item(set(array('icon' => 'plus',  'class' => 'add-item ghost'))),
-                item(set(array('icon' => 'trash', 'class' => 'delete-item hidden ghost'))),
-            )
-        )
+        setClass('labels'),
+        set::width('1/2'),
+        set::label($lang->runner->labels),
+        set::name('labels'),
+        set::items($labels),
+        set::control(array('type' => 'picker', 'creatable' => true, 'multiple' => true)),
+        set::value(zget($runner, 'labels', ''))
     ),
     formGroup
     (

@@ -79,6 +79,10 @@ class runner extends control
                 ->get();
 
             $labels = array_filter(array_unique(array_merge(explode(',', $formData->labels), explode(',', $formData->newLabels))));
+            foreach($labels as $label)
+            {
+                if(!preg_match('/^[a-zA-Z0-9_.-_\x7f-\xff]+$/', $label)) return $this->sendError(array('labels' => $this->lang->runner->notice->newLabelsInvalid));
+            }
             $labels = implode(',', $labels);
             $formData->labels = empty($labels) ? '' : ",{$labels},";
             unset($formData->newLabels);
