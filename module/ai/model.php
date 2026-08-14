@@ -241,7 +241,11 @@ class aiModel extends model
             $published  = $object->status == 'active';
 
             if($action == 'promptbasicinfo' || $action == 'timerbasicinfo') return common::hasPriv('ai', 'designPrompt') && !$published;
-            if($action == 'promptaudit')     return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
+            if($action == 'promptaudit')
+            {
+                if(!empty($object->type) && $object->type == 'timer') return false;
+                return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
+            }
             if($action == 'promptedit')      return common::hasPriv('ai', 'promptedit');
             if($action == 'promptpublish')   return common::hasPriv('ai', 'promptpublish') && !$published && $executable;
             if($action == 'promptunpublish') return common::hasPriv('ai', 'promptunpublish') && $published;
