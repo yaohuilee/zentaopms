@@ -1806,9 +1806,16 @@ class aiModel extends model
      */
     public function getPromptById($id)
     {
-        return $this->dao->select('*')->from(TABLE_AI_AGENT)
+        $agent = $this->dao->select('*')->from(TABLE_AI_AGENT)
             ->where('id')->eq($id)
             ->fetch();
+
+        if($agent->type == 'timer')
+        {
+            $agent->logs = $this->dao->select('*')->from(TABLE_AI_TIMERLOG)->where('agent')->eq($id)->orderBy('createdDate_desc')->limit(20)->fetchAll('id', false);
+        }
+
+        return $agent;
     }
 
     /**
