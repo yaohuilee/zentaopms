@@ -3,7 +3,6 @@ ALTER TABLE `zt_ai_agent` ADD `operation` varchar(30) NOT NULL DEFAULT '' COMMEN
 ALTER TABLE `zt_ai_agent` ADD `cycleType` varchar(10) NOT NULL DEFAULT '' COMMENT '周期类型：day/week/month' AFTER `operation`;
 ALTER TABLE `zt_ai_agent` ADD `cycleConfig` text NULL DEFAULT NULL COMMENT '周期配置' AFTER `cycleType`;
 ALTER TABLE `zt_ai_agent` ADD `notifyRule` text NULL DEFAULT NULL COMMENT '通知规则JSON：roles/users/methods' AFTER `cycleConfig`;
-ALTER TABLE `zt_ai_agent` ADD `reviewRule` text NULL DEFAULT NULL COMMENT 'AI审查规则，非空表示开启审查' AFTER `notifyRule`;
 ALTER TABLE `zt_ai_agent` ADD `lastRunDate` datetime NULL DEFAULT NULL COMMENT '最近一次定时执行时间' AFTER `editedDate`;
 
 CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
