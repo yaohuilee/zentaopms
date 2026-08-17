@@ -1972,7 +1972,7 @@ class aiModel extends model
         $this->lang->error->unique = $this->lang->ai->validate->nameNotUnique;
 
         $this->dao->update(TABLE_AI_AGENT)
-            ->data($prompt)
+            ->data($prompt, 'logs')
             ->batchCheck($this->config->ai->createprompt->requiredFields, 'notempty')
             ->check('name', 'unique', "`id` != {$prompt->id} AND `deleted` = '0'")
             ->autoCheck()

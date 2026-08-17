@@ -14954,7 +14954,6 @@ CREATE TABLE IF NOT EXISTS `zt_ai_agent` (
   `cycleType` varchar(10) NOT NULL DEFAULT '' COMMENT '周期类型：day/week/month',
   `cycleConfig` text NULL DEFAULT NULL COMMENT '周期配置',
   `notifyRule` text NULL DEFAULT NULL COMMENT '通知规则JSON：roles/users/methods',
-  `reviewRule` text NULL DEFAULT NULL COMMENT 'AI审查规则，非空表示开启审查',
   `source` text DEFAULT NULL,
   `targetForm` varchar(30) NOT NULL DEFAULT '',
   `purpose` text DEFAULT NULL,
