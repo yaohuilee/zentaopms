@@ -564,7 +564,7 @@ class releaseModel extends model
 
         if(dao::isError()) return false;
 
-        if($oldRelease->status != $release->status && $release->status == 'normal') $this->setStoriesStage($oldRelease->id);
+        if($oldRelease->status != $release->status && $release->status == 'normal') $this->setStoriesStage($oldRelease->id, array('type' => 'editRelease', 'objectID' => $oldRelease->id));
 
         $shadowBuild = array();
         if($release->name != $oldRelease->name)   $shadowBuild['name']   = $release->name;
@@ -878,7 +878,7 @@ class releaseModel extends model
 
         $this->dao->update(TABLE_RELEASE)->data($release, 'comment')->where('id')->eq($releaseID)->exec();
 
-        if($status == 'normal') $this->setStoriesStage($releaseID);
+        if($status == 'normal') $this->setStoriesStage($releaseID, array('type' => 'publishRelease', 'objectID' => $releaseID));
         return !dao::isError();
     }
 
@@ -1422,11 +1422,12 @@ class releaseModel extends model
      * 当发布的状态变为正常时，设置需求的阶段。
      * Set the stage of the stories when the release status is normal.
      *
-     * @param  int $releaseID
+     * @param  int   $releaseID
+     * @param  array $trigger
      * @access public
      * @return void
      */
-    public function setStoriesStage(int $releaseID): void
+    public function setStoriesStage(int $releaseID, array $trigger = array()): void
     {
         $release = $this->getByID($releaseID);
         if(!$release) return;
@@ -1438,7 +1439,7 @@ class releaseModel extends model
         $this->dao->update(TABLE_STORY)->set('stagedBy')->eq('')->where('id')->in($storyIdList)->exec();
 
         $this->loadModel('story');
-        foreach($storyIdList as $storyID) $this->story->setStage((int)$storyID);
+        foreach($storyIdList as $storyID) $this->story->setStage((int)$storyID, $trigger);
     }
 
     /**

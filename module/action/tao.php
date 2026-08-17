@@ -548,6 +548,8 @@ class actionTao extends actionModel
                 break;
             case 'linkRelease':
             case 'unlinkRelease':
+            case 'editRelease':
+            case 'publishRelease':
                 $release = $this->fetchObjectInfoByID(TABLE_RELEASE, (int)$triggerObjectID, 'name');
                 if($release && $release->name) $objectLink = common::hasPriv('release', 'view') ? html::a(helper::createLink('release', 'view', "releaseID={$triggerObjectID}"), $release->name) : $release->name;
                 break;
