@@ -18,5 +18,21 @@ CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS `zt_ai_timerqueue` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `agent` int unsigned NOT NULL DEFAULT 0 COMMENT '智能体ID',
+  `objectType` varchar(30) NOT NULL DEFAULT '' COMMENT '对象类型',
+  `objectID` int unsigned NOT NULL DEFAULT 0 COMMENT '对象ID',
+  `status` varchar(10) NOT NULL DEFAULT 'wait' COMMENT '状态：wait/doing/done',
+  `content` mediumtext NULL DEFAULT NULL COMMENT 'AI通知正文',
+  `toList` varchar(1000) NOT NULL DEFAULT '' COMMENT '通知人账号列表',
+  `createdBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
+  `createdDate` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+CREATE INDEX `idx_agent_status` ON `zt_ai_timerqueue`(`agent`, `status`);
+CREATE INDEX `idx_agent_object` ON `zt_ai_timerqueue`(`agent`, `objectType`, `objectID`);
+
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents', '执行定时智能体', 'zentao', 1, 'normal', NULL);
