@@ -2443,7 +2443,8 @@ REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `typ
 ('30',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeTaskEffort',        '计算任务剩余工时',                   'zentao', 1, 'normal', NULL),
 ('40',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeburn',              '更新燃尽图',                         'zentao', 1, 'normal', NULL),
 ('50',  '23', '*', '*', '*', 'moduleName=execution&methodName=computecfd',               '更新累积流图',                       'zentao', 1, 'normal', NULL),
-('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',                 'zentao', 1, 'normal', NULL);
+('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',                 'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=zai&methodName=syncVectorization',              '自动同步向量化数据',                 'zentao', 1, 'normal', NULL);
 
 REPLACE INTO `zt_group` (`vision`, `name`, `role`, `desc`) VALUES
 ('rnd',  'ADMIN',          'admin',          'for administrator'),
@@ -15254,6 +15255,21 @@ CREATE TABLE `zt_ai_skill` (
   `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
+
+-- DROP TABLE IF EXISTS `zt_ai_vectorqueue`;
+CREATE TABLE IF NOT EXISTS `zt_ai_vectorqueue` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `objectType` varchar(255) NOT NULL DEFAULT '' COMMENT '对象类型',
+  `objectID` int unsigned NOT NULL DEFAULT 0 COMMENT '对象ID',
+  `retries` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '重试次数',
+  `lastError` text NULL COMMENT '最后错误',
+  `lastSyncTime` datetime NULL DEFAULT NULL COMMENT '最后同步时间',
+  `createdDate` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `editedDate` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE UNIQUE INDEX `uk_object` ON `zt_ai_vectorqueue` (`objectType`, `objectID`);
+CREATE INDEX `idx_retries` ON `zt_ai_vectorqueue` (`retries`);
 
 -- DROP TABLE IF EXISTS `zt_market`;
 CREATE TABLE IF NOT EXISTS `zt_market` (
