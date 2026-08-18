@@ -22,8 +22,7 @@ featureBar
     div(searchToggle
     (
         set::module('spaceSearch'),
-        set::open($type == 'bysearch'),
-        set::onSearch(jsRaw('function(result){ if(!result || !result.load) return; $.apps.updateAppUrl(result.load); window.loadPartial(result.load, "#spaceList"); return false; }'))
+        set::open($type == 'bysearch')
     ))
 );
 toolbar
@@ -32,31 +31,15 @@ toolbar
 );
 
 $tableData = initTableData($spaces, $config->space->dtable->fieldList, $this->space);
-div
+dtable
 (
-    set::id('spaceList'),
-    empty($spaces) ?
-    div
-    (
-        setClass('w-full dtable-empty-tip text-center bg-white'),
-        div
-        (
-            setClass('text-gray'),
-            $lang->space->notice->noSpaces,
-            hasPriv('space', 'create') ?
-            btn
-            (
-                set(array('text' => $lang->space->create, 'url' => inLink('create'), 'class' => 'ml-2 primary-pale border-primary', 'icon'  => 'plus'))
-            ) : null
-        ),
-    ) :
-    dtable
-    (
-        set::id('spaces'),
-        $isJumpRepo ? set::onRenderCell(jsRaw('window.renderCell')) : null,
-        set::cols($config->space->dtable->fieldList),
-        set::data($tableData),
-        set::userMap($users),
-        set::footPager(usePager())
-    )
+    set::id('spaces'),
+    $isJumpRepo ? set::onRenderCell(jsRaw('window.renderCell')) : null,
+    set::cols($config->space->dtable->fieldList),
+    set::data($tableData),
+    set::userMap($users),
+    set::emptyTip($lang->space->notice->noSpaces),
+    hasPriv('space', 'create') ? set::createLink($createLink) : null,
+    hasPriv('space', 'create') ? set::createTip($lang->space->create) : null,
+    set::footPager(usePager())
 );
