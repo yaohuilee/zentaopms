@@ -255,6 +255,7 @@ $config->logonMethods[] = 'artifact.moveartifact';
 $config->logonMethods[] = 'artifact.copycmd';
 $config->logonMethods[] = 'zai.ajaxgettoken';
 $config->logonMethods[] = 'zai.ajaxgetuseragent';
+$config->logonMethods[] = 'zai.ajaxsearchknowledges';
 $config->logonMethods[] = 'repo.import';
 
 /* Ajax 方法依赖的方法。The methods that Ajax methods depend on. */
@@ -299,6 +300,7 @@ $config->ajaxDependencies['build.ajaxgetproductbuilds']                       = 
 $config->ajaxDependencies['build.ajaxgetprojectbuilds']                       = ['testtask.create', 'testtask.importunitresult', 'testtask.edit', 'bug.batchcreate', 'bug.batchedit', 'build.create', 'build.edit', 'issue.resolve'];
 $config->ajaxDependencies['build.ajaxgetsystembuilds']                        = ['release.create', 'release.edit'];
 $config->ajaxDependencies['build.ajaxgetsystemlist']                          = ['build.create', 'build.edit'];
+$config->ajaxDependencies['chart.ajaxgetchart']                               = 'chart.design';
 $config->ajaxDependencies['codescan.ajaxgetbranchbyplan']                     = 'codescan.exec';
 $config->ajaxDependencies['codescan.ajaxgetissueresolvedbytop']               = 'codescan.overview';
 $config->ajaxDependencies['codescan.ajaxgetissuetrends']                      = 'codescan.overview';

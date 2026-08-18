@@ -10981,6 +10981,9 @@ class upgradeModel extends model
             $tableName = '`' . $tableName . '`';
             if($tableName == TABLE_METRICLIB || $tableName == TABLE_ACTION || $tableName == TABLE_HISTORY) continue;
 
+             /* 先修改字段长度，避免修改字符集报错。 Fix mysql error: Specified key was too long. */
+            if($tableName == TABLE_COMPILE || $tableName == TABLE_MEASQUEUE) $this->dbh->exec("ALTER TABLE {$tableName} MODIFY COLUMN `status` varchar(100)");
+
             /* 转换表的字符集和排序规则。Convert table charset and collation. */
             try
             {
@@ -12011,6 +12014,8 @@ class upgradeModel extends model
         }
 
         $this->dao->query("ALTER TABLE " . TABLE_PROJECT . " DROP COLUMN `deliverable`;");
+        $this->dao->query("DROP VIEW IF EXISTS `ztv_projectnotpl`;");
+        $this->dao->query("CREATE OR REPLACE VIEW `ztv_projectnotpl` AS SELECT * FROM " . TABLE_PROJECT . " WHERE `deleted` = '0' AND `isTpl` = 0;");
     }
 
     /**

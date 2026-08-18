@@ -13,15 +13,32 @@ $routes['/products/:productID']       = array('response' => 'product,dynamics,me
 $routes['/products/:productID/close'] = array('post' => array('response' => '*'));
 
 $routes['/products/:productID/stories']     = array('redirect' => '/products/browse?productID=:productID', 'search' => array('enabled' => true));
-$routes['/projects/:projectID/stories']     = array('redirect' => '/projectstories/story?projectID=:projectID', 'response' => 'stories(array),pager', 'search' => array('enabled' => true, 'searchModule' => 'projectstory', 'querySessionKey' => 'projectstory'));
+$routes['/projects/:projectID/stories']     = array(
+    'get' => array('redirect' => '/projectstories/story?projectID=:projectID', 'response' => 'stories(array),pager', 'search' => array('enabled' => true, 'searchModule' => 'projectstory', 'querySessionKey' => 'projectstory')),
+    'post' => array('redirect' => '/story/create?productID=0&branch=0&objectID=:projectID', 'data' => 'project=:projectID')
+);
 $routes['/executions/:executionID/stories'] = array('redirect' => '/executions/story?executionID=:executionID', 'search' => array('enabled' => true, 'searchModule' => 'executionStory', 'querySessionKey' => 'executionStory'));
 $routes['/stories/:storyID']                = array('response' => 'story,actions(array)');
 
 $routes['/products/:productID/epics']     = array('redirect' => '/products/browse?productID=:productID&storyType=epic', 'response' => 'stories(array)|epics,pager', 'search' => array('enabled' => true));
-$routes['/epics/:storyID']                = array('response' => 'story|epic,actions(array)');
+$routes['/epics/:storyID'] = array(
+    'get'    => array('response' => 'story|epic,actions(array)'),
+    'put'    => array('response' => '*'),
+    'delete' => array('response' => '*'),
+);
+$routes['/epics/:storyID/change']   = array('put' => array('response' => '*'));
+$routes['/epics/:storyID/close']    = array('put' => array('response' => '*'));
+$routes['/epics/:storyID/activate'] = array('put' => array('response' => '*'));
 
 $routes['/products/:productID/requirements'] = array('redirect' => '/products/browse?productID=:productID&storyType=requirement', 'response' => 'stories(array)|requirements,pager', 'search' => array('enabled' => true));
-$routes['/requirements/:storyID']            = array('response' => 'story|requirement,actions(array)');
+$routes['/requirements/:storyID'] = array(
+    'get'    => array('response' => 'story|requirement,actions(array)'),
+    'put'    => array('response' => '*'),
+    'delete' => array('response' => '*'),
+);
+$routes['/requirements/:storyID/change']   = array('put' => array('response' => '*'));
+$routes['/requirements/:storyID/close']    = array('put' => array('response' => '*'));
+$routes['/requirements/:storyID/activate'] = array('put' => array('response' => '*'));
 
 $routes['/products/:productID/productplans'] = array('redirect' => '/productplans?productID=:productID', 'response' => 'plans(array)|productplans,pager', 'search' => array('enabled' => true));
 $routes['/productplans/:planID']             = array('get' => array ('response' => 'plan|productplan,actions(array)'), 'put' => array ('response' => '*'));
@@ -42,6 +59,7 @@ $routes['/projects/team']               = array('response' => 'teamMembers(array
 $routes['/projects/:projectID/members'] = array('get' => array('redirect' => '/projects/team?projectID=:projectID'), 'put' => array('redirect' => '/projects/manageMembers?projectID=:projectID'));
 $routes['/projects/:projectID']         = array('response' => 'project');
 $routes['/projects/:projectID/close']   = array('post' => array('response' => '*'));
+$routes['/projects/:projectID/tasks']   = array('post' => array('redirect' => '/task/create?executionID=0', 'data' => 'project=:projectID'));
 
 $routes['/executions']                      = array('method' => 'all', 'response' => 'executionStats(array)|executions,pager', 'search' => array('enabled' => true, 'searchModule' => 'execution', 'querySessionKey' => 'execution'));
 $routes['/projects/:projectID/executions']  = array('redirect' => '/projects/execution?projectID=:projectID');
@@ -65,10 +83,14 @@ $routes['/executions/:executionID/builds'] = array('redirect' => '/executions/bu
 $routes['/builds/:buildID']                = array('response' => 'build,actions(array)');
 
 $routes['/products/:productID/bugs']     = array('redirect' => '/bugs?productID=:productID', 'response' => 'bugs(array),pager', 'search' => array('enabled' => true));
-$routes['/projects/:projectID/bugs']     = array('redirect' => '/projects/bug?projectID=:projectID', 'search' => array('enabled' => true, 'searchModule' => 'projectBug', 'querySessionKey' => 'projectBug'));
+$routes['/projects/:projectID/bugs']     = array(
+    'get' => array('redirect' => '/projects/bug?projectID=:projectID', 'search' => array('enabled' => true, 'searchModule' => 'projectBug', 'querySessionKey' => 'projectBug')),
+    'post' => array('redirect' => '/bug/create?productID=0&branch=0&extras=projectID=:projectID', 'data' => 'project=:projectID')
+);
 $routes['/executions/:executionID/bugs'] = array('redirect' => '/executions/bug?executionID=:executionID', 'search' => array('enabled' => true, 'searchModule' => 'executionBug', 'querySessionKey' => 'executionBug'));
 $routes['/feedbacks/:feedbackID/bugs']   = array('post' => array('redirect' => '/bug/create?productID=0&branch=0&extras=projectID=0,fromType=feedback,fromID=:feedbackID', 'data' => 'feedback=:feedbackID'));
 $routes['/bugs/:bugID']                  = array('response' => 'bug,actions(array)');
+$routes['/bugs/:bugID/confirm']          = array('put' => array('response' => '*'));
 
 $routes['/products/:productID/testcases']     = array('redirect' => '/testcases?productID=:productID', 'response' => 'cases(array)|testcases,pager', 'search' => array('enabled' => true, 'searchModule' => 'testcase', 'querySessionKey' => 'testcase'));
 $routes['/projects/:projectID/testcases']     = array('redirect' => '/projects/testcase?projectID=:projectID', 'search' => array('enabled' => true, 'searchModule' => 'testcase', 'querySessionKey' => 'testcase'));
@@ -116,12 +138,16 @@ $routes['/executions/:executionID/auditplans']  = array('redirect' => '/auditpla
 $routes['/feedbacks']                     = array('method' => 'admin', 'response' => 'feedbacks(array),pager', 'search' => array('enabled' => true));
 $routes['/products/:productID/feedbacks'] = array('redirect' => '/feedbacks?param=:productID', 'search' => array('enabled' => true));
 $routes['/feedbacks/:feedbackID/todos']   = array('post' => array('redirect' => '/todo/create?date=today&from=feedback&param=:feedbackID', 'data' => 'feedback=:feedbackID&type=feedback'));
+$routes['/feedbacks/:feedbackID/stories'] = array('post' => array('redirect' => '/story/create?productID=0&branch=0&extra=fromType=feedback,fromID=:feedbackID', 'data' => 'feedback=:feedbackID'));
 $routes['/feedbacks/:feedbackID']         = array('response' => 'feedback,actions(array)');
 
 $routes['/tickets']                       = array('response' => 'tickets(array),pager', 'search' => array('enabled' => true));
 $routes['/feedbacks/:feedbackID/tickets'] = array('post' => array('redirect' => '/ticket/create?productID=0&extras=fromType=feedback,fromID=:feedbackID', 'data' => 'feedback=:feedbackID'));
+$routes['/feedbacks/:feedbackID/tasks']   = array('post' => array('redirect' => '/task/create?executionID=0', 'data' => 'feedback=:feedbackID'));
 $routes['/products/:productID/tickets']   = array('redirect' => '/tickets?param=:productID', 'search' => array('enabled' => true));
 $routes['/tickets/:ticketID']             = array('response' => 'ticket,actions(array)');
+$routes['/tickets/:ticketID/stories']     = array('post' => array('redirect' => '/story/create?productID=0&branch=0&extra=fromType=ticket,fromID=:ticketID', 'data' => 'ticket=:ticketID'));
+$routes['/tickets/:ticketID/bugs']        = array('post' => array('redirect' => '/bug/create?productID=0&branch=0&extras=projectID=0,fromType=ticket,fromID=:ticketID', 'data' => 'ticket=:ticketID'));
 
 $routes['/systems']                     = array('response' => 'appList(array)|systems,pager');
 $routes['/products/:productID/systems'] = array('redirect' => '/systems?productID=:productID');
@@ -206,23 +232,23 @@ $routes['/doc/libs/:libID'] = array(
 );
 $routes['/doc/my/spaces/:spaceID/libs/:libID/docs'] = array(
     'get'  => array('redirect' => '/doc/ajaxGetSpaceData?type=mine&spaceID=:spaceID&libID=:libID&picks=doc'),
-    'post' => array('redirect' => '/doc/create?objectType=mine&objectID=:spaceID&libID=:libID&moduleID=0&docType=', 'data' => 'contentType=html')
+    'post' => array('redirect' => '/doc/create?objectType=mine&objectID=:spaceID&libID=:libID&moduleID=0&docType=', 'data' => 'lib=:libID&module=0&contentType=html')
 );
 $routes['/doc/team/spaces/:spaceID/libs/:libID/docs'] = array(
     'get'  => array('redirect' => '/doc/ajaxGetSpaceData?type=custom&spaceID=:spaceID&libID=:libID&picks=doc'),
-    'post' => array('redirect' => '/doc/create?objectType=custom&objectID=:spaceID&libID=:libID&moduleID=0&docType=', 'data' => 'contentType=html')
+    'post' => array('redirect' => '/doc/create?objectType=custom&objectID=:spaceID&libID=:libID&moduleID=0&docType=', 'data' => 'lib=:libID&module=0&contentType=html')
 );
 $routes['/doc/product/spaces/:productID/libs/:libID/docs'] = array(
     'get'  => array('redirect' => '/doc/ajaxGetSpaceData?type=product&spaceID=:productID&libID=:libID&picks=doc'),
-    'post' => array('redirect' => '/doc/create?objectType=product&objectID=:productID&libID=:libID&moduleID=0&docType=', 'data' => 'contentType=html')
+    'post' => array('redirect' => '/doc/create?objectType=product&objectID=:productID&libID=:libID&moduleID=0&docType=', 'data' => 'lib=:libID&module=0&contentType=html')
 );
 $routes['/doc/project/spaces/:projectID/libs/:libID/docs'] = array(
     'get'  => array('redirect' => '/doc/ajaxGetSpaceData?type=project&spaceID=:projectID&libID=:libID&picks=doc'),
-    'post' => array('redirect' => '/doc/create?objectType=project&objectID=:projectID&libID=:libID&moduleID=0&docType=', 'data' => 'contentType=html')
+    'post' => array('redirect' => '/doc/create?objectType=project&objectID=:projectID&libID=:libID&moduleID=0&docType=', 'data' => 'lib=:libID&module=0&contentType=html')
 );
 $routes['/doc/docs/:docID'] = array(
     'get'    => array('redirect' => '/doc/ajaxGetDoc?docID=:docID'),
-    'put'    => array('redirect' => '/doc/edit?docID=:docID'),
+    'put'    => array('redirect' => '/doc/edit?docID=:docID', 'data' => 'contentType=html'),
     'delete' => array('redirect' => '/doc/delete?docID=:docID')
 );
 $routes['/doc/docs/:docID/collect'] = array(

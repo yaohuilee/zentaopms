@@ -1640,9 +1640,6 @@ $lang->resource->codescan->resend         = 'resend';
 $lang->resource->codescan->overview     = 'overview';
 $lang->resource->codescan->issue        = 'issue';
 $lang->resource->codescan->issueView    = 'issueView';
-$lang->resource->codescan->ignoreIssue  = 'ignoreIssue';
-$lang->resource->codescan->confirmIssue = 'confirmIssue';
-$lang->resource->codescan->activeIssue  = 'activeIssue';
 
 $lang->resource->runner = new stdclass();
 $lang->resource->runner->browse      = 'browse';

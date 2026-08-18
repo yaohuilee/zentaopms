@@ -1008,7 +1008,7 @@ class doc extends control
                 $_POST['parent'] = 0;
             }
 
-            if(!$doc) return $this->send(array('result' => 'fail', 'message' => $this->lang->doc->errorNotFound));
+            if(!$doc) return $this->send(array('result' => 'fail', 'message' => $this->lang->notFound));
 
             $isOpen          = $doc->acl == 'open';
             $currentAccount  = $this->app->user->account;
@@ -2524,6 +2524,8 @@ class doc extends control
         $doc->privs   = array('edit' => common::hasPriv('doc', 'edit', $doc) && $doc->acl == 'open');
         $doc->editors = $this->doc->getEditors($docID);
         $doc->draft   = $doc->status == 'draft' ? $this->doc->getContent($docID, 0) : null;
+
+        unset($doc->order); // 防止order覆盖左侧文档树导致乱跳
 
         $lib        = $this->doc->getLibByID((int)$doc->lib);
         $objectType = $lib->type;
