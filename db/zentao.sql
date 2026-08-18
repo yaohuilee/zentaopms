@@ -14984,6 +14984,23 @@ CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
+-- DROP TABLE IF EXISTS `zt_ai_timerqueue`;
+CREATE TABLE IF NOT EXISTS `zt_ai_timerqueue` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `agent` int unsigned NOT NULL DEFAULT 0 COMMENT '智能体ID',
+  `objectType` varchar(30) NOT NULL DEFAULT '' COMMENT '对象类型',
+  `objectID` int unsigned NOT NULL DEFAULT 0 COMMENT '对象ID',
+  `status` varchar(10) NOT NULL DEFAULT 'wait' COMMENT '状态：wait/doing/done',
+  `content` mediumtext NULL DEFAULT NULL COMMENT 'AI通知正文',
+  `toList` varchar(1000) NOT NULL DEFAULT '' COMMENT '通知人账号列表',
+  `createdBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
+  `createdDate` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+CREATE INDEX `idx_agent_status` ON `zt_ai_timerqueue`(`agent`, `status`);
+CREATE INDEX `idx_agent_object` ON `zt_ai_timerqueue`(`agent`, `objectType`, `objectID`);
+
 INSERT INTO `zt_ai_agent` (`id`, `code`, `name`, `desc`, `model`, `module`, `displayPosition`, `actionPurpose`, `source`, `targetForm`, `purpose`, `elaboration`, `role`, `characterization`, `createdBy`, `createdDate`, `status`) VALUES
 (1, 'zt_story_polishing', '需求润色', '优化需求中标题、描述和验收标准等字段，使表述清晰准确。', 0, 'story', 'detail', 'story.change', ',story.title,story.spec,story.verify,story.product,story.module,story.pri,story.category,story.estimate,', 'story.change', '帮忙优化其中各字段的表述，使表述清晰准确。必要时可以修改需求使其更加合理。', '需求描述格式建议使用：作为一名<某种类型的用户>，我希望<达成某些目的>，这样可以<开发的价值>。验收标准建议列举多条。直接给出你的润色结果，无需建议。', '请你扮演一名资深的产品经理。', '负责产品战略、设计、开发、数据分析、用户体验、团队管理、沟通协调等方面，需要具备多种技能和能力，以实现产品目标和公司战略。', 'system', '2023-08-10 13:24:14', 'active'),
 (2, 'zt_story_to_testcase', '一键拆用例', '为需求生成一个或多个对应的测试用例。', 0, 'story', 'detail', 'story.testcasecreate', ',story.title,story.spec,story.verify,story.product,story.module,story.pri,story.category,story.estimate,', 'story.testcasecreate', '为这个需求生成一个或多个对应的测试用例。', '', '作为一名资深的测试工程师。', '熟悉测试流程和方法，精通自动化测试和性能测试，能够设计和编写测试用例和测试脚本，擅长问题诊断和分析，熟悉敏捷开发和持续集成，能够协调多部门合作和项目管理。开发工程师应该是专业且严谨的。', 'system', '2023-08-10 13:24:14', 'active'),
