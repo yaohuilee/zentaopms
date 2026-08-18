@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `zt_ai_vectorqueue` (
   `objectType` varchar(255) NOT NULL DEFAULT '' COMMENT '对象类型',
   `objectID` int unsigned NOT NULL DEFAULT 0 COMMENT '对象ID',
   `retries` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '重试次数',
-  `lastError` text NULL COMMENT '最后错误',
+  `lastError` text NULL DEFAULT NULL COMMENT '最后错误',
   `lastSyncTime` datetime NULL DEFAULT NULL COMMENT '最后同步时间',
   `createdDate` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `editedDate` datetime NULL DEFAULT NULL COMMENT '更新时间',
