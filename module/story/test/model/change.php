@@ -15,9 +15,9 @@ cid=18479
 - 测试存在relievedTwins。属性title @测试需求1变更标题
 - 测试变成需求。属性title @名称修改
 - 测试变更时在 spec 中提到的用户发送 mention 通知
- - 属性notifyCount @user1
- - 属性mentionUser @0
-- 测试变更时 spec 无 mention 不发送通知 @~~
+ - 属性notifyCount @1
+ - 属性mentionUser @user1
+- 测试变更时 spec 无 mention 不发送通知 @0
 
 */
 include dirname(__FILE__, 5) . '/test/lib/init.php';
@@ -90,8 +90,8 @@ $types['requirement'] = array('mentioned');
 $tester->config->message->setting = array('message' => array('setting' => $types));
 
 $story->changeTest(5, $mentionStory);
-r($story->getLastMentionNotifyInfo()) && p('notifyCount,mentionUser') && e('user1,0'); // 测试变更时在 spec 中提到的用户发送 mention 通知
+r($story->getLastMentionNotifyInfo()) && p('notifyCount,mentionUser') && e('1,user1'); // 测试变更时在 spec 中提到的用户发送 mention 通知
 
 $notifyCount = $story->getMentionNotifyCount();
 $story->changeTest(11, $plainStory);
-r($story->getMentionNotifyCount() - $notifyCount) && p() && e('~~'); // 测试变更时 spec 无 mention 不发送通知
+r($story->getMentionNotifyCount() - $notifyCount) && p() && e('0'); // 测试变更时 spec 无 mention 不发送通知
