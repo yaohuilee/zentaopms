@@ -334,6 +334,24 @@ class my extends control
 
         foreach($stories as $story) $story->estimate = $story->estimate . $this->config->hourUnit;
 
+        /* 补充关联对象列数据。 */
+        if(!empty($stories))
+        {
+            $storyIdList = array_keys($stories);
+
+            $relatedObjectList = array();
+            if($this->config->edition != 'open')
+            {
+                $this->loadModel('custom');
+                $relatedObjectList = $this->custom->getRelatedObjectList($storyIdList, 'epic', 'byRelation', true);
+            }
+
+            foreach($stories as $story)
+            {
+                $story->relatedObject = zget($relatedObjectList, $story->id, 0);
+            }
+        }
+
          /* Build the search form. */
         $currentMethod = $this->app->rawMethod;
         $actionURL     = $this->createLink('my', $currentMethod, "mode=epic&browseType=bysearch&param=myQueryID&orderBy={$orderBy}&recTotal={$recTotal}&recPerPage={$recPerPage}&pageID={$pageID}");
@@ -402,6 +420,24 @@ class my extends control
         if(!empty($stories)) $stories = $this->story->mergeReviewer($stories);
 
         foreach($stories as $story) $story->estimate = $story->estimate . $this->config->hourUnit;
+
+        /* 补充关联对象列数据。 */
+        if(!empty($stories))
+        {
+            $storyIdList = array_keys($stories);
+
+            $relatedObjectList = array();
+            if($this->config->edition != 'open')
+            {
+                $this->loadModel('custom');
+                $relatedObjectList = $this->custom->getRelatedObjectList($storyIdList, 'requirement', 'byRelation', true);
+            }
+
+            foreach($stories as $story)
+            {
+                $story->relatedObject = zget($relatedObjectList, $story->id, 0);
+            }
+        }
 
          /* Build the search form. */
         $currentMethod = $this->app->rawMethod;
