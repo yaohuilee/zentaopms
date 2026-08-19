@@ -13691,6 +13691,40 @@ class upgradeModel extends model
 
             $this->dao->exec("ALTER TABLE {$table} DROP COLUMN `company`");
         }
+    }
+
+    /**
+     * 处理项目组下的风险数据。
+     * Process PI's risk data.
+     *
+     * @access public
+     * @return bool
+     */
+    public function processPIRiskData(): bool
+    {
+        $PIData = $this->dao->select('id,teamkanban')->from(TABLE_PI)->where('deleted')->eq(0)->fetchPairs();
+        if(empty($PIData)) return true;
+
+        $kanbanCellGroup = $this->dao->select('id,kanban,cards')->from(TABLE_KANBANCELL)->where('kanban')->in(array_values($PIData))->andWhere('type')->eq('risk')->fetchGroup('kanban', 'id');
+        if(empty($kanbanCellGroup)) return true;
+
+        foreach($PIData as $PIID => $kanbanID)
+        {
+            $cellData = zget($kanbanCellGroup, $kanbanID, array());
+            if(empty($cellData)) continue;
+
+            $riskIdList = '';
+            foreach($cellData as $cell)
+            {
+                if(empty($cell->cards)) continue;
+                $riskIdList = trim($riskIdList, ',') . ',' . trim($cell->cards, ',');
+            }
+            $riskIdList = trim($riskIdList, ',');
+            if(empty($riskIdList)) continue;
+
+            $this->dao->update(TABLE_RISK)->set('PI')->eq($PIID)->where('id')->in($riskIdList)->exec();
+            if(dao::isError()) return false;
+        }
         return true;
     }
 }

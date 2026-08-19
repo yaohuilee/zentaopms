@@ -687,7 +687,7 @@ $lang->subject->menu->storyConcept = array('link' => "{$lang->storyConcept}|cust
 
 /* System menu. */
 $lang->system->menu          = new stdclass();
-$lang->system->menu->team    = array('link' => "{$lang->team->common}|my|team|", 'subModule' => 'user');
+$lang->system->menu->team    = array('link' => "{$lang->dept->common}|my|team|", 'subModule' => 'user');
 $lang->system->menu->dynamic = array('link' => "$lang->dynamic|company|dynamic|");
 $lang->system->menu->view    = array('link' => "{$lang->company->common}|company|view");
 

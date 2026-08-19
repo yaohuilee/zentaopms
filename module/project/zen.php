@@ -427,6 +427,20 @@ class projectZen extends project
                             $productPlans[$productID][$branchID][$plan->id] = $plan->begin == $this->config->productplan->future && $plan->end == $this->config->productplan->future ? $plan->title . ' ' . $this->lang->productplan->future : $plan->title . " [{$plan->begin} ~ {$plan->end}]";
                         }
                     }
+
+                    /* 已关联的过期计划也需要展示在计划选项中，未关联的过期计划不展示。*/
+                    if(!empty($linkedProduct->plans))
+                    {
+                        foreach($linkedProduct->plans as $linkedPlans)
+                        {
+                            $planList = array_filter(explode(',', $linkedPlans));
+                            foreach($planList as $planID)
+                            {
+                                if(isset($productPlans[$productID][$branchID][$planID])) continue;
+                                $productPlans[$productID][$branchID][$planID] = '';
+                            }
+                        }
+                    }
                 }
             }
         }

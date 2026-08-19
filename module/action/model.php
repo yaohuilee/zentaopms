@@ -314,6 +314,7 @@ class actionModel extends model
         {
             $fieldListVar = $this->config->action->multipleObjectFields[$objectType][$history->field];
             $fieldList    = isset($this->lang->{$objectType}->{$fieldListVar}) ? $this->lang->{$objectType}->{$fieldListVar} : array();
+            if($fieldListVar == 'users') $fieldList = $users;
             if(!empty($history->old))
             {
                 $history->oldValue = '';
@@ -1588,7 +1589,14 @@ class actionModel extends model
                 if($objectDeleted) return $action;
             }
 
-            if(in_array($this->config->edition, array('max', 'ipd')) && strpos($this->config->action->assetType, ",{$action->objectType},") !== false && empty($action->project) && empty($action->product) && empty($action->execution))
+            $riskPI = 0;
+            if(in_array($this->config->edition, array('max', 'ipd')) && $action->objectType == 'risk')
+            {
+                $riskPI = $this->dao->select('PI')->from(TABLE_RISK)->where('id')->eq($action->objectID)->fetch('PI');
+                if(!empty($riskPI)) $vars .= '&from=pi';
+            }
+
+            if(!$riskPI && in_array($this->config->edition, array('max', 'ipd')) && strpos($this->config->action->assetType, ",{$action->objectType},") !== false && empty($action->project) && empty($action->product) && empty($action->execution))
             {
                 $this->actionTao->processMaxDocObjectLink($action, $moduleName, $methodName, $vars);
             }
@@ -1657,6 +1665,7 @@ class actionModel extends model
         if(!empty($action->objectLink) && $action->objectType == 'meeting')    $action->objectLink .= '#app=' . $this->app->tab; // Set app for meeting by open tab.
         if($this->config->vision == 'lite' && $action->objectType == 'module') $action->objectLink .= '#app=project';
         if($action->objectType == 'nc' && !empty($action->execution)) $action->objectLink .= '#app=execution';
+        if(!empty($action->objectLink) && !empty($riskPI)) $action->objectLink .= '#app=safe';
 
         return $action;
     }
