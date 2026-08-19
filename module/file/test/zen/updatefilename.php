@@ -24,6 +24,11 @@ zenData('file')->loadYaml('file_updatefilename', false, 2)->gen(5);
 zenData('action')->gen(0);
 zenData('history')->gen(0);
 zenData('user')->gen(5);
+zenData('story')->gen(5);
+zenData('task')->gen(5);
+zenData('bug')->gen(5);
+zenData('case')->gen(5);
+zenData('product')->gen(5);
 
 // 3. 用户登录（选择合适角色）
 su('admin');

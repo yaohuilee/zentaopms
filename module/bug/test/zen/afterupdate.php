@@ -59,6 +59,10 @@ $execution->gen(5);
 $action = zenData('action');
 $action->gen(0);
 
+zenData('history')->gen(0);
+zenData('feedback')->gen(0);
+zenData('release')->gen(0);
+zenData('story')->gen(5);
 zenData('user')->gen(5);
 su('admin');
 

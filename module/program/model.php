@@ -322,7 +322,7 @@ class programModel extends model
         $releaseGroup = $this->loadModel('release')->getGroupByProduct($productIdList);
 
         /* Get doing executions. */
-        $doingExecutions = $this->dao->select('id, project, name, end')->from(TABLE_EXECUTION)
+        $doingExecutions = $this->dao->select('id, project, name, begin, end')->from(TABLE_EXECUTION)
             ->where('type')->in('sprint,stage,kanban')
             ->andWhere('status')->eq('doing')
             ->andWhere('deleted')->eq(0)
