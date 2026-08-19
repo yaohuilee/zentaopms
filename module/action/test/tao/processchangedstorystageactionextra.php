@@ -1,21 +1,22 @@
 #!/usr/bin/env php
 <?php
+
 /**
 
 title=测试 actionTao::processChangedStoryStageActionExtra();
 timeout=0
 cid=0
 
-- 测试步骤1：linkPlan触发类型，验证输出包含"关联到计划" >> 包含关联到计划文案
-- 测试步骤2：unlinkPlan触发类型，验证输出包含"移除了计划" >> 包含移除了计划文案
-- 测试步骤3：linkProject触发类型，验证输出包含"关联到项目" >> 包含关联到项目文案
-- 测试步骤4：unlinkProject触发类型，验证输出包含"移除了项目" >> 包含移除了项目文案
-- 测试步骤5：startTask触发类型，验证输出包含"开始了任务" >> 包含开始了任务文案
-- 测试步骤6：finishTask触发类型，验证输出包含"完成了任务" >> 包含完成了任务文案
-- 测试步骤7：linkRelease触发类型，验证输出包含"关联到发布" >> 包含关联到发布文案
-- 测试步骤8：unlinkRelease触发类型，验证输出包含"移除了发布" >> 包含移除了发布文案
-- 测试步骤9：editStory触发类型，验证输出包含"编辑需求后" >> 包含编辑需求后文案
-- 测试步骤10：无效触发类型，验证actionText为空 >> 无效类型actionText为空
+- 步骤1：linkPlan触发，验证包含"关联到计划" @1
+- 步骤2：unlinkPlan触发，验证包含"移除了计划" @1
+- 步骤3：linkProject触发，验证包含"关联到项目" @1
+- 步骤4：unlinkProject触发，验证包含"移除了项目" @1
+- 步骤5：startTask触发设计任务，验证包含"开始了任务" @1
+- 步骤6：finishTask触发开发任务，验证包含"完成了任务" @1
+- 步骤7：linkRelease触发，验证包含"关联到发布" @1
+- 步骤8：unlinkRelease触发，验证包含"移除了发布" @1
+- 步骤9：editStory触发，验证包含"编辑需求后" @1
+- 步骤10：无效触发类型，验证不包含任何有效actionText @1
 
 */
 
