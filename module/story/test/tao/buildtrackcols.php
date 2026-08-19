@@ -7,7 +7,7 @@ title=测试 storyModel->buildTrackCols();
 timeout=0
 cid=18606
 
-- 执行$epicCols @16
+- 执行$epicCols @17
 - 执行$epicCols[0]
  - 属性name @epic
  - 属性title @业务需求
@@ -35,7 +35,7 @@ cid=18606
  - 属性title @BR2
  - 属性parent @epic
  - 属性parentName @epic
-- 执行$requirementCols @13
+- 执行$requirementCols @14
 - 执行$requirementCols[0]
  - 属性name @requirement
  - 属性title @用户需求
@@ -54,7 +54,7 @@ cid=18606
  - 属性title @UR2
  - 属性parent @requirement
  - 属性parentName @requirement
-- 执行$storyCols @10
+- 执行$storyCols @11
 - 执行$storyCols[0]
  - 属性name @story
  - 属性title @研发需求
@@ -77,15 +77,15 @@ cid=18606
  - 属性title @研发需求
  - 属性parent @-1
 - 执行$epicCols[10]
- - 属性name @story_1
- - 属性title @SR1
+ - 属性name @story_2
+ - 属性title @SR2
  - 属性parent @story
  - 属性parentName @story
 - 执行$epicCols[13]
- - 属性name @requirement_2
- - 属性title @UR2
- - 属性parent @requirement
- - 属性parentName @requirement
+ - 属性name @epic_1
+ - 属性title @BR1
+ - 属性parent @epic
+ - 属性parentName @epic
 
 */
 include dirname(__FILE__, 5) . '/test/lib/init.php';
