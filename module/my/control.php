@@ -242,6 +242,30 @@ class my extends control
 
         foreach($stories as $story) $story->estimate = $story->estimate . $this->config->hourUnit;
 
+        /* 补充TBC、关联对象列数据。 */
+        if(!empty($stories))
+        {
+            $storyIdList = array_keys($stories);
+            $storyTasks  = $this->loadModel('task')->getStoryTaskCounts($storyIdList);
+            $storyBugs   = $this->loadModel('bug')->getStoryBugCounts($storyIdList);
+            $storyCases  = $this->loadModel('testcase')->getStoryCaseCounts($storyIdList);
+
+            $relatedObjectList = array();
+            if($this->config->edition != 'open')
+            {
+                $this->loadModel('custom');
+                $relatedObjectList = $this->custom->getRelatedObjectList($storyIdList, 'story', 'byRelation', true);
+            }
+
+            foreach($stories as $story)
+            {
+                $story->taskCount     = zget($storyTasks, $story->id, 0);
+                $story->bugCount      = zget($storyBugs,  $story->id, 0);
+                $story->caseCount     = zget($storyCases, $story->id, 0);
+                $story->relatedObject = zget($relatedObjectList, $story->id, 0);
+            }
+        }
+
          /* Build the search form. */
         $currentMethod = $this->app->rawMethod;
         $actionURL     = $this->createLink('my', $currentMethod, "mode=story&browseType=bysearch&param=myQueryID&orderBy={$orderBy}&recTotal={$recTotal}&recPerPage={$recPerPage}&pageID={$pageID}");
@@ -1381,7 +1405,7 @@ class my extends control
         $users  = $this->loadModel('company')->getUsers('inside', 'bydept', 0, $deptID, $sort, $pager);
         foreach($users as $user) unset($user->password); // Remove passwd.
 
-        $this->view->title     = $this->lang->my->team;
+        $this->view->title     = $this->lang->dept->common;
         $this->view->users     = $users;
         $this->view->userPairs = $this->loadModel('user')->getPairs('noletter|noclosed');
         $this->view->deptID    = $deptID;

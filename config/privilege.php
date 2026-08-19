@@ -176,6 +176,7 @@ $config->logonMethods[] = 'my.preference';
 $config->logonMethods[] = 'my.profile';
 $config->logonMethods[] = 'my.settutorialconfig';
 $config->logonMethods[] = 'personnel.unbindwhitelist';
+$config->logonMethods[] = 'pi.ajaxgetdropmenu';
 $config->logonMethods[] = 'pivot.drillmodal';
 $config->logonMethods[] = 'pivot.versions';
 $config->logonMethods[] = 'product.ajaxgetdropmenu';

@@ -7,7 +7,7 @@ title=测试 storyModel->buildTrackCols();
 timeout=0
 cid=18606
 
-- 执行$epicCols @16
+- 执行$epicCols @17
 - 执行$epicCols[0]
  - 属性name @epic
  - 属性title @业务需求
@@ -35,7 +35,7 @@ cid=18606
  - 属性title @BR2
  - 属性parent @epic
  - 属性parentName @epic
-- 执行$requirementCols @13
+- 执行$requirementCols @14
 - 执行$requirementCols[0]
  - 属性name @requirement
  - 属性title @用户需求
@@ -54,7 +54,7 @@ cid=18606
  - 属性title @UR2
  - 属性parent @requirement
  - 属性parentName @requirement
-- 执行$storyCols @10
+- 执行$storyCols @11
 - 执行$storyCols[0]
  - 属性name @story
  - 属性title @研发需求
@@ -77,15 +77,15 @@ cid=18606
  - 属性title @研发需求
  - 属性parent @-1
 - 执行$epicCols[10]
- - 属性name @story_1
- - 属性title @SR1
+ - 属性name @story_2
+ - 属性title @SR2
  - 属性parent @story
  - 属性parentName @story
 - 执行$epicCols[13]
- - 属性name @requirement_2
- - 属性title @UR2
- - 属性parent @requirement
- - 属性parentName @requirement
+ - 属性name @epic_1
+ - 属性title @BR1
+ - 属性parent @epic
+ - 属性parentName @epic
 
 */
 include dirname(__FILE__, 5) . '/test/lib/init.php';
@@ -108,23 +108,23 @@ $epicCols        = $tester->story->buildTrackCols('epic');
 $requirementCols = $tester->story->buildTrackCols('requirement');
 $storyCols       = $tester->story->buildTrackCols('story');
 
-r(count($epicCols)) && p() && e(16);
+r(count($epicCols)) && p() && e(17);
 r($epicCols[0]) && p('name,title,parent') && e('epic,业务需求,-1');
 r($epicCols[1]) && p('name,title,parent') && e('requirement,用户需求,-1');
 r($epicCols[2]) && p('name,title,parent') && e('story,研发需求,-1');
-r($epicCols[10]) && p('name,title,parent,parentName') && e('epic_1,BR1,epic,epic');
-r($epicCols[13]) && p('name,title,parent,parentName') && e('requirement_2,UR2,requirement,requirement');
-r($epicCols[15]) && p('name,title,parent,parentName') && e('story_2,SR2,story,story');
+r($epicCols[15]) && p('name,title,parent,parentName') && e('epic_1,BR1,epic,epic');
+r($epicCols[14]) && p('name,title,parent,parentName') && e('requirement_2,UR2,requirement,requirement');
+r($epicCols[12]) && p('name,title,parent,parentName') && e('story_2,SR2,story,story');
 
-r(count($requirementCols)) && p() && e(13);
+r(count($requirementCols)) && p() && e(14);
 r($requirementCols[0]) && p('name,title,parent') && e('requirement,用户需求,-1');
 r($requirementCols[1]) && p('name,title,parent') && e('story,研发需求,-1');
-r($requirementCols[10]) && p('name,title,parent,parentName') && e('requirement_2,UR2,requirement,requirement');
-r($requirementCols[12]) && p('name,title,parent,parentName') && e('story_2,SR2,story,story');
+r($requirementCols[13]) && p('name,title,parent,parentName') && e('requirement_2,UR2,requirement,requirement');
+r($requirementCols[11]) && p('name,title,parent,parentName') && e('story_2,SR2,story,story');
 
-r(count($storyCols)) && p() && e(10);
+r(count($storyCols)) && p() && e(11);
 r($storyCols[0]) && p('name,title,parent') && e('story,研发需求,-1');
-r($storyCols[9]) && p('name,title,parent,parentName') && e('story_2,SR2,story,story');
+r($storyCols[10]) && p('name,title,parent,parentName') && e('story_2,SR2,story,story');
 
 $tester->story->dao->delete()->from(TABLE_STORYGRADE)->where('type')->eq('epic')->andWhere('grade')->gt('1')->exec();
 
@@ -132,5 +132,5 @@ $epicCols = $tester->story->buildTrackCols('epic');
 r($epicCols[0]) && p('name,title,parent') && e('epic,业务需求,-1');
 r($epicCols[1]) && p('name,title,parent') && e('requirement,用户需求,-1');
 r($epicCols[2]) && p('name,title,parent') && e('story,研发需求,-1');
-r($epicCols[10]) && p('name,title,parent,parentName') && e('epic_1,BR1,epic,epic');
-r($epicCols[13]) && p('name,title,parent,parentName') && e('story_1,SR1,story,story');
+r($epicCols[15]) && p('name,title,parent,parentName') && e('epic_1,BR1,epic,epic');
+r($epicCols[11]) && p('name,title,parent,parentName') && e('story_1,SR1,story,story');

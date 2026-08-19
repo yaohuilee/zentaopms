@@ -2345,10 +2345,11 @@ class executionModel extends model
      * @param  string $actionURL
      * @param  string $type         executionStory
      * @param  object $execution
+     * @param  int    $productID
      * @access public
      * @return void
      */
-    public function buildStorySearchForm(array $products, array $branchGroups, array $modules, int $queryID, string $actionURL, string $type = 'executionStory', ?object $execution = null): void
+    public function buildStorySearchForm(array $products, array $branchGroups, array $modules, int $queryID, string $actionURL, string $type = 'executionStory', ?object $execution = null, int $productID = 0): void
     {
         $this->loadModel('productplan');
         $this->app->loadLang('branch');
@@ -2361,10 +2362,11 @@ class executionModel extends model
         $planPairs    = array();
 
         /* Get the relevant data for the search. */
-        foreach($products as $productID => $product)
+        $planProducts = $productID ? array($productID => $products[$productID]) : $products;
+        foreach($planProducts as $planProductID => $product)
         {
             $productPairs[$product->id] = $product->name;
-            $planGroup = $this->productplan->getBranchPlanPairs($productID, array(BRANCH_MAIN) + $product->branches, '', true);
+            $planGroup = $this->productplan->getBranchPlanPairs($planProductID, array(BRANCH_MAIN) + $product->branches, '', true);
             foreach($planGroup as $plans) $planPairs += $plans;
 
             if($product->type == 'normal') continue;
@@ -2374,7 +2376,7 @@ class executionModel extends model
             foreach($branches[$product->id] as $branchID => $branch)
             {
                 if(!isset($branchGroups[$product->id][$branchID])) continue;
-                if($branchID != BRANCH_MAIN) $branchPairs[$branchID] = ((count($products) > 1) ? $product->name . '/' : '') . $branchGroups[$product->id][$branchID];
+                if($branchID != BRANCH_MAIN) $branchPairs[$branchID] = ((count($planProducts) > 1) ? $product->name . '/' : '') . $branchGroups[$product->id][$branchID];
             }
         }
 
@@ -2387,6 +2389,7 @@ class executionModel extends model
         $this->config->product->search['params']['product']['values'] = $productPairs + array('all' => $this->lang->product->allProductsOfProject);
         $this->config->product->search['params']['plan']['values']    = $planPairs;
         $this->config->product->search['params']['module']['values']  = $modules;
+        $this->config->product->search['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), $productID ? $productID : array_keys($products));
         $this->config->product->search['params']['status']            = array('operator' => '=', 'control' => 'select', 'values' => $this->lang->story->statusList);
         $this->config->product->search['params']['stage']['values']   = array('' => '') + $this->lang->story->stageList;
         if($productType == 'normal')
@@ -2410,6 +2413,7 @@ class executionModel extends model
             {
                 unset($this->config->product->search['fields']['plan']);
                 unset($this->config->product->search['params']['plan']);
+                unset($this->config->product->search['fields']['release'], $this->config->product->search['params']['release']);
             }
         }
 
@@ -2969,12 +2973,13 @@ class executionModel extends model
             $data->order   = ++ $lastOrder;
             $this->dao->replace(TABLE_PROJECTSTORY)->data($data)->exec();
 
-            $this->story->setStage($storyID);
             $this->linkCases($executionID, $data->product, $storyID);
 
             $action = $execution->type == 'project' ? 'linked2project' : 'linked2execution';
             if($action == 'linked2execution' and $execution->type == 'kanban') $action = 'linked2kanban';
             if($execution->multiple or $execution->type == 'project') $this->action->create('story', $storyID, $action, '', $executionID);
+
+            $this->story->setStage($storyID, array('type' => 'linkProject', 'objectID' => $executionID));
         }
 
         if(!isset($output['laneID']) or !isset($output['columnID'])) $this->kanban->updateLane($executionID);
@@ -3164,10 +3169,10 @@ class executionModel extends model
      */
     public function afterUnlinkStory(object $execution, int $storyID): bool
     {
-        $this->loadModel('story')->setStage($storyID);
         $this->unlinkCases($execution->id, $storyID);
         $actionType = $execution->type == 'project' ? 'unlinkedFromProject' : 'unlinkedFromExecution';
         if($execution->multiple || $execution->type == 'project') $this->loadModel('action')->create('story', $storyID, $actionType, '', $execution->id);
+        $this->loadModel('story')->setStage($storyID, array('type' => 'unlinkProject', 'objectID' => $execution->id));
 
         /* 从迭代中移除该需求，并记录日志。*/
         if(empty($execution->multiple) && $execution->type != 'project')

@@ -355,8 +355,15 @@ $fnGenerateFootToolbar = function() use ($lang, $app, $product, $productID, $pro
 
     foreach($lang->story->stageList as $key => $stageName)
     {
-        if(!str_contains('|tested|verified|rejected|released|closed|', "|$key|")) continue;
-        $stageItems[] = array('text' => $stageName,  'class' => 'batch-btn', 'data-formaction' => $this->createLink('story', 'batchChangeStage', "stage=$key"));
+        if($key == 'closed' && $canBatchClose)
+        {
+            $stageItems[] = array('text' => $stageName, 'class' => 'batch-btn', 'data-page' => 'batch', 'data-formaction' => $this->createLink('story', 'batchClose', "productID={$productID}&executionID=0"));
+        }
+        else
+        {
+            if(!str_contains('|tested|verified|rejected|released|closed|', "|$key|")) continue;
+            $stageItems[] = array('text' => $stageName,  'class' => 'batch-btn', 'data-formaction' => $this->createLink('story', 'batchChangeStage', "stage=$key"));
+        }
     }
 
     $pinyinItems = common::convert2Pinyin($users);

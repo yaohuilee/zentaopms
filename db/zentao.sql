@@ -965,6 +965,7 @@ CREATE TABLE IF NOT EXISTS `zt_effort` (
   `product` text DEFAULT NULL,
   `project` int unsigned NOT NULL DEFAULT 0,
   `execution` int unsigned NOT NULL DEFAULT 0,
+  `team` int unsigned NOT NULL DEFAULT 0 COMMENT '团队',
   `account` varchar(30) NOT NULL DEFAULT '',
   `work` text DEFAULT NULL,
   `date` date DEFAULT NULL,
@@ -1238,6 +1239,7 @@ CREATE TABLE IF NOT EXISTS `zt_kanbangroup` (
 CREATE TABLE IF NOT EXISTS `zt_kanbanlane` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `execution` int unsigned NOT NULL DEFAULT 0,
+  `team` int unsigned NOT NULL DEFAULT 0 COMMENT '团队',
   `type` varchar(30) NOT NULL DEFAULT '',
   `region` int unsigned NOT NULL DEFAULT 0,
   `group` int unsigned NOT NULL DEFAULT 0,
@@ -1253,11 +1255,22 @@ CREATE TABLE IF NOT EXISTS `zt_kanbanlane` (
 CREATE INDEX `execution` ON `zt_kanbanlane`(`execution`);
 CREATE INDEX `group` ON `zt_kanbanlane`(`group`);
 
+-- DROP TABLE IF EXISTS `zt_kanbanlinks`;
+CREATE TABLE IF NOT EXISTS `zt_kanbanlinks` (
+  `kanban` int unsigned NOT NULL DEFAULT 0 COMMENT '看板ID',
+  `from` char(30) NOT NULL DEFAULT '' COMMENT '源ID',
+  `to` char(30) NOT NULL DEFAULT '' COMMENT '目标ID'
+) ENGINE=InnoDB COMMENT='看板关联表';
+CREATE UNIQUE INDEX `uk_kanbanlinks` ON `zt_kanbanlinks`(`kanban`,`from`,`to`);
+
 -- DROP TABLE IF EXISTS `zt_kanbancolumn`;
 CREATE TABLE IF NOT EXISTS `zt_kanbancolumn` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `parent` int NOT NULL DEFAULT 0,
   `type` varchar(30) NOT NULL DEFAULT '',
+  `execution` int unsigned NOT NULL DEFAULT 0 COMMENT '执行',
+  `capacity` varchar(255) NOT NULL DEFAULT '0' COMMENT '容量',
+  `piexecution` int unsigned NOT NULL DEFAULT 0 COMMENT 'PI执行',
   `region` int unsigned NOT NULL DEFAULT 0,
   `group` int unsigned NOT NULL DEFAULT 0,
   `name` varchar(255) NOT NULL DEFAULT '',
@@ -1500,6 +1513,7 @@ CREATE TABLE IF NOT EXISTS `zt_project` (
   `consumed` decimal(12,2) unsigned NOT NULL DEFAULT 0.00,
   `teamCount` int unsigned NOT NULL DEFAULT 0,
   `market` int unsigned NOT NULL DEFAULT 0,
+  `PI` int unsigned NOT NULL DEFAULT 0 COMMENT 'PI',
   `openedBy` varchar(30) NOT NULL DEFAULT '',
   `openedDate` datetime DEFAULT NULL,
   `openedVersion` varchar(20) NOT NULL DEFAULT '',
@@ -1843,8 +1857,10 @@ CREATE TABLE IF NOT EXISTS `zt_story` (
   `status` varchar(10) NOT NULL DEFAULT '',
   `subStatus` varchar(30) NOT NULL DEFAULT '',
   `color` char(7) NOT NULL DEFAULT '',
+  `cardColor` char(30) NOT NULL DEFAULT '' COMMENT '卡片颜色',
   `stage` varchar(10) NOT NULL DEFAULT 'wait',
   `stagedBy` varchar(30) NOT NULL DEFAULT '',
+  `prevReviewers` text DEFAULT NULL,
   `mailto` text DEFAULT NULL,
   `lib` int unsigned NOT NULL DEFAULT 0,
   `fromStory` int unsigned NOT NULL DEFAULT 0,
@@ -2093,6 +2109,7 @@ CREATE TABLE IF NOT EXISTS `zt_team` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `root` int unsigned NOT NULL DEFAULT 0,
   `type` varchar(10) NOT NULL DEFAULT 'project',
+  `teamgroup` int unsigned NOT NULL DEFAULT 0 COMMENT '团队组',
   `account` varchar(30) NOT NULL DEFAULT '',
   `role` varchar(30) NOT NULL DEFAULT '',
   `position` varchar(30) NOT NULL DEFAULT '',
@@ -2107,6 +2124,28 @@ CREATE TABLE IF NOT EXISTS `zt_team` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE UNIQUE INDEX `team` ON `zt_team`(`root`,`type`,`account`);
+
+-- DROP TABLE IF EXISTS `zt_teamgroup`;
+CREATE TABLE IF NOT EXISTS `zt_teamgroup` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `type` char(30) NOT NULL DEFAULT '' COMMENT '类型',
+  `logo` text DEFAULT NULL COMMENT '团队logo',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '团队名称',
+  `manager` text DEFAULT NULL COMMENT '负责人',
+  `parent` int unsigned NOT NULL DEFAULT 0 COMMENT '所属团队',
+  `grade` smallint unsigned NOT NULL DEFAULT 1 COMMENT '级别',
+  `path` text DEFAULT NULL COMMENT '路径',
+  `status` char(30) NOT NULL DEFAULT 'enable' COMMENT '状态',
+  `slogan` varchar(255) NOT NULL DEFAULT '' COMMENT '团队口号',
+  `declaration` text DEFAULT NULL COMMENT '团队信条',
+  `createdBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
+  `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
+  `lastEditedBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁编辑',
+  `lastEditedDate` datetime DEFAULT NULL COMMENT '编辑时间',
+  `disbandedDate` datetime DEFAULT NULL COMMENT '解散时间',
+  `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT='团队组织结构表';
 
 -- DROP TABLE IF EXISTS `zt_testreport`;
 CREATE TABLE IF NOT EXISTS `zt_testreport` (
@@ -14230,6 +14269,32 @@ CREATE TABLE IF NOT EXISTS `zt_solutions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
+-- DROP TABLE IF EXISTS `zt_art`;
+CREATE TABLE IF NOT EXISTS `zt_art` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+  `status` char(30) NOT NULL DEFAULT 'normal' COMMENT '状态',
+  `product` text DEFAULT NULL COMMENT '关联产品',
+  `RTE` varchar(255) NOT NULL DEFAULT '' COMMENT 'RTE',
+  `manager` varchar(255) NOT NULL DEFAULT '' COMMENT '负责人',
+  `PO` varchar(255) NOT NULL DEFAULT '' COMMENT 'PO',
+  `architect` varchar(255) NOT NULL DEFAULT '' COMMENT '架构师',
+  `team` varchar(255) NOT NULL DEFAULT '' COMMENT '团队',
+  `desc` longtext DEFAULT NULL COMMENT '描述',
+  `acl` varchar(30) NOT NULL DEFAULT 'open' COMMENT '访问控制',
+  `whitelist` text DEFAULT NULL COMMENT '白名单',
+  `createdBy` varchar(255) NOT NULL DEFAULT '' COMMENT '由谁创建',
+  `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
+  `lastEditedBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁编辑',
+  `lastEditedDate` datetime DEFAULT NULL COMMENT '编辑时间',
+  `closedBy` varchar(255) NOT NULL DEFAULT '' COMMENT '由谁关闭',
+  `closedDate` datetime DEFAULT NULL COMMENT '关闭时间',
+  `activatedBy` varchar(255) NOT NULL DEFAULT '' COMMENT '由谁激活',
+  `activatedDate` datetime DEFAULT NULL COMMENT '激活时间',
+  `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT='项目组表';
+
 -- DROP TABLE IF EXISTS `zt_artifactrepo`;
 CREATE TABLE IF NOT EXISTS `zt_artifactrepo` (
   `id` smallint unsigned NOT NULL AUTO_INCREMENT,
@@ -14309,6 +14374,8 @@ CREATE TABLE IF NOT EXISTS `zt_risk` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `project` int unsigned NOT NULL DEFAULT 0,
   `execution` int unsigned NOT NULL DEFAULT 0,
+  `PI` int unsigned NOT NULL DEFAULT 0 COMMENT '规划',
+  `team` int unsigned NOT NULL DEFAULT 0 COMMENT '团队',
   `name` varchar(255) NOT NULL DEFAULT '',
   `source` varchar(30) NOT NULL DEFAULT '',
   `category` varchar(30) NOT NULL DEFAULT '',
@@ -14482,6 +14549,51 @@ REPLACE INTO `zt_approvalflowobject` (`id`, `root`, `flow`, `objectType`, `objec
 (2,   '0',  '3', 'charter',     '0',   'completionApproval'),
 (3,   '0',  '4', 'charter',     '0',   'cancelProjectApproval'),
 (4,   '0',  '5', 'charter',     '0',   'activateProjectApproval');
+
+-- DROP TABLE IF EXISTS `zt_pi`;
+CREATE TABLE IF NOT EXISTS `zt_pi` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `ART` int unsigned NOT NULL DEFAULT 0 COMMENT '项目组 ID',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+  `product` text DEFAULT NULL COMMENT '关联产品',
+  `team` text DEFAULT NULL COMMENT '关联团队',
+  `status` char(30) NOT NULL DEFAULT 'normal' COMMENT '状态',
+  `desc` text DEFAULT NULL COMMENT '描述',
+  `acl` char(30) NOT NULL DEFAULT 'extends' COMMENT '访问控制',
+  `whitelist` text DEFAULT NULL COMMENT '白名单',
+  `teamkanban` int unsigned NOT NULL DEFAULT 0 COMMENT '团队看板',
+  `plankanban` int unsigned NOT NULL DEFAULT 0 COMMENT '项目看板',
+  `createdBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
+  `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
+  `lastEditedBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁编辑',
+  `lastEditedDate` datetime DEFAULT NULL COMMENT '编辑时间',
+  `closedBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁关闭',
+  `closedDate` datetime DEFAULT NULL COMMENT '关闭时间',
+  `closedReason` text DEFAULT NULL COMMENT '关闭原因',
+  `activatedBy` char(30) NOT NULL DEFAULT '' COMMENT '由谁激活',
+  `activatedDate` datetime DEFAULT NULL COMMENT '激活时间',
+  `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT='PI表';
+
+-- DROP TABLE IF EXISTS `zt_pistory`;
+CREATE TABLE IF NOT EXISTS `zt_pistory` (
+  `pi` int unsigned NOT NULL DEFAULT 0 COMMENT 'PI ID',
+  `story` int unsigned NOT NULL DEFAULT 0 COMMENT '需求 ID',
+  `order` int unsigned NOT NULL DEFAULT 0 COMMENT '顺序'
+) ENGINE=InnoDB COMMENT='PI需求关联表';
+CREATE UNIQUE INDEX `uk_pistory` ON `zt_pistory` (`pi`,`story`);
+
+-- DROP TABLE IF EXISTS `zt_piexecution`;
+CREATE TABLE IF NOT EXISTS `zt_piexecution` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `pi` int unsigned NOT NULL DEFAULT 0 COMMENT 'PI ID',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+  `begin` date DEFAULT NULL COMMENT '开始时间',
+  `end` date DEFAULT NULL COMMENT '结束时间',
+  `order` int unsigned NOT NULL DEFAULT 0 COMMENT '顺序',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT='PI执行表';
 
 -- DROP TABLE IF EXISTS `zt_pivot`;
 CREATE TABLE IF NOT EXISTS `zt_pivot` (

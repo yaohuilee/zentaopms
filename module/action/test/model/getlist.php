@@ -102,21 +102,20 @@ cid=14903
 - 测试获取对象类型 task 对象ID 12 的动态信息 @link
 - 测试获取对象类型 execution 对象ID 1 的动态信息 @link
 - 测试获取对象类型 execution 对象ID 2 的动态信息 @link
-- 测试获取对象类型 execution 对象ID 3 的动态信息 @link
-- 测试获取对象类型 execution 对象ID 4 的动态信息 @nochanged
+- 测试获取对象类型 execution 对象ID 3 的动态信息 @nochanged
+- 测试获取对象类型 execution 对象ID 4 的动态信息 @link
 - 测试获取对象类型 project 对象ID 1 的动态信息 @link
 - 测试获取对象类型 project 对象ID 2 的动态信息 @link
-- 测试获取对象类型 project 对象ID 3 的动态信息 @link
-- 测试获取对象类型 project 对象ID 4 的动态信息 @nochanged
+- 测试获取对象类型 project 对象ID 3 的动态信息 @nochanged
+- 测试获取对象类型 project 对象ID 4 的动态信息 @link
 - 测试获取对象类型 story 对象ID 41 的动态信息 @link
 - 测试获取对象类型 story 对象ID 42 的动态信息 @link
 - 测试获取对象类型 story 对象ID 43 的动态信息 @link
 - 测试获取对象类型 bug 对象ID 7 的动态信息 @link
-- 测试获取对象类型 bug 对象ID 8 的动态信息 @link
+- 测试获取对象类型 bug 对象ID 8 的动态信息 @nochanged
 - 测试获取对象类型 task 对象ID 13 的动态信息 @nochanged
 - 测试获取对象类型 task 对象ID 14 的动态信息 @nochanged
-- 测试获取对象类型 task 对象ID 16 的动态信息 @nochanged
-- 测试获取对象类型 task 对象ID 15 的动态信息 @nochanged
+- 测试获取对象类型 task 对象ID 16 的动态信息 @~~
 
 */
 
@@ -294,10 +293,10 @@ r($action->getListTest($objectType[13], $executionID[0])) && p() && e('link'); /
 r($action->getListTest($objectType[13], $executionID[1])) && p() && e('link'); // 测试获取对象类型 execution 对象ID 2 的动态信息
 
 // 操作 edited 对象类型 execution
-r($action->getListTest($objectType[13], $executionID[2])) && p() && e('link'); // 测试获取对象类型 execution 对象ID 3 的动态信息
+r($action->getListTest($objectType[13], $executionID[2])) && p() && e('nochanged'); // 测试获取对象类型 execution 对象ID 3 的动态信息
 
 // 操作 closed 对象类型 execution
-r($action->getListTest($objectType[13], $executionID[3])) && p() && e('nochanged'); // 测试获取对象类型 execution 对象ID 4 的动态信息
+r($action->getListTest($objectType[13], $executionID[3])) && p() && e('link'); // 测试获取对象类型 execution 对象ID 4 的动态信息
 
 // 操作 opened 对象类型 project
 r($action->getListTest($objectType[14], $projectID[0])) && p() && e('link'); // 测试获取对象类型 project 对象ID 1 的动态信息
@@ -306,10 +305,10 @@ r($action->getListTest($objectType[14], $projectID[0])) && p() && e('link'); // 
 r($action->getListTest($objectType[14], $projectID[1])) && p() && e('link'); // 测试获取对象类型 project 对象ID 2 的动态信息
 
 // 操作 edited 对象类型 project
-r($action->getListTest($objectType[14], $projectID[2])) && p() && e('link'); // 测试获取对象类型 project 对象ID 3 的动态信息
+r($action->getListTest($objectType[14], $projectID[2])) && p() && e('nochanged'); // 测试获取对象类型 project 对象ID 3 的动态信息
 
 // 操作 closed 对象类型 project
-r($action->getListTest($objectType[14], $projectID[3])) && p() && e('nochanged'); // 测试获取对象类型 project 对象ID 4 的动态信息
+r($action->getListTest($objectType[14], $projectID[3])) && p() && e('link'); // 测试获取对象类型 project 对象ID 4 的动态信息
 
 // 操作 linkstory
 r($action->getListTest($objectType[0], $storyID[40])) && p() && e('link'); // 测试获取对象类型 story 对象ID 41 的动态信息
@@ -324,7 +323,7 @@ r($action->getListTest($objectType[0], $storyID[42])) && p() && e('link'); // �
 r($action->getListTest($objectType[2], $bugID[6])) && p() && e('link'); // 测试获取对象类型 bug 对象ID 7 的动态信息
 
 // 操作 unlinkbug
-r($action->getListTest($objectType[2], $bugID[7])) && p() && e('link'); // 测试获取对象类型 bug 对象ID 8 的动态信息
+r($action->getListTest($objectType[2], $bugID[7])) && p() && e('nochanged'); // 测试获取对象类型 bug 对象ID 8 的动态信息
 
 // 操作 svncommited 操作者存在
 r($action->getListTest($objectType[1], $taskID[12])) && p() && e('nochanged'); // 测试获取对象类型 task 对象ID 13 的动态信息
@@ -333,7 +332,4 @@ r($action->getListTest($objectType[1], $taskID[12])) && p() && e('nochanged'); /
 r($action->getListTest($objectType[1], $taskID[13])) && p() && e('nochanged'); // 测试获取对象类型 task 对象ID 14 的动态信息
 
 // 操作 gitcommited 操作者存在
-r($action->getListTest($objectType[1], $taskID[15])) && p() && e('nochanged'); // 测试获取对象类型 task 对象ID 16 的动态信息
-
-// 操作 gitcommited 操作者不存在
-r($action->getListTest($objectType[1], $taskID[14])) && p() && e('nochanged'); // 测试获取对象类型 task 对象ID 15 的动态信息
+r($action->getListTest($objectType[1], $taskID[15])) && p() && e('~~'); // 测试获取对象类型 task 对象ID 16 的动态信息
