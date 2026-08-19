@@ -25,6 +25,12 @@ $actionTable->loadYaml('action_printprojectdynamicblock', false, 2)->gen(20);
 
 $userTable = zenData('user');
 $userTable->loadYaml('user_printprojectdynamicblock', false, 2)->gen(10);
+zenData('story')->gen(20);
+zenData('task')->gen(20);
+zenData('bug')->gen(20);
+zenData('project')->gen(20);
+zenData('product')->gen(10);
+zenData('build')->gen(20);
 
 // 3. 用户登录（选择合适角色）
 su('admin');

@@ -1211,6 +1211,8 @@ class storyZenTest
         // 获取story和product数据用于测试
         $story = $tester->loadModel('story')->getByID($storyID);
         if(empty($story)) return array();
+        $story->id      = (int)$story->id;
+        $story->version = (int)$story->version;
 
         $product = $tester->loadModel('product')->getByID($story->product);
 

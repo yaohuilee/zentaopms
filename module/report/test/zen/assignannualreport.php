@@ -23,7 +23,8 @@ include dirname(__FILE__, 2) . '/lib/zen.class.php';
 
 zenData('user')->gen(20);
 zenData('dept')->gen(10);
-$actionTable = zenData('action');
+$actionTable = zenData('action')->loadYaml('action_assignannualbasedata', false, 2);
+$actionTable->id->range('1-100');
 $actionTable->date->range('(-2Y)-(w):1D')->type('timestamp')->format('YYYY-MM-DD hh:mm:ss');
 $actionTable->gen(100);
 zenData('todo')->gen(50);
