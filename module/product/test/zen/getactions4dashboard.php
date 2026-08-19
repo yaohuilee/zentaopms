@@ -20,6 +20,11 @@ include dirname(__FILE__, 2) . '/lib/zen.class.php';
 
 zenData('action')->loadYaml('getactions4dashboard/action', false, 2)->gen(50);
 zenData('product')->loadYaml('getactions4dashboard/product', false, 2)->gen(5);
+zenData('story')->gen(10);
+zenData('bug')->gen(10);
+zenData('task')->gen(10);
+zenData('case')->gen(10);
+zenData('project')->gen(5);
 zenData('user')->gen(5);
 
 su('admin');
