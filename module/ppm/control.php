@@ -394,7 +394,7 @@ class ppm extends control
         $reviewID         = !empty($flow) && !empty($flow->definition->reviewFlow) ? $flow->definition->reviewFlow->approvals->approvalID : 0;
         $reviewers        = !empty($reviewID) ? array() : $this->ppm->getReviewers($id);
         $reviewResult     = $this->ppm->getReviewResult($reviewers, empty($flow) ? array() : $flow);
-        $defaultMergeType = $this->cookie->mergeType ? $this->cookie->mergeType : 'rebase';
+        $defaultMergeType = $this->cookie->mergeType ? $this->cookie->mergeType : 'merge';
 
         $this->view->title            = empty($repo->name) ? $this->lang->ppm->common : $repo->name . ' - ' . $this->lang->ppm->common;
         $this->view->ppm              = $ppm;
@@ -417,7 +417,7 @@ class ppm extends control
         $this->view->oldRevision      = $ppm->targetBranch;
         $this->view->newRevision      = $ppm->sourceBranch;
         $this->view->defaultMergeType = $defaultMergeType;
-        $this->view->checkResult      = $this->ppmZen-> getCheckResult($ppm, $reviewResult, $this->view->bugs, $defaultMergeType);
+        $this->view->checkResult      = $this->ppmZen->getCheckResult($ppm, $reviewResult, $this->view->bugs, $defaultMergeType);
         $this->view->param            = $param;
         $this->view->rule             = $this->loadModel('repobranchrule')->getRuleByBranchName($ppm->targetRepoID, $ppm->targetBranch);
         $this->view->pipelines        = $this->ppm->getPipelinesByPPM($ppm);

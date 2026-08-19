@@ -728,7 +728,7 @@ class pipeline extends control
      * @access public
      * @return void
      */
-    public function ajaxGetStepSchema(string $stepName)
+    public function ajaxGetStepSchema(string $stepName, int $pipelineID = 0, string $params = '')
     {
         $stepSchema = $this->pipeline->getStepSchema($stepName);
         if(dao::isError())
@@ -736,6 +736,15 @@ class pipeline extends control
             $error = dao::getError();
             return $this->sendError(zget($error, 'apiMessage', 'api error'));
         }
+
+        $pipeline = $this->pipeline->fetchByID($pipelineID);
+        $renderSchemaKeywords = $this->pipelineZen->renderSchemaKeywords($this->config->pipeline->jsonSchemaKeywords, $pipeline, $params);
+
+        foreach($renderSchemaKeywords as $key => $link)
+        {
+            $stepSchema = str_replace('%' . $key . '%', $link, $stepSchema);
+        }
+
         $this->send(array('result' => 'success', 'data' => $stepSchema));
     }
 
@@ -1220,5 +1229,19 @@ class pipeline extends control
         $this->view->repo     = $this->loadModel('repo')->getByID($repoID);
 
         $this->display();
+    }
+
+    public function ajaxGetRepos(int $spaceID = 0)
+    {
+        $repos = $this->loadModel('repo')->getList(0, $spaceID);
+        a($repos);die;
+
+        $repoList = array();
+        foreach($repos as $repo)
+        {
+            $repoList[] = array('value' => $repo->id, 'text' => $repo->name, 'key' => $repo->name);
+        }
+
+        echo json_encode($repoList);
     }
 }
