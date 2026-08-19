@@ -342,6 +342,7 @@ class story extends control
 
         if(!empty($_POST))
         {
+            if(isset($_POST['reviewer']) && !is_array($_POST['reviewer'])) $_POST['reviewer'] = array();
             $storyData = $this->storyZen->buildStoryForEdit($storyID);
             if(!$storyData) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
@@ -358,6 +359,7 @@ class story extends control
 
             $response = array('result' => 'success', 'message' => $message);
             $response['load'] = $this->storyZen->getAfterEditLocation($storyID, $storyType);
+            if($this->post->locate == 'change') $response['load'] = $this->createLink($this->app->rawModule, 'change', "storyID=$storyID&from=&storyType={$storyType}");
             return $this->send($response);
         }
 
@@ -896,7 +898,7 @@ class story extends control
 
         /* Get story reviewer. */
         $reviewerList    = $this->story->getReviewerPairs($story->id, $story->version);
-        $story->reviewer = array_keys($reviewerList);
+        $story->reviewer = !empty($reviewerList) ? array_keys($reviewerList) : $story->prevReviewers;
 
         $this->view->story        = $story;
         $this->view->actions      = $this->action->getList('story', $storyID);
@@ -1088,12 +1090,13 @@ class story extends control
         if($story->status == 'draft') unset($reasonList['cancel']);
         unset($reasonList['subdivided']);
 
-        $this->view->title      = $this->lang->story->close . "STORY" . $this->lang->hyphen . $story->title;
-        $this->view->product    = $product;
-        $this->view->story      = $story;
-        $this->view->actions    = $this->action->getList('story', $storyID);
-        $this->view->users      = $this->loadModel('user')->getPairs();
-        $this->view->reasonList = $reasonList;
+        $this->view->title       = $this->lang->story->close . "STORY" . $this->lang->hyphen . $story->title;
+        $this->view->product     = $product;
+        $this->view->story       = $story;
+        $this->view->actions     = $this->action->getList('story', $storyID);
+        $this->view->users       = $this->loadModel('user')->getPairs();
+        $this->view->reasonList  = $reasonList;
+        $this->view->undoneTasks = $this->dao->select('count(id) as count')->from(TABLE_TASK)->where('story')->eq($storyID)->andWhere('status')->in('wait,doing,pause')->andWhere('deleted')->eq(0)->fetch('count');
         $this->display();
     }
 
@@ -1165,11 +1168,12 @@ class story extends control
         $errorTips = '';
         if($closedStory) $errorTips .= sprintf($this->lang->story->closedStory, implode(',', $closedStory));
 
-        $this->view->productID  = $productID;
-        $this->view->stories    = $stories;
-        $this->view->storyType  = $storyType;
-        $this->view->twinsCount = $twinsCount;
-        $this->view->errorTips  = $errorTips;
+        $this->view->productID   = $productID;
+        $this->view->stories     = $stories;
+        $this->view->undoneTasks = $this->dao->select('story,count(id) as count')->from(TABLE_TASK)->where('story')->in($storyIdList)->andWhere('status')->in('wait,doing,pause')->andWhere('deleted')->eq(0)->groupBy('story')->fetchPairs('story', 'count');
+        $this->view->storyType   = $storyType;
+        $this->view->twinsCount  = $twinsCount;
+        $this->view->errorTips   = $errorTips;
         $this->display();
     }
 

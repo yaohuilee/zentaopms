@@ -1405,7 +1405,7 @@ class my extends control
         $users  = $this->loadModel('company')->getUsers('inside', 'bydept', 0, $deptID, $sort, $pager);
         foreach($users as $user) unset($user->password); // Remove passwd.
 
-        $this->view->title     = $this->lang->my->team;
+        $this->view->title     = $this->lang->dept->common;
         $this->view->users     = $users;
         $this->view->userPairs = $this->loadModel('user')->getPairs('noletter|noclosed');
         $this->view->deptID    = $deptID;

@@ -216,6 +216,9 @@ class bug extends control
         $this->session->set('storyList', '', 'product');
         $this->session->set('projectList', $this->app->getURI(true) . "#app={$this->app->tab}", 'project');
 
+        $actions = $this->loadModel('action')->getList('bug', $bug->id);
+        $actions = $this->bug->mergeTaskActions($actions);
+
         $this->view->title       = "BUG #$bug->id $bug->title - " . $product->name;
         $this->view->branchID    = $bug->branch;
         $this->view->product     = $product;
@@ -231,7 +234,7 @@ class bug extends control
         $this->view->branchName  = $product->type == 'normal' ? '' : zget($branches, $bug->branch, '');
         $this->view->builds      = $builds;
         $this->view->linkCommits = $this->loadModel('repo')->getCommitsByObject($bug->id, 'bug');
-        $this->view->actions     = $this->loadModel('action')->getList('bug', $bug->id);
+        $this->view->actions     = $actions;
         $this->view->preAndNext  = $this->loadModel('common')->getPreAndNextObject('bug', $bugID);
 
         $this->display();
@@ -539,7 +542,7 @@ class bug extends control
         $this->qa->setMenu($oldBug->product, $oldBug->branch);
 
         $users  = $this->loadModel('user')->getPairs('noclosed');
-        $builds = $this->loadModel('build')->getBuildPairs(array($oldBug->product), $oldBug->branch, 'withbranch,noreleased,nofail');
+        $builds = $this->loadModel('build')->getBuildPairs(array($oldBug->product), $oldBug->branch, 'noterminate,withbranch,noreleased,nofail');
 
         /* 展示相关变量。 */
         /* Show the variables associated. */

@@ -841,6 +841,7 @@ class myModel extends model
         $this->config->product->search['actionURL']                   = $actionURL;
         $this->config->product->search['params']['product']['values'] = $products;
         $this->config->product->search['params']['plan']['values']    = $this->loadModel('productplan')->getPairs($productIdList, $branchParam);
+        $this->config->product->search['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), $productIdList);
         $this->config->product->search['fields']['title']             = $this->lang->story->title;
         $this->config->product->search['params']['grade']['values']   = $this->loadModel('story')->getGradePairs('story', 'enable');
         unset($this->config->product->search['fields']['module'], $this->config->product->search['fields']['branch'], $this->config->product->search['fields']['roadmap']);
@@ -884,6 +885,7 @@ class myModel extends model
         $myStoryQuery = $this->session->{$queryName};
         $myStoryQuery = preg_replace('/`(\w+)`/', 't1.`$1`', $myStoryQuery);
         if(strpos($myStoryQuery, 'result') !== false) $myStoryQuery = str_replace('t1.`result`', 't5.`result`', $myStoryQuery);
+        $myStoryQuery = preg_replace_callback("/t1\.`release`\s*(=|!=)\s*'(\d+)'/i", function($matches){$op = $matches[1] == '!=' ? 'NOT ' : ''; return "{$op}EXISTS (SELECT 1 FROM " . TABLE_RELEASE . " WHERE " . TABLE_RELEASE . ".id = '{$matches[2]}' AND " . TABLE_RELEASE . ".deleted = '0' AND FIND_IN_SET(t1.`id`, " . TABLE_RELEASE . ".stories))";}, $myStoryQuery);
 
         return $this->myTao->fetchStoriesBySearch($myStoryQuery, $type, $orderBy, $pager, $type == 'contribute' ? $this->getAssignedByMe($this->app->user->account, null, $orderBy, 'story') : array());
     }
@@ -925,6 +927,7 @@ class myModel extends model
         unset($this->config->product->search['fields']['stage']);
         unset($this->config->product->search['fields']['module']);
         unset($this->config->product->search['fields']['branch']);
+        unset($this->config->product->search['fields']['release'], $this->config->product->search['params']['release']);
 
         $this->loadModel('search')->setSearchParams($this->config->product->search);
     }
@@ -966,6 +969,7 @@ class myModel extends model
         unset($this->config->product->search['fields']['stage']);
         unset($this->config->product->search['fields']['module']);
         unset($this->config->product->search['fields']['branch']);
+        unset($this->config->product->search['fields']['release'], $this->config->product->search['params']['release']);
 
         $this->loadModel('search')->setSearchParams($this->config->product->search);
     }

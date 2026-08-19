@@ -1075,7 +1075,7 @@ class task extends control
                 if(strpos(",{$childTask->path},", ",$taskID,") === false) continue;
                 $this->task->delete(TABLE_TASK, $childID);
                 if($childTask->fromBug != 0) $this->dao->update(TABLE_BUG)->set('toTask')->eq(0)->where('id')->eq($childTask->fromBug)->exec();
-                if($childTask->story) $this->loadModel('story')->setStage($childTask->story);
+                if($childTask->story) $this->loadModel('story')->setStage($childTask->story, array('type' => 'deleteTask', 'objectID' => $childID));
             }
         }
 
@@ -1087,7 +1087,7 @@ class task extends control
             $this->loadModel('action')->create('task', $task->parent, 'deleteChildrenTask', '', $taskID);
         }
         if($task->fromBug != 0) $this->dao->update(TABLE_BUG)->set('toTask')->eq(0)->where('id')->eq($task->fromBug)->exec();
-        if($task->story) $this->loadModel('story')->setStage($task->story);
+        if($task->story) $this->loadModel('story')->setStage($task->story, array('type' => 'deleteTask', 'objectID' => $taskID));
 
         $this->loadModel('program')->refreshProjectStats($task->project);
 

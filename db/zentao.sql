@@ -1860,6 +1860,7 @@ CREATE TABLE IF NOT EXISTS `zt_story` (
   `cardColor` char(30) NOT NULL DEFAULT '' COMMENT '卡片颜色',
   `stage` varchar(10) NOT NULL DEFAULT 'wait',
   `stagedBy` varchar(30) NOT NULL DEFAULT '',
+  `prevReviewers` text DEFAULT NULL,
   `mailto` text DEFAULT NULL,
   `lib` int unsigned NOT NULL DEFAULT 0,
   `fromStory` int unsigned NOT NULL DEFAULT 0,
