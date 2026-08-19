@@ -760,6 +760,8 @@ class productModel extends model
         $projectID = ($this->app->tab == 'project' && empty($projectID)) ? $this->session->project : $projectID;
         $searchConfig['params']['module']['values'] = empty($showAll) ? $this->productTao->getModulesForSearchForm($productID, $products, $branch, (int)$projectID) : $this->loadModel('tree')->getAllModulePairs('story');
 
+        if($storyType != 'story') unset($searchConfig['fields']['release'], $searchConfig['params']['release']);
+
         $gradePairs = $this->loadModel('story')->getGradePairs($storyType, 'all');
 
         if($projectID || $storyType == 'all')
@@ -793,6 +795,13 @@ class productModel extends model
         $productIdList = ($this->app->tab == 'project' && empty($productID)) || !empty($showAll) ? array_keys($products) : array($productID);
         $branchParam   = ($this->app->tab == 'project' && empty($productID)) || !empty($showAll) ? '' : $branch;
         $searchConfig['params']['plan']['values'] = $this->loadModel('productplan')->getPairs($productIdList, (empty($branchParam) || $branchParam == 'all') ? '' : $branchParam);
+
+        /* Get product release data. */
+        if(isset($searchConfig['fields']['release']))
+        {
+            $productParam = $this->app->rawMethod == 'relateobject' ? 0 : $productID;
+            $searchConfig['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), $productParam, (empty($branchParam) || $branchParam == 'all') ? '' : $branchParam, $projectID);
+        }
 
         /* Get branch data. */
         if($productID && empty($showAll))
@@ -904,6 +913,25 @@ class productModel extends model
             ->markRight(1)
             ->beginIF($appendProject)->orWhere('t2.id')->in($appendProject)->fi()
             ->orderBy('`order`_asc')
+            ->fetchPairs('id', 'name');
+    }
+
+    /**
+     * 获取关联某产品的未关闭项目列表。
+     * Get unclosed projects linked to a product.
+     *
+     * @param  int    $productID
+     * @access public
+     * @return array
+     */
+    public function getUnclosedProjectsByProduct(int $productID): array
+    {
+        return $this->dao->select('t2.id, t2.name')->from(TABLE_PROJECTPRODUCT)->alias('t1')
+            ->leftJoin(TABLE_PROJECT)->alias('t2')->on('t1.project = t2.id')
+            ->where('t1.product')->eq($productID)
+            ->andWhere('t2.type')->eq('project')
+            ->andWhere('t2.deleted')->eq('0')
+            ->andWhere('t2.status')->ne('closed')
             ->fetchPairs('id', 'name');
     }
 

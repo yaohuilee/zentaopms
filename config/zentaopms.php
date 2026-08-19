@@ -459,6 +459,7 @@ define('TABLE_AI_MINIPROGRAMSTAR',  '`' . $config->db->prefix . 'ai_miniprograms
 define('TABLE_AI_MESSAGE',          '`' . $config->db->prefix . 'ai_message`');
 define('TABLE_AI_MODEL',            '`' . $config->db->prefix . 'ai_model`');
 define('TABLE_AI_ASSISTANT',        '`' . $config->db->prefix . 'ai_assistant`');
+define('TABLE_AI_VECTORQUEUE',      '`' . $config->db->prefix . 'ai_vectorqueue`');
 
 define('TABLE_SQLITE_QUEUE', '`' . $config->db->prefix . 'sqlite_queue`');
 define('TABLE_DUCKDBQUEUE', '`' . $config->db->prefix . 'duckdbqueue`');

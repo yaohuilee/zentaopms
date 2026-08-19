@@ -466,6 +466,7 @@ class execution extends control
             $this->config->product->search['fields']['title'] = $this->lang->story->title;
             unset($this->config->product->search['fields']['plan']);
             unset($this->config->product->search['params']['plan']);
+            unset($this->config->product->search['fields']['release'], $this->config->product->search['params']['release']);
             unset($this->config->product->search['fields']['stage']);
             unset($this->config->product->search['params']['stage']);
         }
@@ -667,7 +668,6 @@ class execution extends control
         $pager = pager::init($recTotal, $recPerPage, $pageID);
 
         unset($this->config->testcase->dtable->fieldList['title']['nestedToggle']);
-        if($productID && $products[$productID]->type == 'normal') unset($this->config->testcase->dtable->fieldList['branch']);
 
         /* Build the search form. */
         $actionURL = $this->createLink('execution', 'testcase', "executionID=$executionID&productID=$productID&branchID=$branchID&browseType=bysearch&queryID=myQueryID&moduleID=0&orderBy=$orderBy");
@@ -2027,7 +2027,7 @@ class execution extends control
                 $cardList = !empty($laneData[$columnKey]) ? $laneData[$columnKey] : array();
                 foreach($cardList as $card)
                 {
-                    $items[$laneKey][$columnKey][] = array('id' => $card->id, 'name' => $card->id, 'title' => $card->name, 'status' => $card->status, 'delay' => !empty($card->delay) ? $card->delay : 0, 'progress' => $card->progress);
+                    $items[$laneKey][$columnKey][] = array('id' => $card->id, 'name' => $card->id, 'title' => $card->name, 'status' => $card->status, 'delay' => !empty($card->delay) ? $card->delay : 0, 'progress' => $card->progress, 'begin' => !helper::isZeroDate($execution->begin) ? $execution->begin : '', 'end' => !helper::isZeroDate($execution->end) ? $execution->end : '');
 
                     if(!isset($columnCards[$columnKey])) $columnCards[$columnKey] = 0;
                     $columnCards[$columnKey] ++;
