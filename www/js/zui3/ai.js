@@ -134,9 +134,12 @@ window.getAgentCreatingOptions = function(info, langData)
             const objType = info.objectType;
             if(result && typeof result === 'object' && !Array.isArray(result) && normalizedProps)
             {
-                const engNames = {};
-                Object.keys(result).forEach(function(k) { engNames[k] = k; });
                 const typeProps = normalizedProps[objType] || normalizedProps;
+                const engNames = {};
+                Object.keys(result).forEach(function(k)
+                {
+                    engNames[k] = (typeProps && typeProps[k] !== undefined) ? typeProps[k] : k;
+                });
                 if(typeof typeProps === 'object')
                 {
                     Object.keys(typeProps).forEach(function(k)
@@ -229,8 +232,9 @@ window.executeZentaoPrompt = async function(info, testingMode)
  * @param {string}  agentPurpose   - 智能体目的描述
  * @param {boolean} isBatch        - 是否为批量表单
  * @param {Array}   skills         - ZAI skillID UUID 列表
+ * @param {Object}  fieldLabels    - 模块标准字段标签映射
  */
-window.executeUniversalPromptWithZentaoAPI = async function(formSchema, contextIDs, promptID, promptFields, allowedFields, agentRole, agentPurpose, isBatch, skills)
+window.executeUniversalPromptWithZentaoAPI = async function(formSchema, contextIDs, promptID, promptFields, allowedFields, agentRole, agentPurpose, isBatch, skills, fieldLabels)
 {
     const zaiPanel = await checkZAIPanel(true);
     if(!zaiPanel) return;
@@ -261,7 +265,7 @@ window.executeUniversalPromptWithZentaoAPI = async function(formSchema, contextI
         const prop = isStepsEditor
             ? {
                 type: 'array',
-                description: field.label || name,
+                description: (fieldLabels && fieldLabels[name]) || field.label || name,
                     items: {
                         type: 'object',
                         properties: {
@@ -278,7 +282,7 @@ window.executeUniversalPromptWithZentaoAPI = async function(formSchema, contextI
             }
             : {
                 type: 'string',
-                description: field.label || name,
+                description: (fieldLabels && fieldLabels[name]) || field.label || name,
             };
         if(!isStepsEditor && Array.isArray(field.options) && field.options.length)
         {

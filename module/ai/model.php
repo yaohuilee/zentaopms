@@ -4126,6 +4126,32 @@ class aiModel extends model
     }
 
     /**
+     * 获取模块的标准字段标签映射（字段名 → 显示名称）。
+     * Get standard field labels of a module, used as authoritative display names.
+     *
+     * @param  string $module
+     * @access public
+     * @return array
+     */
+    public function getFormFieldLabels(string $module): array
+    {
+        $this->app->loadLang($module);
+        if(empty($this->lang->$module)) return array();
+
+        $excludes = array('common', 'error', 'menu', 'statusList', 'priList', 'typeList', 'moduleList', 'actionList', 'moreActions', 'moduleActions', 'dtable', 'featurebar');
+        $labels   = array();
+        foreach($this->lang->$module as $field => $value)
+        {
+            if(!is_string($value) || $value === '') continue;
+            if(empty($field) || !preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $field)) continue;
+            if(in_array($field, $excludes)) continue;
+            $labels[$field] = $value;
+        }
+
+        return $labels;
+    }
+
+    /**
      * 从 formSchema 字段值加载关联上下文对象并构建描述文本。
      * Load context objects from form schema and build description text.
      *
