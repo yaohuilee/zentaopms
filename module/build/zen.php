@@ -182,25 +182,30 @@ class buildZen extends build
         $this->view->param             = $param;
         $this->view->bugPager          = $bugPager;
         $this->view->generatedBugPager = $generatedBugPager;
-        $this->view->bugs              = $this->build->getBugList($build->allBugs, $type == 'bug' ? $sort : '', $bugPager);
 
         $generatedBugs = $this->loadModel('bug')->getExecutionBugs((int)$build->execution, $build->product, 'all', "$build->id,{$build->builds}", $type, (int)$param, $type == 'generatedBug' ? $sort : 'status_desc,id_desc', '', $generatedBugPager);
         $this->view->generatedBugs = $this->bug->processBuildForBugs($generatedBugs);
 
+        $bugs = $this->build->getBugList($build->allBugs, $type == 'bug' ? $sort : '', $bugPager);
+        $this->view->bugs = $this->bug->processBuildForBugs($bugs);
+
         $storyIdList = $taskIdList = array();
-        foreach($this->view->generatedBugs as $bug)
+        foreach(array($this->view->bugs, $this->view->generatedBugs) as $bugList)
         {
-            if($bug->story)  $storyIdList[$bug->story] = $bug->story;
-            if($bug->task)   $taskIdList[$bug->task]   = $bug->task;
-            if($bug->toTask) $taskIdList[$bug->toTask] = $bug->toTask;
+            foreach($bugList as $bug)
+            {
+                if($bug->story)  $storyIdList[$bug->story] = $bug->story;
+                if($bug->task)   $taskIdList[$bug->task]   = $bug->task;
+                if($bug->toTask) $taskIdList[$bug->toTask] = $bug->toTask;
+            }
         }
 
-        $this->view->generatedBugBranchPairs  = $this->loadModel('branch')->getPairs($build->product, 'withClosed');
-        $this->view->generatedBugModulePairs  = $this->loadModel('tree')->getAllModulePairs('bug');
-        $this->view->generatedBugPlans        = array(0 => '') + $this->loadModel('productplan')->getPairs($build->product);
-        $this->view->generatedBugProjectPairs = $this->loadModel('project')->getPairsByProgram();
-        $this->view->generatedBugStories      = $storyIdList ? $this->loadModel('story')->getPairsByList($storyIdList) : array();
-        $this->view->generatedBugTasks        = $taskIdList  ? $this->loadModel('task')->getPairsByIdList($taskIdList) : array();
+        $this->view->bugBranchPairs  = $this->loadModel('branch')->getPairs($build->product, 'withClosed');
+        $this->view->bugModulePairs  = $this->loadModel('tree')->getAllModulePairs('bug');
+        $this->view->bugPlans        = array(0 => '') + $this->loadModel('productplan')->getPairs($build->product);
+        $this->view->bugProjectPairs = $this->loadModel('project')->getPairsByProgram();
+        $this->view->bugStories      = $storyIdList ? $this->loadModel('story')->getPairsByList($storyIdList) : array();
+        $this->view->bugTasks        = $taskIdList  ? $this->loadModel('task')->getPairsByIdList($taskIdList) : array();
 
         if($this->app->getViewType() == 'json')
         {
