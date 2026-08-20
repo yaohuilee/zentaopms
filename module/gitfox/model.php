@@ -14,13 +14,13 @@ class gitfoxModel extends model
     protected $repos = array();
 
     /**
-     * 检查服务是否健康。
-     * Check service health.
+     * 获取 GitFox 健康状态及版本信息。
+     * Get GitFox health status and version info.
      *
      * @access public
-     * @return bool|string
+     * @return object|false
      */
-    public function checkHealth(): bool|string
+    public function getHealth(): object|false
     {
         $url = $this->config->devops->gitfoxURL;
         if($this->config->devops->gitfoxPort) $url .= ':' . $this->config->devops->gitfoxPort;
@@ -30,12 +30,28 @@ class gitfoxModel extends model
         $result  = json_decode(common::http($url));
         if(empty($result) || empty($result->status) || $result->status != 'healthy') return false;
 
-        $checkResult = 'healthy';
-        $version     = zget($result, 'version', '');
-        if($version != $this->config->devops->gitfoxVersion) $checkResult = 'upgrade';
-        if(!$version) $checkResult = 'beta';
+        return $result;
+    }
 
-        return $checkResult;
+    /**
+     * 检查服务是否健康。
+     * Check service health.
+     *
+     * @param  object|false $health
+     * @access public
+     * @return bool|string
+     */
+    public function checkHealth(object|false|null $health = null): bool|string
+    {
+        if($health === null) $health = $this->getHealth();
+        if(!$health) return false;
+
+        $version = trim((string)zget($health, 'version', ''));
+        if($version === '') return 'beta';
+
+        $currentVersion  = ltrim($version, 'vV');
+        $requiredVersion = ltrim((string)$this->config->devops->gitfoxVersion, 'vV');
+        return version_compare($currentVersion, $requiredVersion, '<') ? 'upgrade' : 'healthy';
     }
 
     /**
