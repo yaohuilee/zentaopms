@@ -577,10 +577,12 @@ class upgrade extends control
      * @param  string $skipUpdateDocs
      * @param  string $skipUpdateDocTemplates
      * @param  string $skipUpdateProjectReports
+     * @param  string $skipInstallGitFox
+     * @param  string $skipUpgradeGitFox
      * @access public
      * @return void
      */
-    public function afterExec($fromVersion, $processed = 'no', $skipMoveFile = 'no', $skipUpdateDocs = 'no', $skipUpdateDocTemplates = 'no', $skipUpdateProjectReports = 'no', $skipInstallGitFox = 'no')
+    public function afterExec($fromVersion, $processed = 'no', $skipMoveFile = 'no', $skipUpdateDocs = 'no', $skipUpdateDocTemplates = 'no', $skipUpdateProjectReports = 'no', $skipInstallGitFox = 'no', $skipUpgradeGitFox = 'no')
     {
         /* 如果数据库有冲突，显示更改的 sql。*/
         /* If there is a conflict with the standard database, display the changed sql. */
@@ -646,6 +648,11 @@ class upgrade extends control
         if(!$checkGitFox && $skipInstallGitFox == 'no')
         {
             $this->locate($this->createLink('gitfox', 'installGitFox', "inPage=upgrade&skipInstall=0&fromVersion={$fromVersion}"));
+        }
+
+        if($checkGitFox == 'upgrade' && $skipUpgradeGitFox == 'no' )
+        {
+            $this->locate($this->createLink('gitfox', 'upgradeGitFox', "inPage=upgrade&skipUpgrade=0&fromVersion={$fromVersion}"));
         }
 
         unset($_SESSION['user']);

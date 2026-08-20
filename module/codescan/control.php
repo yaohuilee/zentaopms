@@ -16,6 +16,7 @@ class codescan extends control
         parent::__construct();
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
+        if($serverHeath == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $spaceID = 0;
         $repoID  = (int)zget($this->app->params, 'repoID', 0);
