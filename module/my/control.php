@@ -1804,6 +1804,7 @@ class my extends control
     {
         $health = $this->loadModel('gitfox')->checkHealth();
         if(!$health) return $this->sendError($this->lang->gitfox->serverFail);
+        if($health == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $tab = $this->app->tab;
         if($tab != 'my')

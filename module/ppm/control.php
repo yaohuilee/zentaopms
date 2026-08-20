@@ -64,6 +64,7 @@ class ppm extends control
     {
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
+        if($serverHeath == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $this->loadModel('repo');
         if($this->app->tab == 'execution')
