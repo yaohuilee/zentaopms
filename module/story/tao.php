@@ -145,9 +145,9 @@ class storyTao extends storyModel
     {
         $this->loadModel('user');
         $product   = $this->loadModel('product')->getByID($productID);
-        $reviewers = $product->reviewer;
+        $reviewers = $product ? $product->reviewer : '';
 
-        if(!$reviewers and $product->acl != 'open') $reviewers = $this->user->getProductViewListUsers($product);
+        if(!$reviewers && $product && $product->acl != 'open') $reviewers = $this->user->getProductViewListUsers($product);
         return $this->user->getPairs('noclosed|nodeleted|noletter', $storyReviewers, 0, $reviewers);
     }
 
