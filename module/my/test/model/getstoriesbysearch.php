@@ -29,6 +29,8 @@ cid=17301
 include dirname(__FILE__, 5) . '/test/lib/init.php';
 include dirname(__FILE__, 2) . '/lib/model.class.php';
 
+zenData('action')->gen(0);
+zenData('storyreview')->gen(0);
 zenData('story')->loadYaml('story')->gen('20');
 zenData('product')->gen('10');
 zenData('productplan')->gen('15');

@@ -79,6 +79,8 @@ $tester->story->app->user->admin = true;
 $tester->story->app->moduleName  = 'product';
 $tester->story->app->methodName  = 'browse';
 $tester->story->app->control     = new story();
+$tester->story->mao->cache = null;
+restoreObjectTables();
 $requirement = $tester->story->fetchById(1);
 $story       = $tester->story->fetchById(2);
 $execution   = $tester->story->loadModel('project')->fetchById(11);
