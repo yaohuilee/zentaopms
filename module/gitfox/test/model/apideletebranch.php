@@ -8,10 +8,10 @@ timeout=0
 cid=0
 
 - 执行 @0
-- 执行model模块的apideletebranch方法，参数是1, 'master'  @1
-- 执行model模块的apideletebranch方法，参数是1, 'master'  @1
-- 执行$model->apideletebranch(1, 'master')) || is_array($model->apideletebranch(1, 'master')) || is_object($model->apideletebranch(1, 'master' @1
-- 执行model模块的apideletebranch方法，参数是1, 'master'  @1
+- 执行model模块的apideletebranch方法，参数是1, 默认分支 @1
+- 执行model模块的apideletebranch方法，参数是1, 默认分支 @1
+- 执行$model->apideletebranch(1, 默认分支) || is_array($model->apideletebranch(1, 默认分支)) || is_object($model->apideletebranch(1, 默认分支 @1
+- 执行model模块的apideletebranch方法，参数是1, 默认分支 @1
 
 */
 
@@ -23,8 +23,11 @@ su('admin');
 
 $gitfoxTest = new gitfoxModelTest();
 
-r($gitfoxTest->apiDeleteBranchErrorTest(1, 'master')) && p() && e('1');
-r($gitfoxTest->apiDeleteBranchTest(1, 'master')) && p() && e('0');
-r($gitfoxTest->apiDeleteBranchResultTypeTest(1, 'master')) && p() && e('bool');
-r($gitfoxTest->apiDeleteBranchErrorTest(1, 'master')) && p() && e('1');
-r($gitfoxTest->apiDeleteBranchTest(1, 'master')) && p() && e('0');
+$repo   = $gitfoxTest->apiGetSingleRepoTest(1);
+$branch = is_object($repo) && !empty($repo->defaultBranch) ? $repo->defaultBranch : 'master';
+
+r($gitfoxTest->apiDeleteBranchErrorTest(1, $branch)) && p() && e('1');
+r($gitfoxTest->apiDeleteBranchTest(1, $branch)) && p() && e('0');
+r($gitfoxTest->apiDeleteBranchResultTypeTest(1, $branch)) && p() && e('bool');
+r($gitfoxTest->apiDeleteBranchErrorTest(1, $branch)) && p() && e('1');
+r($gitfoxTest->apiDeleteBranchTest(1, $branch)) && p() && e('0');

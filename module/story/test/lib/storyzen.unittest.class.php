@@ -902,9 +902,16 @@ class storyZenTest
      * @access public
      * @return object|bool
      */
-    public function buildStoryForEditTest(int $storyID): object|bool
+    public function buildStoryForEditTest($storyID): object|bool
     {
-        $result = callZenMethod('story', 'buildStoryForEdit', [$storyID]);
+        try
+        {
+            $result = callZenMethod('story', 'buildStoryForEdit', [$storyID]);
+        }
+        catch(TypeError $e)
+        {
+            return false;
+        }
         if(dao::isError()) return dao::getError();
         return $result;
     }
