@@ -533,7 +533,7 @@ $lang->repo->sourceList['Gogs']       = 'Gogs';
 $lang->repo->sourceList['Subversion'] = 'Subversion';
 
 $lang->repo->accessList = array();
-$lang->repo->accessList['writable'] = '可读、可写、可管理';
+$lang->repo->accessList['writable'] = '可读、可写、可管理（导入为GitFox代码仓库，在GitFox代码库进行管理）';
 $lang->repo->accessList['readonly'] = '只读（做镜像导入，在第三方代码库进行管理，由DevOps定期自动同步）';
 
 $lang->repo->importProgress = new stdclass();
