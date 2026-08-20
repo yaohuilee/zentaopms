@@ -450,6 +450,35 @@ class executionModel extends model
             if((in_array($field, array('QD', 'RD')) && in_array($execution->attribute, array('request', 'design', 'review'))) || ($field == 'PO' && $execution->attribute == 'review')) $requiredFields = trim(str_replace(",{$field},", ',', ",{$requiredFields},"), ',');
         }
 
+        /* 关联产品和关联计划不在执行表中，单独校验。 */
+        if(strpos(",{$requiredFields},", ',products,') !== false)
+        {
+            $project = $this->loadModel('project')->fetchByID((int)$oldExecution->project);
+            if(empty($project) || !empty($project->hasProduct))
+            {
+                $products = array_filter((array)zget($postData, 'products', array()));
+                if(empty($products)) dao::$errors['products[0]'] = sprintf($this->lang->error->notempty, $this->lang->execution->manageProducts);
+            }
+            $requiredFields = trim(str_replace(',products,', ',', ",{$requiredFields},"), ',');
+        }
+        if(strpos(",{$requiredFields},", ',plans,') !== false)
+        {
+            $hasPlan = false;
+            $plans   = zget($postData, 'plans', array());
+            foreach((array)$plans as $productPlans)
+            {
+                if(!empty(array_filter((array)$productPlans))) $hasPlan = true;
+            }
+            if(!$hasPlan)
+            {
+                $planErrorKey = 'plans[0][]';
+                if(!empty($plans) && is_array($plans)) $planErrorKey = 'plans[' . key($plans) . '][]';
+                dao::$errors[$planErrorKey] = sprintf($this->lang->error->notempty, $this->lang->execution->linkPlan);
+            }
+            $requiredFields = trim(str_replace(',plans,', ',', ",{$requiredFields},"), ',');
+        }
+        if(dao::isError()) return false;
+
         /* Update data. */
         $this->lang->error->unique = $this->lang->error->repeat;
         $executionProject = isset($execution->project) ? $execution->project : $oldExecution->project;

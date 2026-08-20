@@ -614,6 +614,8 @@ class customModel extends model
                     $fieldKey = 'exec' . ucfirst($fieldName);
                     $fields[$fieldName] = $this->lang->execution->{$fieldKey};
                 }
+                if($moduleName == 'execution' && $fieldName == 'products') $fields[$fieldName] = $this->lang->execution->manageProducts;
+                if($moduleName == 'execution' && $fieldName == 'plans')    $fields[$fieldName] = $this->lang->execution->linkPlan;
             }
         }
 
