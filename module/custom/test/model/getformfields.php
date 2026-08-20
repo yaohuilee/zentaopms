@@ -128,16 +128,20 @@ cid=15897
 - 测试moduleName值为caselib，method为空属性desc @描述
 - 测试moduleName值为caselib，method为create属性desc @描述
 - 测试moduleName值为caselib，method为edit属性desc @描述
-- 测试moduleName值为caselib，method为空
+- 测试moduleName值为testtask，method为空
  - 属性owner @负责人
  - 属性pri @优先级
  - 属性desc @描述
 - 测试moduleName值为testtask，method为create
  - 属性owner @负责人
+ - 属性type @测试类型
+ - 属性members @参与人
  - 属性pri @优先级
  - 属性desc @描述
 - 测试moduleName值为testtask，method为edit
  - 属性owner @负责人
+ - 属性type @测试类型
+ - 属性members @参与人
  - 属性pri @优先级
  - 属性desc @描述
 - 测试moduleName值为testtask，method为importUnit
@@ -214,9 +218,9 @@ r($customTester->getFormFieldsTest($moduleName[10], $method[2]))  && p('begin,en
 r($customTester->getFormFieldsTest($moduleName[11], $method[0]))  && p('desc')                     && e('描述');                                           // 测试moduleName值为caselib，method为空
 r($customTester->getFormFieldsTest($moduleName[11], $method[1]))  && p('desc')                     && e('描述');                                           // 测试moduleName值为caselib，method为create
 r($customTester->getFormFieldsTest($moduleName[11], $method[2]))  && p('desc')                     && e('描述');                                           // 测试moduleName值为caselib，method为edit
-r($customTester->getFormFieldsTest($moduleName[12], $method[0]))  && p('owner,pri,desc')           && e('负责人,优先级,描述');                             // 测试moduleName值为caselib，method为空
-r($customTester->getFormFieldsTest($moduleName[12], $method[1]))  && p('owner,pri,desc')           && e('负责人,优先级,描述');                             // 测试moduleName值为testtask，method为create
-r($customTester->getFormFieldsTest($moduleName[12], $method[2]))  && p('owner,pri,desc')           && e('负责人,优先级,描述');                             // 测试moduleName值为testtask，method为edit
+r($customTester->getFormFieldsTest($moduleName[12], $method[0]))  && p('owner,pri,desc')              && e('负责人,优先级,描述');                          // 测试moduleName值为testtask，method为空
+r($customTester->getFormFieldsTest($moduleName[12], $method[1]))  && p('owner,type,members,pri,desc') && e('负责人,测试类型,参与人,优先级,描述');          // 测试moduleName值为testtask，method为create
+r($customTester->getFormFieldsTest($moduleName[12], $method[2]))  && p('owner,type,members,pri,desc') && e('负责人,测试类型,参与人,优先级,描述');             // 测试moduleName值为testtask，method为edit
 r($customTester->getFormFieldsTest($moduleName[12], $method[10])) && p('owner,pri,desc')           && e('负责人,优先级,描述');                             // 测试moduleName值为testtask，method为importUnit
 r($customTester->getFormFieldsTest($moduleName[13], $method[0]))  && p('keywords,content')         && e('关键字,文档正文');                                // 测试moduleName值为doc，method为空
 r($customTester->getFormFieldsTest($moduleName[13], $method[1]))  && p('keywords,content')         && e('关键字,文档正文');                                // 测试moduleName值为doc，method为create
