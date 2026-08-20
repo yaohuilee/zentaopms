@@ -40,10 +40,17 @@ zenData('task')->loadYaml('buildbrowseview/task', false, 2)->gen(5);
 zenData('build')->gen(5);
 zenData('productplan')->gen(5);
 zenData('user')->gen(5);
+$company = zenData('company');
+$company->admins->range(',admin,');
+$company->gen(1);
+global $app;
+$app->company->admins = ',admin,';
 
 su('admin');
 
 $bugTest = new bugZenTest();
+$bugTest->instance->mao->cache = null;
+restoreObjectTables();
 
 $product1 = new stdClass();
 $product1->id = 1;
