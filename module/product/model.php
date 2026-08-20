@@ -1211,6 +1211,18 @@ class productModel extends model
         $projectLatestExecutions = array();
         $latestExecutionList     = array();
         $today                   = helper::today();
+
+        /* Get workingDays. */
+        $earliestEnd = $today;
+        foreach($executionList as $executions)
+        {
+            foreach($executions as $execution)
+            {
+                if(!empty($execution->end) && !helper::isZeroDate($execution->end) && $execution->end < $earliestEnd) $earliestEnd = $execution->end;
+            }
+        }
+        $workingDays = $this->loadModel('holiday')->getActualWorkingDays($earliestEnd, $today);
+
         foreach($executionList as $projectID => $executions)
         {
             foreach($executions as &$execution)
@@ -1218,8 +1230,13 @@ class productModel extends model
                 /* Calculate delayed execution. */
                 if($execution->status != 'done' && $execution->status != 'closed' && $execution->status != 'suspended')
                 {
-                    $delay = helper::diffDate($today, $execution->end);
-                    if($delay > 0) $execution->delay = $delay;
+                    $betweenDays = $this->holiday->getDaysBetween($execution->end, $today);
+                    if($betweenDays)
+                    {
+                        $delayDays = array_intersect($betweenDays, $workingDays);
+                        $delay     = count($delayDays) - 1;
+                        if($delay > 0) $execution->delay = $delay;
+                    }
                 }
             }
 

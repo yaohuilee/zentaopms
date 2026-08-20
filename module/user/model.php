@@ -1316,13 +1316,26 @@ class userModel extends model
         $projectStoryCountAndEstimate = $this->userTao->fetchProjectStoryCountAndEstimate(array_keys($projects));
         $projectExecutionCount        = $this->userTao->fetchProjectExecutionCount(array_keys($projects));
 
+        /* Get workingDays. */
+        $today       = helper::today();
+        $earliestEnd = $today;
+        foreach($projects as $project)
+        {
+            if(!empty($project->end) && !helper::isZeroDate($project->end) && $project->end < $earliestEnd) $earliestEnd = $project->end;
+        }
+        $workingDays = $this->loadModel('holiday')->getActualWorkingDays($earliestEnd, $today);
         foreach($projects as $project)
         {
             /* Judge whether the project is delayed. */
             if($project->status != 'done' && $project->status != 'closed' && $project->status != 'suspended')
             {
-                $delay = helper::diffDate(helper::today(), $project->end);
-                if($delay > 0) $project->delay = $delay;
+                $betweenDays = $this->holiday->getDaysBetween($project->end, $today);
+                if($betweenDays)
+                {
+                    $delayDays = array_intersect($betweenDays, $workingDays);
+                    $delay     = count($delayDays) - 1;
+                    if($delay > 0) $project->delay = $delay;
+                }
             }
 
             $projectStory = zget($projectStoryCountAndEstimate, $project->id, '');
