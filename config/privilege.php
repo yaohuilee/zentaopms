@@ -38,6 +38,7 @@ $config->openMethods[] = 'user.reset';
 $config->openMethods[] = 'user.resetpassword';
 $config->openMethods[] = 'gitfox.devopsintroduction';
 $config->openMethods[] = 'gitfox.installgitfox';
+$config->openMethods[] = 'gitfox.upgradegitfox';
 $config->openMethods[] = 'gitfox.ajaxcheckgitfoxhealth';
 $config->openMethods[] = 'zai.syncvectorization';
 
