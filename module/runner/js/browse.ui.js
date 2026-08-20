@@ -13,5 +13,18 @@ window.renderCell = function(result, {col, row})
         }
     }
 
+    if(col.name === 'runnerStatus')
+    {
+        const runnerStatus = row.data.runnerStatus;
+        if(runnerStatus == 'offline')
+        {
+            result[0].props.class = result[0].props.class + ' text-danger';
+        }
+        else if(runnerStatus == 'online')
+        {
+            result[0].props.class = result[0].props.class + ' text-success';
+        }
+    }
+
     return result;
 };
