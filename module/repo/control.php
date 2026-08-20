@@ -49,6 +49,7 @@ class repo extends control
     {
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
+        if($serverHeath == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $fromModal = in_array($this->app->rawModule, array('git', 'svn'));
         $tab       = $fromModal ? '' :$this->app->tab;
@@ -112,6 +113,7 @@ class repo extends control
     {
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
+        if($serverHeath == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         if(!$inSpace) $this->session->set('repoID', 0);
 
@@ -481,6 +483,7 @@ class repo extends control
     {
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
+        if($serverHeath == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $hasDevOpsLink = !empty($this->config->devopsLink) && $this->config->devopsLink == 'repo-browse';
         if(!$repoID && !empty($this->config->devopsLink) && $hasDevOpsLink) $repoID = (int)$this->config->lastRepo;

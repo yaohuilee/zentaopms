@@ -710,7 +710,7 @@ class pipeline extends control
                 $task->name  = $plugin->name;
                 $task->type  = $plugin->kind;
                 $task->alias = $plugin->alias;
-                $task->icon  = 'code';
+                $task->image = '/static/svg/pipeline-' . $plugin->name . '.svg';
                 $tasks[] = $task;
             }
             $object->tasks = $tasks;
