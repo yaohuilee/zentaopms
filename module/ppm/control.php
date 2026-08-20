@@ -209,11 +209,9 @@ class ppm extends control
 
         $branches        = $scm->branch('all', 'date_desc');
         $branchNameList  = array_column($branches, 'name', 'name');
-        $defaultBranches = array_values(array_slice($branchNameList, 0, 2));
-        $targetBranch    = $targetBranch ?: zget($defaultBranches, 0, '');
-        $sourceBranch    = $sourceBranch ?: zget($defaultBranches, 1, '');
         if($targetBranch && !$sourceBranch) $sourceBranch = $targetBranch;
-        $flow            = $this->loadModel('reporeviewflow')->getByBranchName($repoID, $targetBranch);
+
+        $flow = $this->loadModel('reporeviewflow')->getByBranchName($repoID, $targetBranch);
         if(!empty($flow))
         {
             $flow->definition = json_decode($flow->definition);
@@ -282,7 +280,6 @@ class ppm extends control
         $this->view->executionID       = $objectID;
         $this->view->objectID          = $objectID;
         $this->view->branches          = $branchNameList;
-        $this->view->defaultBranch     = $targetBranch;
         $this->view->activeBranch      = $sourceBranch;
         $this->view->reviewers         = implode(',', zget($flow, 'reviewers', array()));
         $this->view->flow              = $flow;
