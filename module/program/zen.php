@@ -273,6 +273,22 @@ class programZen extends program
 
         $programList = array();
         $today       = helper::today();
+
+        /* Get workingDays. */
+        $earliestEnd = $today;
+        foreach($projectGroup as $projects)
+        {
+            foreach($projects as $project)
+            {
+                if(!empty($project->end) && !helper::isZeroDate($project->end) && $project->end < $earliestEnd) $earliestEnd = $project->end;
+            }
+        }
+        foreach($doingExecutions as $doingExecution)
+        {
+            if(!empty($doingExecution->end) && !helper::isZeroDate($doingExecution->end) && $doingExecution->end < $earliestEnd) $earliestEnd = $doingExecution->end;
+        }
+        $workingDays = $this->loadModel('holiday')->getActualWorkingDays($earliestEnd, $today);
+
         foreach($productGroup as $programID => $productList)
         {
             foreach($productList as $product)
@@ -283,7 +299,16 @@ class programZen extends program
                 {
                     foreach($projectGroup[$product->id] as $project)
                     {
-                        if(helper::diffDate($today, $project->end) > 0) $project->delay = helper::diffDate($today, $project->end);
+                        if(!in_array($project->status, array('suspended', 'done', 'closed')))
+                        {
+                            $betweenDays = $this->holiday->getDaysBetween($project->end, $today);
+                            if($betweenDays)
+                            {
+                                $delayDays = array_intersect($betweenDays, $workingDays);
+                                $delay     = count($delayDays) - 1;
+                                if($delay > 0) $project->delay = $delay;
+                            }
+                        }
                         if($project->status == 'wait')
                         {
                             $product->waitingProjects[$project->id] = $project;
@@ -294,7 +319,13 @@ class programZen extends program
                             if(isset($doingExecutions[$project->id]))
                             {
                                 $doingExecution = $doingExecutions[$project->id];
-                                if(helper::diffDate($today, $doingExecution->end) > 0) $doingExecution->delay = helper::diffDate($today, $doingExecution->end);
+                                $betweenDays = $this->holiday->getDaysBetween($doingExecution->end, $today);
+                                if($betweenDays)
+                                {
+                                    $delayDays = array_intersect($betweenDays, $workingDays);
+                                    $delay     = count($delayDays) - 1;
+                                    if($delay > 0) $doingExecution->delay = $delay;
+                                }
                                 $product->doingExecutions[$doingExecution->id] = $doingExecution;
                             }
                         }
