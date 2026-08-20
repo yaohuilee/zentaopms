@@ -454,7 +454,7 @@ class zaiModelTest extends baseTest
      */
     public function enqueueTargetsBatchTest($type = '', $lastID = 0)
     {
-        $result = $this->instance->enqueueTargetsBatch($type, $lastID);
+        $result = $this->instance->batchEnqueueTargets($type, $lastID);
         if(dao::isError()) return dao::getError();
         return $result;
     }
