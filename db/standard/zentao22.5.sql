@@ -3817,7 +3817,7 @@ CREATE TABLE `zt_queue` (
   PRIMARY KEY (`id`),
   KEY `status_createdDate` (`status`,`createdDate`),
   KEY `cron_createdDate` (`cron`,`createdDate`),
-  UNIQUE KEY `uk_cron_pending` ON `zt_queue`(`cron`, `pending`)
+  UNIQUE KEY `uk_cron_pending` (`cron`, `pending`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE `zt_relation` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
