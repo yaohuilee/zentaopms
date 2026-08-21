@@ -253,7 +253,7 @@ class ppmModel extends model
                 $response = json_decode(commonModel::http($apiURL, null, array(), $apiRoot->header));
                 if(empty($response) || empty($response->data)) break;
                 $commitList = array_merge($commitList, $response->data);
-                if(!empty($response->listArgs) && $response->listArgs->pageSize < 100) break;
+                if(count($response->data) < 100) break;
             }
 
             return $commitList;
