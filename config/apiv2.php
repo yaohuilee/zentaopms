@@ -2,7 +2,7 @@
 $routes = array();
 
 $routes['/workflows'] = array(
-    'get'  => array('redirect' => '/workflows/browseFlow', 'response' => 'flows(array),pager'), 'search' => array('enabled' => true, 'searchModule' => 'workflow', 'querySessionKey' => 'workflowQuery')
+    'get'  => array('redirect' => '/workflows/browseFlow', 'response' => 'flows(array),pager'), 'search' => array('enabled' => true, 'searchModule' => 'workflow', 'querySessionKey' => 'workflowQuery'),
     'post' => array('redirect' => '/workflows/create?type=flow', 'data' => 'type=flow')
 );
 $routes['/workflows/:module/tables'] = array(

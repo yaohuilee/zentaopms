@@ -148,3 +148,5 @@ ALTER TABLE `zt_risk` ADD `team` int unsigned NOT NULL DEFAULT 0 COMMENT '团队
 ALTER TABLE `zt_story` ADD `cardColor` char(30) NOT NULL DEFAULT '' COMMENT '卡片颜色' AFTER `color`;
 ALTER TABLE `zt_project` ADD `PI` int unsigned NOT NULL DEFAULT 0 COMMENT 'PI' AFTER `market`;
 ALTER TABLE `zt_effort` ADD `team` int unsigned NOT NULL DEFAULT 0 COMMENT '团队' AFTER `execution`;
+
+ALTER TABLE `zt_story` ADD COLUMN `prevReviewers` text DEFAULT NULL AFTER `stagedBy`;
