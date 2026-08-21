@@ -3947,7 +3947,12 @@ class ztSessionHandler implements SessionHandlerInterface
 
         if(!is_file($sessFile) && !touch($sessFile)) return true;
         if(!is_writable($sessFile)) return true;
-        if(md5_file($sessFile) == md5($sessData)) return true;
+        if(md5_file($sessFile) == md5($sessData))
+        {
+            /* 内容未变也要更新 mtime，否则心跳无法阻止 GC 回收 session。 */
+            touch($sessFile);
+            return true;
+        }
         if(file_put_contents($sessFile, $sessData, LOCK_EX)) return true;
         return true;
     }
