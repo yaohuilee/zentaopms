@@ -1633,6 +1633,7 @@ class my extends control
         if($this->app->user->account == 'guest') return print(js::alert('guest') . js::locate('back'));
 
         $user = $this->user->getById($this->app->user->account);
+        unset($user->password);
 
         $this->view->title    = $this->lang->my->common . $this->lang->hyphen . $this->lang->my->profile;
         $this->view->user     = $user;

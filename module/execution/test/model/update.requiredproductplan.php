@@ -13,7 +13,10 @@ cid=1
  - 第0条的field属性 @days
  - 第0条的old属性 @0
  - 第0条的new属性 @5
-- 无产品项目不校验关联产品 @没有数据更新
+- 无产品项目不校验关联产品
+ - 第0条的field属性 @planDuration
+ - 第0条的old属性 @0
+ - 第0条的new属性 @30
 
 */
 include dirname(__FILE__, 5) . '/test/lib/init.php';
@@ -48,4 +51,4 @@ $skipProduct   = array('products' => array());
 r($execution->updateRequiredProductPlanTest(103, $emptyProducts, 'name,begin,end,products')) && p('products') && e('『关联产品』不能为空。'); // 关联产品必填且未选择产品
 r($execution->updateRequiredProductPlanTest(103, $emptyPlans, 'name,begin,end,plans'))       && p('plans')    && e('『关联计划』不能为空。'); // 关联计划必填且未选择计划
 r($execution->updateRequiredProductPlanTest(103, $bothFilled, 'name,begin,end,products,plans')) && p('0:field,old,new') && e('days,0,5'); // 关联产品与计划均已填写可保存
-r($execution->updateRequiredProductPlanTest(104, $skipProduct, 'name,begin,end,products'))   && p()           && e('没有数据更新');           // 无产品项目不校验关联产品
+r($execution->updateRequiredProductPlanTest(104, $skipProduct, 'name,begin,end,products'))   && p('0:field,old,new') && e('planDuration,0,30'); // 无产品项目不校验关联产品
