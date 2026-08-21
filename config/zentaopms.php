@@ -453,6 +453,8 @@ define('TABLE_AI_AGENT',            '`' . $config->db->prefix . 'ai_agent`');
 define('TABLE_AI_USERAGENT',        '`' . $config->db->prefix . 'ai_useragent`');
 define('TABLE_AI_AGENTFIELD',       '`' . $config->db->prefix . 'ai_agentfield`');
 define('TABLE_AI_AGENTROLE',        '`' . $config->db->prefix . 'ai_agentrole`');
+define('TABLE_AI_TIMERLOG',         '`' . $config->db->prefix . 'ai_timerlog`');
+define('TABLE_AI_TIMERQUEUE',       '`' . $config->db->prefix . 'ai_timerqueue`');
 define('TABLE_AI_MINIPROGRAM',      '`' . $config->db->prefix . 'ai_miniprogram`');
 define('TABLE_AI_MINIPROGRAMFIELD', '`' . $config->db->prefix . 'ai_miniprogramfield`');
 define('TABLE_AI_MINIPROGRAMSTAR',  '`' . $config->db->prefix . 'ai_miniprogramstar`');

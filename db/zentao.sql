@@ -2466,24 +2466,25 @@ CREATE TABLE IF NOT EXISTS `zt_webhook` (
 ) ENGINE=InnoDB;
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
-('*',   '*',  '*', '*', '*', '',                                                         '监控定时任务',                       'zentao', 1, 'normal', NULL),
-('0',   '*',  '*', '*', '*', 'moduleName=metric&methodName=updateDashboardMetricLib',    '计算仪表盘数据',                     'zentao', 1, 'normal', NULL),
-('*/1', '*',  '*', '*', '*', 'moduleName=mail&methodName=asyncSend',                     '异步发信',                           'zentao', 1, 'normal', NULL),
-('*/1', '*',  '*', '*', '*', 'moduleName=webhook&methodName=asyncSend',                  '异步发送Webhook',                    'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=admin&methodName=deleteLog',                    '删除过期日志',                       'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=program&methodName=refreshStats',               '刷新项目集统计数据',                 'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=product&methodName=refreshStats',               '刷新产品统计数据',                   'zentao', 1, 'normal', NULL),
-('0',   '0',  '*', '*', '*', 'moduleName=weekly&methodName=createCycleReport',           '定时生成报告',                       'zentao', 1, 'normal', NULL),
-('30',  '0',  '*', '*', '*', 'moduleName=backup&methodName=backup',                      '备份数据和附件',                     'zentao', 1, 'normal', NULL),
-('0',   '1',  '*', '*', '*', 'moduleName=todo&methodName=createCycle',                   '生成周期性待办',                     'zentao', 1, 'normal', NULL),
-('30',  '1',  '*', '*', '*', 'moduleName=metric&methodName=updateMetricLib',             '计算度量数据',                       'zentao', 1, 'normal', NULL),
-('30',  '7',  '*', '*', '*', 'moduleName=effort&methodName=remindNotRecord',             '提醒录入日志',                       'zentao', 1, 'stop',   NULL),
-('0',   '8',  '*', '*', '*', 'moduleName=report&methodName=remind',                      '每日任务提醒',                       'zentao', 1, 'normal', NULL),
-('30',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeTaskEffort',        '计算任务剩余工时',                   'zentao', 1, 'normal', NULL),
-('40',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeburn',              '更新燃尽图',                         'zentao', 1, 'normal', NULL),
-('50',  '23', '*', '*', '*', 'moduleName=execution&methodName=computecfd',               '更新累积流图',                       'zentao', 1, 'normal', NULL),
-('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',                 'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=zai&methodName=syncVectorization',              '自动同步向量化数据',                 'zentao', 1, 'normal', NULL);
+('*',   '*',  '*', '*', '*', '',                                                         '监控定时任务',       'zentao', 1, 'normal', NULL),
+('0',   '*',  '*', '*', '*', 'moduleName=metric&methodName=updateDashboardMetricLib',    '计算仪表盘数据',      'zentao', 1, 'normal', NULL),
+('*/1', '*',  '*', '*', '*', 'moduleName=mail&methodName=asyncSend',                     '异步发信',           'zentao', 1, 'normal', NULL),
+('*/1', '*',  '*', '*', '*', 'moduleName=webhook&methodName=asyncSend',                  '异步发送Webhook',    'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=admin&methodName=deleteLog',                    '删除过期日志',        'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=program&methodName=refreshStats',               '刷新项目集统计数据',  'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=product&methodName=refreshStats',               '刷新产品统计数据',    'zentao', 1, 'normal', NULL),
+('0',   '0',  '*', '*', '*', 'moduleName=weekly&methodName=createCycleReport',           '定时生成报告',        'zentao', 1, 'normal', NULL),
+('30',  '0',  '*', '*', '*', 'moduleName=backup&methodName=backup',                      '备份数据和附件',      'zentao', 1, 'normal', NULL),
+('0',   '1',  '*', '*', '*', 'moduleName=todo&methodName=createCycle',                   '生成周期性待办',      'zentao', 1, 'normal', NULL),
+('30',  '1',  '*', '*', '*', 'moduleName=metric&methodName=updateMetricLib',             '计算度量数据',        'zentao', 1, 'normal', NULL),
+('30',  '7',  '*', '*', '*', 'moduleName=effort&methodName=remindNotRecord',             '提醒录入日志',        'zentao', 1, 'stop',   NULL),
+('0',   '8',  '*', '*', '*', 'moduleName=report&methodName=remind',                      '每日任务提醒',        'zentao', 1, 'normal', NULL),
+('30',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeTaskEffort',        '计算任务剩余工时',     'zentao', 1, 'normal', NULL),
+('40',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeburn',              '更新燃尽图',          'zentao', 1, 'normal', NULL),
+('50',  '23', '*', '*', '*', 'moduleName=execution&methodName=computecfd',               '更新累积流图',         'zentao', 1, 'normal', NULL),
+('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',   'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=ai&methodName=syncVectorization',               '自动同步向量化数据',   'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents',                  '执行定时智能体',       'zentao', 1, 'normal', NULL);
 
 REPLACE INTO `zt_group` (`vision`, `name`, `role`, `desc`) VALUES
 ('rnd',  'ADMIN',          'admin',          'for administrator'),
@@ -15053,6 +15054,7 @@ CREATE TABLE IF NOT EXISTS `zt_ai_model` (
 CREATE TABLE IF NOT EXISTS `zt_ai_agent` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(30) NOT NULL DEFAULT '' COMMENT '内部 code',
+  `type` varchar(20) NOT NULL DEFAULT 'normal' COMMENT '智能体类型：normal普通/timer定时',
   `name` varchar(20) NOT NULL DEFAULT '',
   `desc` text DEFAULT NULL,
   `model` varchar(255) NOT NULL DEFAULT '',
@@ -15061,6 +15063,10 @@ CREATE TABLE IF NOT EXISTS `zt_ai_agent` (
   `module` varchar(30) NOT NULL DEFAULT '',
   `displayPosition` varchar(20) NOT NULL DEFAULT '' COMMENT '显示位置，目前包括：详情页（detail）、表单页（form）',
   `actionPurpose` varchar(100) NOT NULL DEFAULT '' COMMENT '操作目的编码',
+  `operation` varchar(30) NOT NULL DEFAULT '' COMMENT '定时操作目的：report/risk/notify',
+  `cycleType` varchar(10) NOT NULL DEFAULT '' COMMENT '周期类型：day/week/month',
+  `cycleConfig` text NULL DEFAULT NULL COMMENT '周期配置',
+  `notifyRule` text NULL DEFAULT NULL COMMENT '通知规则JSON：roles/users/methods',
   `source` text DEFAULT NULL,
   `targetForm` varchar(30) NOT NULL DEFAULT '',
   `purpose` text DEFAULT NULL,
@@ -15072,9 +15078,41 @@ CREATE TABLE IF NOT EXISTS `zt_ai_agent` (
   `createdDate` datetime DEFAULT NULL,
   `editedBy` varchar(30) NOT NULL DEFAULT '',
   `editedDate` datetime DEFAULT NULL,
+  `lastRunDate` datetime NULL DEFAULT NULL COMMENT '最近一次定时执行时间',
   `deleted` tinyint unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
+
+-- DROP TABLE IF EXISTS `zt_ai_timerlog`;
+CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `agent` int unsigned NOT NULL DEFAULT 0 COMMENT '智能体ID',
+  `status` varchar(20) NOT NULL DEFAULT '' COMMENT '执行状态：success/fail/partial',
+  `successCount` int unsigned NOT NULL DEFAULT 0 COMMENT '成功数量',
+  `failCount` int unsigned NOT NULL DEFAULT 0 COMMENT '失败数量',
+  `message` varchar(500) NOT NULL DEFAULT '' COMMENT '展示文案',
+  `error` varchar(1000) NOT NULL DEFAULT '' COMMENT '错误摘要',
+  `createdDate` datetime NULL DEFAULT NULL COMMENT '执行时间',
+  `deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+-- DROP TABLE IF EXISTS `zt_ai_timerqueue`;
+CREATE TABLE IF NOT EXISTS `zt_ai_timerqueue` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `agent` int unsigned NOT NULL DEFAULT 0 COMMENT '智能体ID',
+  `objectType` varchar(30) NOT NULL DEFAULT '' COMMENT '对象类型',
+  `objectID` int unsigned NOT NULL DEFAULT 0 COMMENT '对象ID',
+  `status` varchar(10) NOT NULL DEFAULT 'wait' COMMENT '状态：wait/doing/done',
+  `content` mediumtext NULL DEFAULT NULL COMMENT 'AI通知正文',
+  `toList` varchar(1000) NOT NULL DEFAULT '' COMMENT '通知人账号列表',
+  `createdBy` varchar(30) NOT NULL DEFAULT '' COMMENT '由谁创建',
+  `createdDate` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+CREATE INDEX `idx_agent_status` ON `zt_ai_timerqueue`(`agent`, `status`);
+CREATE INDEX `idx_agent_object` ON `zt_ai_timerqueue`(`agent`, `objectType`, `objectID`);
 
 INSERT INTO `zt_ai_agent` (`id`, `code`, `name`, `desc`, `model`, `module`, `displayPosition`, `actionPurpose`, `source`, `targetForm`, `purpose`, `elaboration`, `role`, `characterization`, `createdBy`, `createdDate`, `status`) VALUES
 (1, 'zt_story_polishing', '需求润色', '优化需求中标题、描述和验收标准等字段，使表述清晰准确。', 0, 'story', 'detail', 'story.change', ',story.title,story.spec,story.verify,story.product,story.module,story.pri,story.category,story.estimate,', 'story.change', '帮忙优化其中各字段的表述，使表述清晰准确。必要时可以修改需求使其更加合理。', '需求描述格式建议使用：作为一名<某种类型的用户>，我希望<达成某些目的>，这样可以<开发的价值>。验收标准建议列举多条。直接给出你的润色结果，无需建议。', '请你扮演一名资深的产品经理。', '负责产品战略、设计、开发、数据分析、用户体验、团队管理、沟通协调等方面，需要具备多种技能和能力，以实现产品目标和公司战略。', 'system', '2023-08-10 13:24:14', 'active'),

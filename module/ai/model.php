@@ -240,8 +240,12 @@ class aiModel extends model
             $executable = $this->isExecutable($object);
             $published  = $object->status == 'active';
 
-            if($action == 'promptbasicinfo') return common::hasPriv('ai', 'designPrompt') && !$published;
-            if($action == 'promptaudit')     return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
+            if($action == 'promptbasicinfo' || $action == 'timerbasicinfo') return common::hasPriv('ai', 'designPrompt') && !$published;
+            if($action == 'promptaudit')
+            {
+                if(!empty($object->type) && $object->type == 'timer') return false;
+                return common::hasPriv('ai', 'designPrompt') && $executable && !$published;
+            }
             if($action == 'promptedit')      return common::hasPriv('ai', 'promptedit');
             if($action == 'promptpublish')   return common::hasPriv('ai', 'promptpublish') && !$published && $executable;
             if($action == 'promptunpublish') return common::hasPriv('ai', 'promptunpublish') && $published;
@@ -260,6 +264,19 @@ class aiModel extends model
         }
 
         return true;
+    }
+
+    /**
+     * Get design action name by prompt type.
+     *
+     * @param  object|null $prompt
+     * @access public
+     * @return string
+     */
+    public function getPromptDesignAction($prompt): string
+    {
+        if(!empty($prompt) && !empty($prompt->type) && $prompt->type == 'timer') return 'timerbasicinfo';
+        return 'promptbasicinfo';
     }
 
     /**
@@ -1789,9 +1806,16 @@ class aiModel extends model
      */
     public function getPromptById($id)
     {
-        return $this->dao->select('*')->from(TABLE_AI_AGENT)
+        $agent = $this->dao->select('*')->from(TABLE_AI_AGENT)
             ->where('id')->eq($id)
             ->fetch();
+
+        if($agent->type == 'timer')
+        {
+            $agent->logs = $this->dao->select('*')->from(TABLE_AI_TIMERLOG)->where('agent')->eq($id)->orderBy('createdDate_desc')->limit(20)->fetchAll('id', false);
+        }
+
+        return $agent;
     }
 
     /**
@@ -1948,7 +1972,7 @@ class aiModel extends model
         $this->lang->error->unique = $this->lang->ai->validate->nameNotUnique;
 
         $this->dao->update(TABLE_AI_AGENT)
-            ->data($prompt)
+            ->data($prompt, 'logs')
             ->batchCheck($this->config->ai->createprompt->requiredFields, 'notempty')
             ->check('name', 'unique', "`id` != {$prompt->id} AND `deleted` = '0'")
             ->autoCheck()
@@ -2833,6 +2857,15 @@ class aiModel extends model
         if(is_numeric($prompt)) $prompt = $this->getByID($prompt);
         if(empty($prompt)) return false;
 
+        if($prompt->type== 'timer')
+        {
+            foreach(array('name', 'module', 'purpose', 'operation', 'cycleType') as $field)
+            {
+                if(empty($prompt->$field) || $prompt->$field == ',,') return false;
+            }
+            return true;
+        }
+
         $executable      = true;
         $displayPosition = $prompt->displayPosition ?? '';
         if(empty($displayPosition)) return false;
@@ -3422,6 +3455,15 @@ class aiModel extends model
     {
         if(empty($prompt)) return 'basicinfo';
 
+        if($prompt->type == 'timer')
+        {
+            $basicInfoComplete = !empty($prompt->name) && !empty($prompt->module) && !empty($prompt->operation) && !empty($prompt->cycleType);
+            if(!$basicInfoComplete) return 'basicinfo';
+            if(!empty($prompt->status) && $prompt->status == 'active') return 'preview';
+            if(!empty($prompt->purpose)) return 'setprompt';
+            return 'basicinfo';
+        }
+
         $basicInfoComplete = !empty($prompt->name) && !empty($prompt->module) && !empty($prompt->actionPurpose) && !empty($prompt->displayPosition);
         if($basicInfoComplete)
         {
@@ -3433,6 +3475,56 @@ class aiModel extends model
         }
 
         return 'basicinfo';
+    }
+
+    /**
+     * 获取智能体设计向导步骤按钮的状态。
+     * Get design wizard step status map.
+     *
+     * @param  array  $stepSequence
+     * @param  string $currentStep
+     * @param  string $lastActiveStep
+     * @param  int    $promptID
+     * @access public
+     * @return array
+     */
+    public function getPromptDesignStepStatus(array $stepSequence, string $currentStep, string $lastActiveStep, int $promptID = 0): array
+    {
+        $currentStepIndex    = array_search($currentStep, $stepSequence) ?? 0;
+        $lastActiveStepIndex = array_search($lastActiveStep, $stepSequence) ?? 0;
+
+        $stepStatus = array();
+        foreach($stepSequence as $index => $stepName)
+        {
+            if($index < $currentStepIndex)
+            {
+                $stepStatus[$stepName] = 'active';
+            }
+            elseif($index > $currentStepIndex && $index <= $lastActiveStepIndex + 1 && !empty($promptID))
+            {
+                $stepStatus[$stepName] = 'clickable';
+            }
+            else
+            {
+                $stepStatus[$stepName] = 'disabled';
+            }
+
+            if($index == $currentStepIndex) $stepStatus[$stepName] = 'current';
+        }
+
+        return $stepStatus;
+    }
+
+    /**
+     * Get the start method of prompt design wizard.
+     *
+     * @param  string $referer
+     * @access public
+     * @return string
+     */
+    public function getPromptDesignStartMethod(string $referer = ''): string
+    {
+        return stripos($referer, 'timerbasicinfo') !== false ? 'timerBasicInfo' : 'promptBasicInfo';
     }
 
     /**
@@ -3469,7 +3561,8 @@ class aiModel extends model
         $prompts = $this->dao->select('*')->from(TABLE_AI_AGENT)
             ->where('deleted')->eq(0)
             ->andWhere('status')->eq('active')
-            ->andWhere('displayPosition')->eq($displayPosition);
+            ->andWhere('displayPosition')->eq($displayPosition)
+            ->andWhere('type')->ne('timer');
 
         if($displayPosition === 'detail')
         {
@@ -3501,6 +3594,9 @@ class aiModel extends model
 
         /* Remove the unexecutable ones. */
         $prompts = array_filter($prompts, array($this, 'isExecutable'));
+
+        /* Timer agents are executed by scheduler, not page entry. */
+        $prompts = array_filter($prompts, function($prompt){return $prompt->type != 'timer';});
 
         $moduleMap        = $this->config->ai->moduleNameMap ?? array();
         $reverseModuleMap = array_flip($moduleMap);

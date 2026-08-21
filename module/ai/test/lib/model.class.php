@@ -2346,6 +2346,23 @@ class aiModelTest extends baseTest
     }
 
     /**
+     * Test getPromptDesignStepStatus method.
+     *
+     * @param  array  $stepSequence
+     * @param  string $currentStep
+     * @param  string $lastActiveStep
+     * @param  int    $promptID
+     * @access public
+     * @return mixed
+     */
+    public function getPromptDesignStepStatusTest($stepSequence = array(), $currentStep = 'basicinfo', $lastActiveStep = 'basicinfo', $promptID = 0)
+    {
+        $result = $this->instance->getPromptDesignStepStatus($stepSequence, $currentStep, $lastActiveStep, $promptID);
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
+
+    /**
      * Test getPromptsForUser method.
      *
      * @param  string $module

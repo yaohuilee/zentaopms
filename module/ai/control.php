@@ -353,6 +353,7 @@ class ai extends control
         $prompt = empty($promptID) ? new stdclass() : $this->ai->getPromptByID($promptID);
         if(empty($prompt)) $prompt = new stdclass();
         if(!empty($prompt->status) && $prompt->status == 'active') return $this->locate($this->inlink('promptView', "id={$prompt->id}"));
+        if(!empty($prompt->type) && $prompt->type == 'timer')      return $this->locate($this->inlink('timerBasicInfo', "promptID={$prompt->id}"));
 
         if($_POST)
         {
@@ -392,6 +393,7 @@ class ai extends control
         if(!isset($prompt->displayPosition)) $prompt->displayPosition = '';
         if(!isset($prompt->model)) $prompt->model = '';
         if(!isset($prompt->desc)) $prompt->desc = '';
+        if(!isset($prompt->type)) $prompt->type = '';
 
         $this->view->prompt         = $prompt;
         $this->view->promptID       = $promptID;
