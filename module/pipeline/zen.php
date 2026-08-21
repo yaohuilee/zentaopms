@@ -238,14 +238,15 @@ class pipelineZen extends pipeline
      * 渲染关键字链接。
      * Render keywords link.
      *
-     * @param  object      $jsonSchemaKeywords
      * @param  object|bool $pipeline
      * @param  string      $params
      * @access public
      * @return array
      */
-    public function renderSchemaKeywords(object $jsonSchemaKeywords, object|bool $pipeline, string $params = ''): array
+    public function renderSchemaKeywords(object|bool $pipeline, string $params = ''): array
     {
+        $jsonSchemaKeywords = $this->config->pipeline->jsonSchemaKeywords;
+
         $renderResult = array();
         $params       = array_filter(explode(',', trim(urldecode($params))));
 

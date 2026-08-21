@@ -738,11 +738,11 @@ class pipeline extends control
         }
 
         $pipeline = $this->pipeline->fetchByID($pipelineID);
-        $renderSchemaKeywords = $this->pipelineZen->renderSchemaKeywords($this->config->pipeline->jsonSchemaKeywords, $pipeline, $params);
+        $renderSchemaKeywords = $this->pipelineZen->renderSchemaKeywords($pipeline, $params);
 
         foreach($renderSchemaKeywords as $key => $link)
         {
-            $stepSchema = str_replace('%' . $key . '%', $link, $stepSchema);
+            $stepSchema = str_replace('%%' . $key . '%%', $link, $stepSchema);
         }
 
         $this->send(array('result' => 'success', 'data' => $stepSchema));
@@ -1231,15 +1231,38 @@ class pipeline extends control
         $this->display();
     }
 
+    /**
+     * 获取代码库列表。
+     * Get repo list.
+     *
+     * @param  int $spaceID
+     * @access public
+     * @return void
+     */
     public function ajaxGetRepos(int $spaceID = 0)
     {
-        $repos = $this->loadModel('repo')->getList(0, $spaceID);
-        a($repos);die;
+        $this->loadModel('gitfox');
+
+        $params = array();
+        $params['pageSize'] = 1000;
+
+        $repos = array();
+        for($i = 0; true; $i++)
+        {
+            $params['page'] = $i + 1;
+            $response = $this->gitfox->request('/repos/list', 'POST', $params);
+            if(empty($response) || empty($response->data)) break;
+            $repos = array_merge($repos, $response->data);
+            if(count($response->data) < 1000) break;
+        }
 
         $repoList = array();
         foreach($repos as $repo)
         {
-            $repoList[] = array('value' => $repo->id, 'text' => $repo->name, 'key' => $repo->name);
+            if($repo->scmType != 'git' || $repo->mirror) continue;
+            if($spaceID && $repo->spaceID != $spaceID) continue;
+
+            $repoList[] = array('value' => $repo->gitURL, 'text' => $repo->name, 'key' => $repo->name);
         }
 
         echo json_encode($repoList);
