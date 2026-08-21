@@ -732,6 +732,7 @@ CREATE TABLE IF NOT EXISTS `zt_cron` (
   `buildin` tinyint unsigned NOT NULL DEFAULT 0,
   `status` varchar(20) NOT NULL DEFAULT '',
   `lastTime` datetime DEFAULT NULL,
+  `timeout` smallint unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE INDEX `lastTime` ON `zt_cron`(`lastTime`);
@@ -1669,13 +1670,16 @@ CREATE TABLE IF NOT EXISTS `zt_queue` (
   `type` varchar(255) NOT NULL DEFAULT '',
   `command` text DEFAULT NULL,
   `status` varchar(10) NOT NULL DEFAULT 'wait',
+  `pending` tinyint unsigned NULL DEFAULT NULL,
   `execId` int unsigned NOT NULL DEFAULT 0,
   `createdDate` datetime DEFAULT NULL,
+  `startedDate` datetime DEFAULT NULL,
   `deleted` tinyint unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE INDEX `status_createdDate` ON `zt_queue`(`status`, `createdDate`);
 CREATE INDEX `cron_createdDate` ON `zt_queue`(`cron`, `createdDate`);
+CREATE UNIQUE INDEX `uk_cron_pending` ON `zt_queue`(`cron`, `pending`);
 
 -- DROP TABLE IF EXISTS `zt_relation`;
 CREATE TABLE IF NOT EXISTS `zt_relation` (
@@ -2426,24 +2430,24 @@ CREATE TABLE IF NOT EXISTS `zt_webhook` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
-REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
-('*',   '*',  '*', '*', '*', '',                                                         '监控定时任务',                       'zentao', 1, 'normal', NULL),
-('0',   '*',  '*', '*', '*', 'moduleName=metric&methodName=updateDashboardMetricLib',    '计算仪表盘数据',                     'zentao', 1, 'normal', NULL),
-('*/1', '*',  '*', '*', '*', 'moduleName=mail&methodName=asyncSend',                     '异步发信',                           'zentao', 1, 'normal', NULL),
-('*/1', '*',  '*', '*', '*', 'moduleName=webhook&methodName=asyncSend',                  '异步发送Webhook',                    'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=admin&methodName=deleteLog',                    '删除过期日志',                       'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=program&methodName=refreshStats',               '刷新项目集统计数据',                 'zentao', 1, 'normal', NULL),
-('*/5', '*',  '*', '*', '*', 'moduleName=product&methodName=refreshStats',               '刷新产品统计数据',                   'zentao', 1, 'normal', NULL),
-('0',   '0',  '*', '*', '*', 'moduleName=weekly&methodName=createCycleReport',           '定时生成报告',                       'zentao', 1, 'normal', NULL),
-('30',  '0',  '*', '*', '*', 'moduleName=backup&methodName=backup',                      '备份数据和附件',                     'zentao', 1, 'normal', NULL),
-('0',   '1',  '*', '*', '*', 'moduleName=todo&methodName=createCycle',                   '生成周期性待办',                     'zentao', 1, 'normal', NULL),
-('30',  '1',  '*', '*', '*', 'moduleName=metric&methodName=updateMetricLib',             '计算度量数据',                       'zentao', 1, 'normal', NULL),
-('30',  '7',  '*', '*', '*', 'moduleName=effort&methodName=remindNotRecord',             '提醒录入日志',                       'zentao', 1, 'stop',   NULL),
-('0',   '8',  '*', '*', '*', 'moduleName=report&methodName=remind',                      '每日任务提醒',                       'zentao', 1, 'normal', NULL),
-('30',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeTaskEffort',        '计算任务剩余工时',                   'zentao', 1, 'normal', NULL),
-('40',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeburn',              '更新燃尽图',                         'zentao', 1, 'normal', NULL),
-('50',  '23', '*', '*', '*', 'moduleName=execution&methodName=computecfd',               '更新累积流图',                       'zentao', 1, 'normal', NULL),
-('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',                 'zentao', 1, 'normal', NULL);
+REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`, `timeout`) VALUES
+('*',   '*',  '*', '*', '*', '',                                                         '监控定时任务',                       'zentao', 1, 'normal', NULL, 300),
+('0',   '*',  '*', '*', '*', 'moduleName=metric&methodName=updateDashboardMetricLib',    '计算仪表盘数据',                     'zentao', 1, 'normal', NULL, 3600),
+('*/1', '*',  '*', '*', '*', 'moduleName=mail&methodName=asyncSend',                     '异步发信',                           'zentao', 1, 'normal', NULL, 300),
+('*/1', '*',  '*', '*', '*', 'moduleName=webhook&methodName=asyncSend',                  '异步发送Webhook',                    'zentao', 1, 'normal', NULL, 300),
+('*/5', '*',  '*', '*', '*', 'moduleName=admin&methodName=deleteLog',                    '删除过期日志',                       'zentao', 1, 'normal', NULL, 300),
+('*/5', '*',  '*', '*', '*', 'moduleName=program&methodName=refreshStats',               '刷新项目集统计数据',                 'zentao', 1, 'normal', NULL, 300),
+('*/5', '*',  '*', '*', '*', 'moduleName=product&methodName=refreshStats',               '刷新产品统计数据',                   'zentao', 1, 'normal', NULL, 300),
+('0',   '0',  '*', '*', '*', 'moduleName=weekly&methodName=createCycleReport',           '定时生成报告',                       'zentao', 1, 'normal', NULL, 300),
+('30',  '0',  '*', '*', '*', 'moduleName=backup&methodName=backup',                      '备份数据和附件',                     'zentao', 1, 'normal', NULL, 3600),
+('0',   '1',  '*', '*', '*', 'moduleName=todo&methodName=createCycle',                   '生成周期性待办',                     'zentao', 1, 'normal', NULL, 300),
+('30',  '1',  '*', '*', '*', 'moduleName=metric&methodName=updateMetricLib',             '计算度量数据',                       'zentao', 1, 'normal', NULL, 7200),
+('30',  '7',  '*', '*', '*', 'moduleName=effort&methodName=remindNotRecord',             '提醒录入日志',                       'zentao', 1, 'stop',   NULL, 300),
+('0',   '8',  '*', '*', '*', 'moduleName=report&methodName=remind',                      '每日任务提醒',                       'zentao', 1, 'normal', NULL, 300),
+('30',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeTaskEffort',        '计算任务剩余工时',                   'zentao', 1, 'normal', NULL, 300),
+('40',  '23', '*', '*', '*', 'moduleName=execution&methodName=computeburn',              '更新燃尽图',                         'zentao', 1, 'normal', NULL, 300),
+('50',  '23', '*', '*', '*', 'moduleName=execution&methodName=computecfd',               '更新累积流图',                       'zentao', 1, 'normal', NULL, 300),
+('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',                 'zentao', 1, 'normal', NULL, 300);
 
 REPLACE INTO `zt_group` (`vision`, `name`, `role`, `desc`) VALUES
 ('rnd',  'ADMIN',          'admin',          'for administrator'),
