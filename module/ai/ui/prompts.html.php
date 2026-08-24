@@ -191,7 +191,7 @@ $promptCard = function($prompt) use ($lang, $buildDropdown, $userListMap, $timer
             h3(
                 setClass('card-title'),
                 set::title($prompt->name),
-                span($prompt->name),
+                span(setClass('prompt-name'), $prompt->name),
                 $timerLabel,
                 $draftTag
             ),

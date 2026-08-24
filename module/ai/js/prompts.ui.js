@@ -2,7 +2,7 @@ window.onRenderPromptNameCell = function(result, {row, col})
 {
     if(result && col.name == 'name' && typeof timerAgentType !== 'undefined' && row.data.type == timerAgentType && timerAgentTag)
     {
-        result.push({html: `<span class="label size-sm primary-pale ml-1">${timerAgentTag}</span>`});
+        result.push({html: `<span class="label size-sm primary-pale ml-1 timer-tag">${timerAgentTag}</span>`});
     }
     return result;
 };
