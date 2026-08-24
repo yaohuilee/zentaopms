@@ -74,7 +74,17 @@ foreach($pipelines as $pipeline)
 
 $checkAI     = true;
 $checkScan   = $scanSevereIssue <= $config->ppm->scanSevereIssue && $scanOrdinaryIssue <= $config->ppm->scanOrdinaryIssue && $scanPassRate >= $config->ppm->scanPassRate;
-$hasConflict = empty($checkResult->conflictFiles) ? 'no' : 'yes'; // 是否有代码冲突
+$hasConflict = !empty($checkResult->conflictFiles); // 是否有代码冲突
+$checkResult->conflictFiles[] = '/app/public/test/sae2sd2/test2.php';
+
+$conflictFiles = array();
+if($hasConflict)
+{
+    foreach($checkResult->conflictFiles as $file)
+    {
+        $conflictFiles[] = div(setClass('flex items-center'), icon('file mr-1'), span($file));
+    }
+}
 
 $domBox = div
 (
@@ -132,7 +142,7 @@ $domBox = div
         (
             setClass('border px-4 h-12 flex items-center'),
             span(setClass('font-bold'), $lang->ppm->codeConflict),
-            $hasConflict == 'yes' ? label(setClass('danger ml-4'), $lang->ppm->checkStatusList['fail']) : label(setClass('success ml-4'), $lang->ppm->checkStatusList['success']),
+            $hasConflict ? label(setClass('danger ml-4'), $lang->ppm->checkStatusList['fail']) : label(setClass('success ml-4'), $lang->ppm->checkStatusList['success']),
             //div(setClass('flex flex-auto justify-end'), btn(setClass('ghost text-primary'), span(icon(setClass('mr-2'), 'about'), $lang->ppm->locateView)))
         ),
         div
@@ -142,10 +152,21 @@ $domBox = div
             div
             (
                 setClass('flex items-center'),
-                $hasConflict == 'yes' ? icon(setClass('text-danger font-bold mr-1'), 'close') : icon(setClass('text-success font-bold mr-1'), 'check'),
-                span("{$lang->ppm->hasConflict}: ", $lang->ppm->hasConflictList[$hasConflict]),
+                $hasConflict ? icon(setClass('text-danger font-bold mr-1'), 'close') : icon(setClass('text-success font-bold mr-1'), 'check'),
+                span("{$lang->ppm->hasConflict}: ", $lang->ppm->hasConflictList[$hasConflict ? 'yes' : 'no']),
                 div(setClass('flex flex-auto justify-end'), span(setClass('mr-2'), "({$lang->ppm->request}: {$lang->ppm->hasConflictList['no']})"))
-            )
+            ),
+            $hasConflict ? div
+            (
+                div
+                (
+                    setClass('flex items-center mt-1'),
+                    icon(setClass('text-danger font-bold mr-1'), 'close'),
+                    span("{$lang->ppm->conflictFiles}: "),
+                    div(setClass('flex flex-auto justify-end'), span(setClass('mr-2'), "({$lang->ppm->request}: {$lang->ppm->hasConflictList['no']})"))
+                ),
+                $conflictFiles,
+            ) : null
         )
     ),
     //section
