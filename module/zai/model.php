@@ -193,38 +193,30 @@ class zaiModel extends model
      */
     public function createUserAgent(string $account, string $type = ''): string
     {
-        $setting = $this->getSetting(true);
-        $token   = $this->loadModel('ai')->generateToken($setting);
-        $baseUrl = $this->ai->getZaiBaseUrl($setting);
-        $user    = $this->loadModel('user')->getByID($account);
-        $skills  = $this->config->edition == 'open' ? [] : $this->loadModel('ai')->getSkills('private', 'active');
-        $header  = array(
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $token
-        );
-
-        $skillIdList = [];
-        foreach($skills as $skill) $skillIdList[] = $skill->skillID;
-
+        $user = $this->loadModel('user')->getByID($account);
         $data = array(
-            'name' => $user->realname . (empty($type) ? '' : "($type)"),
+            'name' => $user->realname . (empty($type) ? '' : "-$type"),
             'type' => empty($type) ? 'custom' : $type,
-            'is_default' => false,
-            'skills' => $type === 'executor' ? null : $skillIdList // 创建agent的时候直接挂载技能
+            'is_default' => false
         );
 
-        $url    = $baseUrl . '/v8/agents';
-        $result = $this->loadModel('ai')->http('POST', $url, $data, $header);
+        if($type !== 'executor')
+        {
+            $skills      = $this->config->edition == 'open' ? [] : $this->loadModel('ai')->getSkills('private', 'active');
+            $skillIdList = [];
+            foreach($skills as $skill) $skillIdList[] = $skill->skillID;
+            $data['skills'] = $skillIdList;  // 创建agent的时候直接挂载技能
+        }
 
-        if(!$result) return '';
+        $result = $this->callAdminAPI('/v8/agents', 'POST', null, $data);
 
-        $result = json_decode($result, true);
-        if(empty($result['agent']['id'])) return '';
+        if(!$result || $result['result'] !== 'success' || empty($result['data'])) return '';
 
-        $userAgent = $this->dao->select('*')->from(TABLE_AI_USERAGENT)->where('account')->eq($account)->fetch();
-        if(!$userAgent) $this->dao->insert(TABLE_AI_USERAGENT)->data(array('account' => $account, 'agent' => $result['agent']['id'], 'type' => $type))->exec();
+        $createdAgent = $result['data']['agent'];
+        $userAgent    = $this->dao->select('*')->from(TABLE_AI_USERAGENT)->where('account')->eq($account)->andWhere('type')->eq($type)->fetch();
+        if(!$userAgent) $this->dao->insert(TABLE_AI_USERAGENT)->data(array('account' => $account, 'agent' => $createdAgent['id'], 'type' => $type))->exec();
 
-        return $result['agent']['id'];
+        return $createdAgent['id'];
     }
 
     /**
