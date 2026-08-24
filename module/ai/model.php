@@ -2827,7 +2827,7 @@ class aiModel extends model
         $role   = static::tryPunctuate($prompt->role);
         $role  .= static::autoPrependNewline(static::tryPunctuate($prompt->characterization, true));
         $schema = $this->getFunctionCallSchema($prompt->actionPurpose);
-        if(empty($schema)) return -5;
+        if(empty($schema) && $prompt->actionPurpose !== 'coding') return -5;
 
         $this->useLanguageModel($prompt->model);
         return array('role' => $role, 'schema' => $schema, 'dataPrompt' => $dataPrompt, 'name' => $prompt->name, 'purpose' => $prompt->purpose, 'status' => $prompt->status, 'targetForm' => $prompt->actionPurpose, 'promptID' => $prompt->id);
@@ -3030,7 +3030,7 @@ class aiModel extends model
 
         $targetForm = $prompt->actionPurpose;
         if(empty($targetForm)) return array(false, true);
-        if($targetForm === 'empty.empty') return array(false, false);
+        if($targetForm === 'empty.empty' || $targetForm === 'coding') return array(false, false);
 
         $targetFormPath = explode('.', $targetForm, 2);
         if(count($targetFormPath) !== 2) return array(false, true);

@@ -223,7 +223,7 @@ class zai extends control
     {
         if(!in_array($type, array('chat', 'executor'))) $type = '';
 
-        $userAgent = $this->zai->getUserAgent();
+        $userAgent = $this->zai->getUserAgent($type);
         if(!$userAgent) $userAgent = $this->zai->createUserAgent($this->app->user->account, $type);
 
         return $this->send(array('result' => 'success', 'data' => $userAgent));

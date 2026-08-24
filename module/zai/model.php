@@ -115,6 +115,7 @@ class zaiModel extends model
 
         if(!$includeAdmin) unset($setting->adminToken);
         $setting->userAgent = $this->getUserAgent();
+        $setting->codingAgent = $this->getUserAgent('executor');
         $setting->canAddSkill = common::hasPriv('ai', 'addSkill');
 
         return $setting;
@@ -173,11 +174,12 @@ class zaiModel extends model
      * Get ZAI agent of current user.
      *
      * @access public
+     * @param string $type '' | 'executor'
      * @return string
      */
-    public function getUserAgent(): string
+    public function getUserAgent($type = ''): string
     {
-        $agent = $this->dao->select('agent')->from(TABLE_AI_USERAGENT)->where('account')->eq($this->app->user->account)->fetch('agent');
+        $agent = $this->dao->select('agent')->from(TABLE_AI_USERAGENT)->where('account')->eq($this->app->user->account)->andWhere('type')->eq($type)->fetch('agent');
         return $agent ? $agent : '';
     }
 
@@ -208,9 +210,7 @@ class zaiModel extends model
             'name' => $user->realname . (empty($type) ? '' : "($type)"),
             'type' => empty($type) ? 'custom' : $type,
             'is_default' => false,
-            'execution_runtime' => 'pi_coding_agent',
-            'opencode_mode' => 'serve',
-            'skills' => $skillIdList // 创建agent的时候直接挂载技能
+            'skills' => $type === 'executor' ? null : $skillIdList // 创建agent的时候直接挂载技能
         );
 
         $url    = $baseUrl . '/v8/agents';
@@ -222,7 +222,7 @@ class zaiModel extends model
         if(empty($result['agent']['id'])) return '';
 
         $userAgent = $this->dao->select('*')->from(TABLE_AI_USERAGENT)->where('account')->eq($account)->fetch();
-        if(!$userAgent) $this->dao->insert(TABLE_AI_USERAGENT)->data(array('account' => $account, 'agent' => $result['agent']['id']))->exec();
+        if(!$userAgent) $this->dao->insert(TABLE_AI_USERAGENT)->data(array('account' => $account, 'agent' => $result['agent']['id'], 'type' => $type))->exec();
 
         return $result['agent']['id'];
     }
