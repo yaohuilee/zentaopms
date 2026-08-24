@@ -1973,7 +1973,21 @@ class docModel extends model
         $deletedFiles = !empty($doc->deleteFiles) ? explode(',', $doc->deleteFiles) : array();
         unset($doc->deleteFiles);
 
-        $oldDoc           = $this->getByID($docID);
+        $oldDoc = $this->getByID($docID);
+
+        /* 处理重命名的附件。 Handle renamed files. */
+        if(!empty($doc->renameFiles))
+        {
+            $renamedFileList = array();
+            foreach($doc->renameFiles as $renamedFileID => $newName)
+            {
+                if(empty($newName)) continue;
+                $this->dao->update(TABLE_FILE)->set('title')->eq($newName)->where('id')->eq($renamedFileID)->exec();
+                $renamedFileList[$renamedFileID] = array('old' => isset($oldDoc->files[$renamedFileID]) ? $oldDoc->files[$renamedFileID]->title : '', 'new' => $newName);
+            }
+            $doc->renameFiles = $renamedFileList;
+        }
+
         $changes          = common::createChanges($oldDoc, $doc);
         $oldRawContent    = isset($oldDoc->rawContent) ? $oldDoc->rawContent : '';
         $newRawContent    = isset($doc->rawContent) ? $doc->rawContent : '';
@@ -2017,7 +2031,7 @@ class docModel extends model
         }
 
         unset($doc->files);
-        $this->dao->update(TABLE_DOC)->data($doc, 'content,contentType,rawContent,fromVersion,deleteFiles')
+        $this->dao->update(TABLE_DOC)->data($doc, 'content,contentType,rawContent,fromVersion,deleteFiles,renameFiles')
             ->autoCheck()
             ->batchCheck($requiredFields, 'notempty')
             ->where('id')->eq($docID)
