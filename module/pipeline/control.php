@@ -1241,22 +1241,7 @@ class pipeline extends control
      */
     public function ajaxGetRepos(int $spaceID = 0)
     {
-        $this->loadModel('gitfox');
-
-        $params = array();
-        $params['pageSize'] = 1000;
-
-        $repos = array();
-        for($i = 0; true; $i++)
-        {
-            $params['page'] = $i + 1;
-            $response = $this->gitfox->request('/repos/list', 'POST', $params);
-            if(empty($response) || empty($response->data)) break;
-            $repos = array_merge($repos, $response->data);
-            if(count($response->data) < 1000) break;
-        }
-
-        $repoList = array();
+        $repos = $this->loadModel('gitfox')->apiGetRepos();
         foreach($repos as $repo)
         {
             if($repo->scmType != 'git' || $repo->mirror) continue;
