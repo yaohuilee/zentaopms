@@ -326,6 +326,7 @@ $lang->ppm->notice->userNotAllowMerge            = '只允许以下用户合并�
 $lang->ppm->notice->userNotAllowCreate           = '只允许以下用户创建：%s';
 $lang->ppm->notice->hasUnresolvedIssues          = '有未解决的问题，请先解决。';
 $lang->ppm->notice->hasUnresolvedSpecifiedIssues = '有未解决的%s类型的问题，请先解决。';
+$lang->ppm->notice->noHasReviewer                = '未添加评审人';
 
 $lang->ppm->featureBar['view']['all']   = '全部';
 $lang->ppm->featureBar['view']['story'] = '需求';
