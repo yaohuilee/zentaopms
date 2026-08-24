@@ -47,9 +47,10 @@ $timerTag  = isset($lang->ai->timer->tag) ? $lang->ai->timer->tag : '';
 jsVar('timerAgentType', $timerType);
 jsVar('timerAgentTag', $timerTag);
 
-$cols    = $config->ai->dtable->prompts;
+$cols = $config->ai->dtable->prompts;
 $cols['actions']['list'] = $config->ai->actionList;
 $prompts = initTableData($prompts, $cols, $this->ai);
+if(isset($cols['actions']['actionsMap']['promptbasicinfo'])) $cols['actions']['actionsMap']['timerbasicinfo'] = $cols['actions']['actionsMap']['promptbasicinfo'];
 foreach($prompts as $prompt)
 {
     if($prompt->actionPurpose)
