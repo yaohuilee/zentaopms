@@ -1526,7 +1526,7 @@ class repo extends control
         $repoList = $this->repo->getListByProduct($productID);
         foreach($repoList as $repo) unset($repo->connector);
 
-        return print(json_encode($repoList));
+        return print(json_encode(array_values($repoList)));
     }
 
     /**
