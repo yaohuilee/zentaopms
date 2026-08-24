@@ -1018,7 +1018,7 @@ $(() =>
             chatAgent: zaiConfig.userAgent || (async () => {
                 if(zaiConfig.userAgent) return zaiConfig.userAgent;
 
-                const result = await zui.fetchData($.createLink('zai', 'ajaxGetUserAgent', 'type=chat'));
+                const result = await zui.fetchData($.createLink('zai', 'ajaxGetUserAgent'));
                 return result.data;
             }),
             codingAgent: zaiConfig.codingAgent || (async () => {
