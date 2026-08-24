@@ -206,7 +206,6 @@ $config->upgrade->bizVersion['biz13_1']         = '22_1';
 $config->upgrade->bizVersion['biz13_2']         = '22_2';
 $config->upgrade->bizVersion['biz13_3']         = '22_3';
 $config->upgrade->bizVersion['biz13_4']         = '22_4';
-$config->upgrade->bizVersion['biz13_6']         = '22_6'; // biz insert position.
 $config->upgrade->bizVersion['biz13_5']         = '22_5';
 $config->upgrade->bizVersion['biz13_6']         = '22_6'; // biz insert position.
 
