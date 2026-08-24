@@ -326,6 +326,7 @@ $lang->ppm->notice->userNotAllowMerge            = 'Only the following users are
 $lang->ppm->notice->userNotAllowCreate           = 'Only the following users are allowed to create: %s';
 $lang->ppm->notice->hasUnresolvedIssues          = 'There are unresolved issues, please resolve them first.';
 $lang->ppm->notice->hasUnresolvedSpecifiedIssues = 'There are unresolved %s type issues, please resolve them first.';
+$lang->ppm->notice->noHasReviewer                = 'No reviewers have been added';
 
 $lang->ppm->featureBar['view']['all']   = 'All';
 $lang->ppm->featureBar['view']['story'] = 'Story';

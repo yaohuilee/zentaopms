@@ -191,8 +191,9 @@ $domBox = div
             setClass('border px-4 h-12 flex items-center'),
             span(setClass('font-bold'), $lang->ppm->manualReview),
             $reviewResult == 'approved' ? label(setClass('success ml-4'), $lang->ppm->approvalStatusList[$reviewResult]) : null,
-            $reviewResult == 'rejected' ? label(setClass('danger ml-4'),  $lang->ppm->approvalStatusList[$reviewResult]) : null,
-            $reviewResult == 'inProgress' ? label(setClass('secondary ml-4'),  $lang->ppm->approvalStatusList[$reviewResult]) : null
+            $reviewResult == 'rejected' && !empty($reviewers) ? label(setClass('danger ml-4'),  $lang->ppm->approvalStatusList[$reviewResult]) : null,
+            $reviewResult == 'inProgress' ? label(setClass('secondary ml-4'),  $lang->ppm->approvalStatusList[$reviewResult]) : null,
+            $reviewResult == 'rejected' && empty($reviewers) ? label(setClass('secondary ml-4'),  $lang->ppm->approvalStatusList['inProgress']) : null
         ),
         div
         (
@@ -202,7 +203,7 @@ $domBox = div
             (
                 setClass('flex items-center py-1'),
                 $reviewResult == 'approved' ? icon(setClass('text-success font-bold mr-1 reviewResultIcon'), 'check') : icon(setClass('text-danger font-bold mr-1 reviewResultIcon'), 'close'),
-                span("{$lang->ppm->reviewStatus}: ", $lang->ppm->approvalStatusList[$reviewResult]),
+                span("{$lang->ppm->reviewStatus}: ", $reviewResult == 'rejected' && empty($reviewers) ? $lang->ppm->notice->noHasReviewer : $lang->ppm->approvalStatusList[$reviewResult]),
                 div(setClass('flex flex-auto justify-end'), span(setClass('mr-2'), "({$lang->ppm->request}: {$lang->ppm->approvalStatusList['approved']})"))
             ),
             div
