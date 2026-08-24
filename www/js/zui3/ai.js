@@ -80,7 +80,8 @@ window.getAgentCreatingOptions = function(info, langData)
 {
     langData = langData || zui.AIPanel.shared.options.langData || {};
 
-    const noTargetForm = !info.targetForm || info.targetForm === 'empty.empty';
+    const isCoding     = info.targetForm === 'coding';
+    const noTargetForm = !info.targetForm || info.targetForm === 'empty.empty' || isCoding;
     const toolName     = `zentao_tool_${info.promptID}`;
     const klibs        = (info.knowledgeLib ? info.knowledgeLib.split(',') : []).filter(Boolean).map(x => `zentao:${x}`);
     const formConfig   = getPromptFormConfig(info.fields, info.formConfig);
@@ -189,7 +190,7 @@ window.getAgentCreatingOptions = function(info, langData)
         title    : info.name,
         type     : 'agent',
         model    : info.model,
-        agent    : 'zentao-api',
+        agent    : isCoding ? ['aui', 'zentao-api', 'coder'] : ['aui', 'zentao-api'],
         tools    : tools,
         prompt   : [info.role, zui.formatString(langData.processDataPrefix, {data: info.dataPrompt}), noTargetForm ? null : zui.formatString(langData.promptExtraLimit, {toolName: toolName})].filter(Boolean).join('\n\n'),
         form     : formConfig,
@@ -1012,7 +1013,8 @@ $(() =>
                 const result = await zui.fetchData($.createLink('ai', 'ajaxGetMySkills'));
                 const skills = (result.skills || []).map(skill => ({id: skill.skillID, description: skill.desc, name: skill.name}));
                 return skills;
-            },
+            }
+        }, zaiConfig, {
             chatAgent: zaiConfig.userAgent || (async () => {
                 if(zaiConfig.userAgent) return zaiConfig.userAgent;
 
@@ -1022,10 +1024,10 @@ $(() =>
             codingAgent: zaiConfig.codingAgent || (async () => {
                 if(zaiConfig.codingAgent) return zaiConfig.codingAgent;
 
-                const result = await zui.fetchData($.createLink('zai', 'ajaxGetcodingAgent', 'type=executor'));
+                const result = await zui.fetchData($.createLink('zai', 'ajaxGetUserAgent', 'type=executor'));
                 return result.data;
             }),
-        }, zaiConfig));
+        }));
         if(!aiStore) return
 
         zui.AIPanel.init(
