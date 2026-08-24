@@ -10964,7 +10964,9 @@ class upgradeModel extends model
         if($dbCharset != $serverCharset || $dbCollation != $serverCollation)
         {
             /* 转换数据库的字符集和排序规则。Convert database charset and collation. */
-            $this->dbh->exec("ALTER DATABASE `{$this->config->db->name}` CHARACTER SET={$serverCharset} COLLATE={$serverCollation}");
+            $sql = "ALTER DATABASE `{$this->config->db->name}` CHARACTER SET={$serverCharset} COLLATE={$serverCollation}";
+            $this->saveLogs($sql);
+            $this->dbh->exec($sql);
         }
 
         /* 获取当前数据库中所有表的排序规则。Get all tables collation in current database. */
@@ -10982,12 +10984,19 @@ class upgradeModel extends model
             if($tableName == TABLE_METRICLIB || $tableName == TABLE_ACTION || $tableName == TABLE_HISTORY) continue;
 
              /* 先修改字段长度，避免修改字符集报错。 Fix mysql error: Specified key was too long. */
-            if($tableName == TABLE_COMPILE || $tableName == TABLE_MEASQUEUE) $this->dbh->exec("ALTER TABLE {$tableName} MODIFY COLUMN `status` varchar(100)");
+            if($tableName == TABLE_COMPILE || $tableName == TABLE_MEASQUEUE)
+            {
+                $sql = "ALTER TABLE {$tableName} MODIFY COLUMN `name` varchar(100)";
+                $this->saveLogs($sql);
+                $this->dbh->exec($sql);
+            }
 
             /* 转换表的字符集和排序规则。Convert table charset and collation. */
             try
             {
-                $this->dbh->exec("ALTER TABLE {$tableName} CONVERT TO CHARACTER SET {$serverCharset} COLLATE {$serverCollation}");
+                $sql = "ALTER TABLE {$tableName} CONVERT TO CHARACTER SET {$serverCharset} COLLATE {$serverCollation}";
+                $this->saveLogs($sql);
+                $this->dbh->exec($sql);
             }
             catch(PDOException $e)
             {
