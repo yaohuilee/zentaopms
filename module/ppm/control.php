@@ -93,7 +93,7 @@ class ppm extends control
 
         if(in_array($this->app->tab, array('execution', 'project')) && $objectID) return print($this->fetch('ppm', 'browseByExecution', "repoID={$repoID}&mode={$mode}&param={$param}&objectID={$objectID}&orderBy={$orderBy}&recTotal={$recTotal}&recPerPage={$recPerPage}&pageID={$pageID}"));
 
-        $repoList = $this->repo->getListByPriv();
+        $repoList = $this->repo->getListByPriv('all', '', false);
         if(empty($repoList)) $this->locate($this->repo->createLink('create'));
 
         if(!$repoID) $repoID = key($repoList);
