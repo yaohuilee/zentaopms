@@ -1068,6 +1068,7 @@ class actionTao extends actionModel
 
         if($action->objectType == 'docTemplate' && !common::hasPriv('docTempalte', 'view')) return false;
         if($action->objectType == 'ppm' && (empty($action->objectName) || $action->action == 'deleted')) return false;
+        if($action->objectType == 'prompt' && $action->action == 'deleted') return false;
         if($action->objectType == 'stakeholder' && $action->project == 0) return false;
         if($action->objectType == 'chartgroup') return false;
         if($action->objectType == 'branch' && $action->action == 'mergedbranch') return false;
