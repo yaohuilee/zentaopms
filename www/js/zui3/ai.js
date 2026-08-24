@@ -1016,9 +1016,15 @@ $(() =>
             chatAgent: zaiConfig.userAgent || (async () => {
                 if(zaiConfig.userAgent) return zaiConfig.userAgent;
 
-                const result = await zui.fetchData($.createLink('zai', 'ajaxGetUserAgent'));
+                const result = await zui.fetchData($.createLink('zai', 'ajaxGetUserAgent', 'type=chat'));
                 return result.data;
-            })
+            }),
+            codingAgent: zaiConfig.codingAgent || (async () => {
+                if(zaiConfig.codingAgent) return zaiConfig.codingAgent;
+
+                const result = await zui.fetchData($.createLink('zai', 'ajaxGetcodingAgent', 'type=executor'));
+                return result.data;
+            }),
         }, zaiConfig));
         if(!aiStore) return
 
