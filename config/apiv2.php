@@ -377,3 +377,9 @@ $routes['/:type/modules/:moduleID'] = array(
     'put'    => array('redirect' => '/tree/edit?moduleID=:moduleID&type=:type', 'data' => 'moduleID=:moduleID&type=:type'),
     'delete' => array('redirect' => '/tree/delete?moduleID=:moduleID')
 );
+
+/* 加载扩展模块的路由配置。Load the route configuration of the extension module. */
+foreach(glob(__DIR__ . DS . 'ext' . DS . 'apiv2' . DS . '*.php') as $file)
+{
+    if(is_file($file)) include_once $file;
+}
