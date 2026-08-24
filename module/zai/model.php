@@ -189,7 +189,7 @@ class zaiModel extends model
      * @param string $account
      * @return string
      */
-    public function createUserAgent(string $account): string
+    public function createUserAgent(string $account, string $type = ''): string
     {
         $setting = $this->getSetting(true);
         $token   = $this->loadModel('ai')->generateToken($setting);
@@ -205,8 +205,8 @@ class zaiModel extends model
         foreach($skills as $skill) $skillIdList[] = $skill->skillID;
 
         $data = array(
-            'name' => $user->realname,
-            'type' => 'custom',
+            'name' => $user->realname . (empty($type) ? '' : "($type)"),
+            'type' => empty($type) ? 'custom' : $type,
             'is_default' => false,
             'execution_runtime' => 'pi_coding_agent',
             'opencode_mode' => 'serve',

@@ -1514,6 +1514,22 @@ class repo extends control
     }
 
     /**
+     * 根据产品ID获取代码库列表。
+     * Ajax get repo list by productID.
+     *
+     * @param  int    $productID
+     * @access public
+     * @return void
+     */
+    public function ajaxGetListByProduct(int $productID)
+    {
+        $repoList = $this->repo->getListByProduct($productID);
+        foreach($repoList as $repo) unset($repo->connector);
+
+        return print(json_encode($repoList));
+    }
+
+    /**
      * 根据Url获取代码库信息。
      * API: get repo by url.
      *
