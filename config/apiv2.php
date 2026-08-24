@@ -1,6 +1,8 @@
 <?php
 $routes = array();
 
+$routes['/workflowgroups'] = array('redirect' => '/workflowgroups/project', 'response' => 'groups(array),pager');
+
 $routes['/workflows'] = array(
     'get'  => array('redirect' => '/workflows/browseFlow', 'response' => 'flows(array),pager'), 'search' => array('enabled' => true, 'searchModule' => 'workflow', 'querySessionKey' => 'workflowQuery'),
     'post' => array('redirect' => '/workflows/create?type=flow', 'data' => 'type=flow')
