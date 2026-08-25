@@ -3877,7 +3877,7 @@ class ztSessionHandler implements SessionHandlerInterface
      */
     public function getSessionFile($id): string
     {
-        if(!empty($this->sessionFile)) return $this->sessionFile;
+        if(!empty($this->sessionFile) && $this->sessionID == $id) return $this->sessionFile;
         if(!preg_match('/^\w+$/', $id)) return false;
 
         $fileName = "sess_{$id}";
