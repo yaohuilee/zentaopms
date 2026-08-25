@@ -26,5 +26,21 @@ window.renderCell = function(result, {col, row})
         }
     }
 
+    if(col.name === 'labels')
+    {
+        const labels = row.data.labels;
+        //labels是一个,号分隔的字符串,需要把result里面的值变成一个个label标签
+        const labelsArr = labels.split(',');
+        console.log(labelsArr);
+        let labelsHtml = '';
+        labelsArr.forEach((label) => {
+            if(label)
+            {
+                labelsHtml += '<span class="label label-default mr-1">' + label + '</span>';
+            }
+        });
+        result[0] = {html: labelsHtml};
+    }
+
     return result;
 };
