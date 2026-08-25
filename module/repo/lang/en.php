@@ -533,7 +533,7 @@ $lang->repo->sourceList['Gogs']       = 'Gogs';
 $lang->repo->sourceList['Subversion'] = 'Subversion';
 
 $lang->repo->accessList = array();
-$lang->repo->accessList['writable'] = 'Readable, Writable, Manageable (for image import, managed via third-party code repository, automatically synced regularly by DevOps)';
+$lang->repo->accessList['writable'] = 'Readable, Writable, Manageable (Import as GitFox code repository, manage in GitFox)';
 $lang->repo->accessList['readonly'] = 'Read-only (for image import, managed via third-party code repository, automatically synced regularly by DevOps)';
 
 $lang->repo->importProgress = new stdclass();
