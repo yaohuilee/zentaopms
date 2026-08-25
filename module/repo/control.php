@@ -1138,7 +1138,7 @@ class repo extends control
             $type       = zget($importRepo, 'origin', 'GitLab');
             $providerID = zget($importRepo, 'providerID', 0);
             $groupID    = $type == 'Subversion' ? '' : zget($importRepo, 'organize', '');
-            $groupID    = urlencode($groupID);
+            $groupID    = helper::safe64Encode($groupID);
             $type       = zget($importRepo, 'origin', 'GitLab');
             $acl        = zget($importRepo, 'acl', 'open');
         }

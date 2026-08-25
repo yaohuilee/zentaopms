@@ -45,7 +45,7 @@ $branch->status->range('active');
 $branch->deleted->range('0');
 $branch->gen(1);
 $company = zenData('company');
-$company->admins->range(',admin,');
+$company->admins->range('`,admin,`');
 $company->gen(1);
 global $app;
 $app->company->admins = ',admin,';

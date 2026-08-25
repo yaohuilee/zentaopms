@@ -269,8 +269,8 @@ class bug extends control
             $project = $this->loadModel('project')->getByID($params['projectID']);
             if($project && empty($project->hasProduct))
             {
-                $productID        = $this->loadModel('product')->getShadowProductByProject($params['projectID'])->id;
-                $_POST['product'] = $productID;
+                $productID = $this->loadModel('product')->getShadowProductByProject($params['projectID'])->id;
+                if(!empty($_POST)) $_POST['product'] = $productID;
             }
         }
 
