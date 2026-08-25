@@ -680,27 +680,6 @@ CREATE TABLE IF NOT EXISTS `zt_company` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
--- DROP TABLE IF EXISTS `zt_compile`;
-CREATE TABLE IF NOT EXISTS `zt_compile` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL DEFAULT '',
-  `job` int unsigned NOT NULL DEFAULT 0,
-  `queue` int unsigned NOT NULL DEFAULT 0,
-  `status` varchar(100) NOT NULL DEFAULT '',
-  `branch` varchar(255) NOT NULL DEFAULT '',
-  `logs` longtext DEFAULT NULL,
-  `atTime` varchar(10) NOT NULL DEFAULT '',
-  `testtask` int unsigned NOT NULL DEFAULT 0,
-  `tag` varchar(255) NOT NULL DEFAULT '',
-  `times` tinyint unsigned NOT NULL DEFAULT 0,
-  `createdBy` varchar(30) NOT NULL DEFAULT '',
-  `createdDate` datetime DEFAULT NULL,
-  `updateDate` datetime DEFAULT NULL,
-  `deleted` tinyint unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-CREATE INDEX `idx_created_status` ON `zt_compile`(`createdDate`, `status`, `deleted`);
-
 -- DROP TABLE IF EXISTS `zt_config`;
 CREATE TABLE IF NOT EXISTS `zt_config` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
