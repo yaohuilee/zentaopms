@@ -1022,6 +1022,7 @@ class userModel extends model
         $user->view   = $this->grantUserView($user->account, $user->rights['acls']);
         $this->session->set('user', $user);
         $this->app->user = $this->session->user;
+        $this->regenerateSession();
         $this->loadModel('action')->create('user', $user->id, 'login');
         $this->loadModel('score')->create('user', 'login');
         $this->loadModel('common')->loadConfigFromDB();
@@ -1048,6 +1049,7 @@ class userModel extends model
         $user->view   = $this->grantUserView($user->account, $user->rights['acls']);
         $this->session->set('user', $user);
         $this->app->user = $this->session->user;
+        $this->regenerateSession();
         $this->loadModel('action')->create('user', $user->id, 'login');
         $this->loadModel('score')->create('user', 'login');
         $this->loadModel('common')->loadConfigFromDB();
@@ -1209,6 +1211,10 @@ class userModel extends model
         $this->session->set('user', $user);
         $this->app->user = $this->session->user;
 
+        /* 登录成功后轮换会话 ID，防止会话固定。*/
+        /* Regenerate session ID after login to prevent session fixation. */
+        $this->regenerateSession();
+
         /* 记录登录日志并发放积分。*/
         /* Save log and give login score. */
         if(isset($user->id) and $addAction) $this->loadModel('action')->create('user', $user->id, 'login');
@@ -1219,6 +1225,24 @@ class userModel extends model
         if($keepLogin) $this->keepLogin($user);
 
         return $user;
+    }
+
+    /**
+     * 登录成功后轮换会话 ID，并重发会话 cookie，防止会话固定攻击。
+     * Regenerate session ID after login and resend session cookie to prevent session fixation.
+     *
+     * @access protected
+     * @return void
+     */
+    protected function regenerateSession(): void
+    {
+        if(empty(session_id()) or headers_sent()) return;
+
+        session_regenerate_id(true);
+
+        /* 同步重发会话 cookie，确保浏览器和客户端使用新的会话 ID。*/
+        /* Resend the session cookie so clients use the new session ID. */
+        helper::setcookie($this->config->sessionVar, session_id(), 0);
     }
 
     /**
