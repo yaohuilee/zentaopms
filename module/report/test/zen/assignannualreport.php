@@ -36,7 +36,7 @@ zenData('case')->gen(30);
 zenData('product')->gen(5);
 zenData('project')->gen(10);
 $company = zenData('company');
-$company->admins->range(',admin,');
+$company->admins->range('`,admin,`');
 $company->gen(1);
 global $app;
 $app->company->admins = ',admin,';

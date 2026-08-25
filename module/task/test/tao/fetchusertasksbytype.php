@@ -45,7 +45,7 @@ $story->gen(20);
 
 zenData('user')->gen(30);
 $company = zenData('company');
-$company->admins->range(',admin,');
+$company->admins->range('`,admin,`');
 $company->gen(1);
 zenData('userview')->gen(0);
 zenData('group')->gen(0);

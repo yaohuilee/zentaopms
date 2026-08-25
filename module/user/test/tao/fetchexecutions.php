@@ -37,7 +37,7 @@ $userTable->account->range('admin,user1,user2');
 $userTable->gen(3);
 
 $companyTable = zenData('company');
-$companyTable->admins->range(',admin,');
+$companyTable->admins->range('`,admin,`');
 $companyTable->gen(1);
 global $app;
 $app->company->admins = ',admin,';

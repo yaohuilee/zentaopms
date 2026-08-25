@@ -66,6 +66,7 @@ r($aiTest->isClickableTest($enabledObject, 'unknownaction'))      && p() && e('1
 $app->rawMethod = 'prompts';
 $publishedIncompletePrompt = new stdClass();
 $publishedIncompletePrompt->status          = 'active';
+$publishedIncompletePrompt->type            = '';
 $publishedIncompletePrompt->displayPosition = 'detail';
 $publishedIncompletePrompt->name            = 'prompt';
 $publishedIncompletePrompt->module          = 'story';
