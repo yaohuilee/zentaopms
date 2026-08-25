@@ -2027,7 +2027,7 @@ class execution extends control
                 $cardList = !empty($laneData[$columnKey]) ? $laneData[$columnKey] : array();
                 foreach($cardList as $card)
                 {
-                    $items[$laneKey][$columnKey][] = array('id' => $card->id, 'name' => $card->id, 'title' => $card->name, 'status' => $card->status, 'delay' => !empty($card->delay) ? $card->delay : 0, 'progress' => $card->progress, 'begin' => !helper::isZeroDate($execution->begin) ? $execution->begin : '', 'end' => !helper::isZeroDate($execution->end) ? $execution->end : '');
+                    $items[$laneKey][$columnKey][] = array('id' => $card->id, 'name' => $card->id, 'title' => $card->name, 'status' => $card->status, 'delay' => !empty($card->delay) ? $card->delay : 0, 'progress' => $card->progress, 'begin' => !helper::isZeroDate($card->begin) ? $card->begin : '', 'end' => !helper::isZeroDate($card->end) ? $card->end : '');
 
                     if(!isset($columnCards[$columnKey])) $columnCards[$columnKey] = 0;
                     $columnCards[$columnKey] ++;
