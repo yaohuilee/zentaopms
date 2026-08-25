@@ -275,6 +275,7 @@ class api extends router
             'scarves' => 'scarf',
             'hooves' => 'hoof',
             'veterans' => 'veteran', // 特殊情况示例
+            'resourcecalendars' => 'resourcecalendars',
         );
 
         if(isset($irregular[strtolower($word)])) {
