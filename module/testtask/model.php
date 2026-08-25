@@ -1221,6 +1221,18 @@ class testtaskModel extends model
         {
             if(empty($run->scene) || !isset($scenes[$run->scene])) continue;
             $run->parent  = 'scene-' . $run->scene;
+            $run->isScene = false;
+        }
+
+        foreach($scenes as $scene)
+        {
+            foreach($displayScenes as $displayScene)
+            {
+                if(str_contains($scene->path, $displayScene . ','))
+                {
+                    $displayScenes = array_merge($displayScenes, explode(',', trim($scene->path, ',')));
+                }
+            }
         }
 
         foreach($scenes as $id => $scene)
