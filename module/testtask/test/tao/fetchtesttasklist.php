@@ -11,7 +11,7 @@ zenData('build')->gen(500);
 zenData('testtask')->gen(500);
 zenData('user')->gen(5);
 $company = zenData('company');
-$company->admins->range(',admin,');
+$company->admins->range('`,admin,`');
 $company->gen(1);
 global $app;
 $app->company->admins = ',admin,';

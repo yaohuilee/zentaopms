@@ -26,7 +26,7 @@ $actionTable->loadYaml('action_printprojectdynamicblock', false, 2)->gen(20);
 $userTable = zenData('user');
 $userTable->loadYaml('user_printprojectdynamicblock', false, 2)->gen(10);
 $company = zenData('company');
-$company->admins->range(',admin,');
+$company->admins->range('`,admin,`');
 $company->gen(1);
 global $app;
 $app->company->admins = ',admin,';
