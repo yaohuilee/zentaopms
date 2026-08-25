@@ -1524,7 +1524,12 @@ class repo extends control
     public function ajaxGetListByProduct(int $productID)
     {
         $repoList = $this->repo->getListByProduct($productID);
-        foreach($repoList as $repo) unset($repo->connector);
+        foreach($repoList as $repo)
+        {
+            unset($repo->connector);
+            $scmRepo   = $this->repo->processGitService(clone $repo);
+            $repo->url = $this->repo->getCloneUrl($scmRepo);
+        }
 
         return print(json_encode(array_values($repoList)));
     }
