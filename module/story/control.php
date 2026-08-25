@@ -99,7 +99,8 @@ class story extends control
             $response = $this->storyZen->getResponseInModal($message);
             if($response) return $this->send($response);
 
-            $response = array('result' => 'success', 'message' => $message);
+            $objectChanges = array('type' => 'add', 'objectType' => $storyType, 'objectList' => array($storyID));
+            $response      = array('result' => 'success', 'message' => $message, 'changes' => $objectChanges);
             if($this->post->newStory)
             {
                 $response['message'] = $message . $this->lang->story->newStory;
@@ -206,7 +207,8 @@ class story extends control
             if(isInModal()) return $this->send($this->storyZen->getResponseInModal($this->lang->saveSuccess));
 
             $locateLink = $this->storyZen->getAfterBatchCreateLocation($productID, $branch, $executionID, $storyID, $storyType, $plan);
-            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $locateLink));
+            $objectChanges = array('type' => 'add', 'objectType' => $storyType, 'objectList' => array_values($storyIdList));
+            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $locateLink, 'changes' => $objectChanges));
         }
 
         $this->storyZen->setMenuForBatchCreate($productID, $branch, $executionID, $extra, $storyType);
@@ -357,7 +359,8 @@ class story extends control
             $response = $this->storyZen->getResponseInModal($message);
             if($response) return $this->send($response);
 
-            $response = array('result' => 'success', 'message' => $message);
+            $objectChanges = array('type' => 'update', 'objectType' => $storyType, 'objectList' => array($storyID));
+            $response      = array('result' => 'success', 'message' => $message, 'changes' => $objectChanges);
             $response['load'] = $this->storyZen->getAfterEditLocation($storyID, $storyType);
             if($this->post->locate == 'change') $response['load'] = $this->createLink($this->app->rawModule, 'change', "storyID=$storyID&from=&storyType={$storyType}");
             return $this->send($response);
@@ -408,7 +411,7 @@ class story extends control
             $this->story->batchUpdate($stories);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
-            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'load' => $this->session->storyList));
+            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'load' => $this->session->storyList, 'changes' => array('type' => 'update', 'objectType' => $storyType, 'objectList' => array_keys($stories))));
         }
 
         $stories = $this->storyZen->getStoriesByChecked();
@@ -466,7 +469,8 @@ class story extends control
             $response = $this->storyZen->getResponseInModal($message);
             if($response) return $this->send($response);
 
-            return $this->send(array('result' => 'success', 'message' => $message, 'load' => $location));
+            $objectChanges = array('type' => 'update', 'objectType' => $storyType, 'objectList' => array($storyID));
+            return $this->send(array('result' => 'success', 'message' => $message, 'load' => $location, 'changes' => $objectChanges));
         }
 
         $this->commonAction($storyID);
@@ -717,7 +721,7 @@ class story extends control
 
             $locateLink = $this->session->storyList ? $this->session->storyList : $this->createLink('product', 'browse', "productID={$story->product}");
             $locateLink = isInModal() ? true : $locateLink;
-            return $this->send(array('result' => 'success', 'load' => $locateLink, 'closeModal' => true));
+            return $this->send(array('result' => 'success', 'load' => $locateLink, 'closeModal' => true, 'changes' => array('type' => 'delete', 'objectType' => $story->type, 'objectList' => array($storyID))));
         }
     }
 

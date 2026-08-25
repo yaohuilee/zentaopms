@@ -128,6 +128,7 @@ class task extends control
 
             /* Get the information returned after a task is created. */
             $response = $this->taskZen->responseAfterCreate($taskData, $execution, $this->post->after ? $this->post->after : '');
+            $response['changes'] = array('type' => 'add', 'objectType' => 'task', 'objectList' => array_values($taskIdList));
             return $this->send($response);
         }
 
@@ -194,6 +195,7 @@ class task extends control
             if(!isset($output['laneID']) || !isset($output['columnID'])) $this->loadModel('kanban')->updateLane($executionID, 'task');
 
             $response = $this->taskZen->responseAfterbatchCreate($taskIdList, $execution);
+            $response['changes'] = array('type' => 'add', 'objectType' => 'task', 'objectList' => array_values($taskIdList));
             return $this->send($response);
         }
 
@@ -233,6 +235,7 @@ class task extends control
             if($task->status == 'doing') $this->loadModel('common')->syncPPEStatus($taskID);
 
             $response = $this->taskZen->responseAfterEdit($taskID, $from, $changes, $message);
+            $response['changes'] = array('type' => 'update', 'objectType' => 'task', 'objectList' => array($taskID));
             return $this->send($response);
         }
 
@@ -267,6 +270,7 @@ class task extends control
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $response = $this->taskZen->responseAfterBatchEdit($allChanges);
+            $response['changes'] = array('type' => 'update', 'objectType' => 'task', 'objectList' => array_keys($taskData));
             return $this->send($response);
         }
 

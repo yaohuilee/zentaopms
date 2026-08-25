@@ -1065,6 +1065,7 @@ class doc extends control
                 $this->loadModel('message')->sendMentionNotice('doc', 'edit', $response['actionID'], $docData, $doc);
             }
 
+            $response['changes'] = array('type' => 'update', 'objectType' => 'doc', 'objectList' => array($docID));
             return $this->send($response);
         }
 
