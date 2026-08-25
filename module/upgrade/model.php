@@ -10986,7 +10986,7 @@ class upgradeModel extends model
              /* 先修改字段长度，避免修改字符集报错。 Fix mysql error: Specified key was too long. */
             if($tableName == TABLE_COMPILE || $tableName == TABLE_MEASQUEUE)
             {
-                $sql = "ALTER TABLE {$tableName} MODIFY COLUMN `name` varchar(100)";
+                $sql = "ALTER TABLE {$tableName} MODIFY COLUMN `status` varchar(100)";
                 $this->saveLogs($sql);
                 $this->dbh->exec($sql);
             }
