@@ -221,7 +221,7 @@ class task extends control
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             /* For team task. */
-            $teamData = $this->post->team ? form::data($this->config->task->form->team->edit)->get() : new stdclass();
+            $teamData = in_array($task->mode, array('linear', 'multi')) && $this->post->team ? form::data($this->config->task->form->team->edit)->get() : new stdclass();
 
             /* Update task. */
             $changes = $this->task->update($task, $teamData);
