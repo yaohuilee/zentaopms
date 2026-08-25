@@ -28,19 +28,9 @@ $taskNavs['canceledBy'] = array('text' => sprintf($lang->user->canceledBy, $that
 if(isset($taskNavs[$browseType])) $taskNavs[$browseType]['active'] = true;
 
 $this->loadModel('my');
-$cols = array();
-foreach($config->user->defaultFields['task'] as $field) $cols[$field] = $config->my->task->dtable->fieldList[$field];
-$cols['id']['checkbox']       = false;
-$cols['name']['data-toggle']  = 'modal';
-$cols['name']['data-size']    = 'lg';
+$cols = $this->loadModel('datatable')->getSetting('user', 'task');
 
-$cols = array_map(function($col)
-{
-    unset($col['fixed'], $col['group']);
-    return $col;
-}, $cols);
-
-$tasks = initTableData($tasks, $cols, $this->task);
+$tasks = initTableData($tasks, $config->user->task->dtable->fieldList, $this->task);
 foreach($tasks as $task)
 {
     $task->rawStatus     = $task->status;
@@ -61,6 +51,8 @@ div
         set::bordered(true),
         set::cols($cols),
         set::data(array_values($tasks)),
+        set::customCols(true),
+        set::priList($lang->task->priList),
         set::orderBy($orderBy),
         set::sortLink(inlink('task', "userID={$user->id}&browseType={$browseType}&orderBy={name}_{sortType}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}")),
         set::onRenderCell(jsRaw('window.renderCell')),

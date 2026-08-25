@@ -13,6 +13,7 @@ $config->datatable->workflowLayoutMap['build-build']           = array('module' 
 $config->datatable->workflowLayoutMap['task-task']             = array('module' => 'task', 'method' => 'browse'); // 任务加载task-browse的layout配置。
 $config->datatable->workflowLayoutMap['task-importTask']       = array('module' => 'task', 'method' => 'browse'); // 转入任务加载task-browse的layout配置。
 $config->datatable->workflowLayoutMap['my-task']               = array('module' => 'task', 'method' => 'browse'); // 地盘任务加载task-browse的layout配置。
+$config->datatable->workflowLayoutMap['user-task']             = array('module' => 'task', 'method' => 'browse'); // 组织个人待办任务列表加载task-browse的layout配置。
 $config->datatable->workflowLayoutMap['my-story']              = array('module' => 'story', 'method' => 'browse'); // 地盘需求加载story-browse的layout配置。
 $config->datatable->workflowLayoutMap['my-requirement']        = array('module' => 'requirement', 'method' => 'browse'); // 地盘用户需求加载requirement-browse的layout配置。
 $config->datatable->workflowLayoutMap['my-epic']               = array('module' => 'epic', 'method' => 'browse'); // 地盘业务需求加载epic-browse的layout配置。
