@@ -476,6 +476,7 @@ $config->ajaxDependencies['repo.ajaxloadproducts']                            = 
 $config->ajaxDependencies['repo.ajaxshowrepo']                                = 'repo.import';
 $config->ajaxDependencies['repo.ajaxsyncbranchcommit']                        = ['repo.showsynccommit', 'repo.browse'];
 $config->ajaxDependencies['repo.ajaxsynccommit']                              = 'repo.showsynccommit';
+$config->ajaxDependencies['repo.ajaxgetlistbyproduct']                        = 'repo.browse';
 $config->ajaxDependencies['space.ajaxtips']                                   = 'space.create';
 $config->ajaxDependencies['requirement.ajaxgetuserstories']                   = ['todo.create', 'todo.edit', 'todo.batchcreate'];
 $config->ajaxDependencies['screen.ajaxgetchart']                              = ['screen.viewold', 'screen.design'];

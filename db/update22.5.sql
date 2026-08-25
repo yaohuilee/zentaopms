@@ -189,3 +189,5 @@ CREATE INDEX `idx_agent_object` ON `zt_ai_timerqueue`(`agent`, `objectType`, `ob
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents', '执行定时智能体', 'zentao', 1, 'normal', NULL);
+
+ALTER TABLE `zt_ai_useragent` ADD COLUMN `type` varchar(30) NOT NULL DEFAULT '' COMMENT '类型：'' | executor' AFTER `agent`;

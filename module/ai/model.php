@@ -2827,7 +2827,7 @@ class aiModel extends model
         $role   = static::tryPunctuate($prompt->role);
         $role  .= static::autoPrependNewline(static::tryPunctuate($prompt->characterization, true));
         $schema = $this->getFunctionCallSchema($prompt->actionPurpose);
-        if(empty($schema)) return -5;
+        if(empty($schema) && $prompt->actionPurpose !== 'coding') return -5;
 
         $this->useLanguageModel($prompt->model);
         return array('role' => $role, 'schema' => $schema, 'dataPrompt' => $dataPrompt, 'name' => $prompt->name, 'purpose' => $prompt->purpose, 'status' => $prompt->status, 'targetForm' => $prompt->actionPurpose, 'promptID' => $prompt->id);
@@ -3030,7 +3030,7 @@ class aiModel extends model
 
         $targetForm = $prompt->actionPurpose;
         if(empty($targetForm)) return array(false, true);
-        if($targetForm === 'empty.empty') return array(false, false);
+        if($targetForm === 'empty.empty' || $targetForm === 'coding') return array(false, false);
 
         $targetFormPath = explode('.', $targetForm, 2);
         if(count($targetFormPath) !== 2) return array(false, true);
@@ -4123,6 +4123,32 @@ class aiModel extends model
         }
 
         return array();
+    }
+
+    /**
+     * 获取模块的标准字段标签映射（字段名 → 显示名称）。
+     * Get standard field labels of a module, used as authoritative display names.
+     *
+     * @param  string $module
+     * @access public
+     * @return array
+     */
+    public function getFormFieldLabels(string $module): array
+    {
+        $this->app->loadLang($module);
+        if(empty($this->lang->$module)) return array();
+
+        $excludes = array('common', 'error', 'menu', 'statusList', 'priList', 'typeList', 'moduleList', 'actionList', 'moreActions', 'moduleActions', 'dtable', 'featurebar');
+        $labels   = array();
+        foreach($this->lang->$module as $field => $value)
+        {
+            if(!is_string($value) || $value === '') continue;
+            if(empty($field) || !preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/', $field)) continue;
+            if(in_array($field, $excludes)) continue;
+            $labels[$field] = $value;
+        }
+
+        return $labels;
     }
 
     /**
