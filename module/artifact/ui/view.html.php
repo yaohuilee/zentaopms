@@ -79,7 +79,7 @@ $canDeleteArtifact = hasPriv('artifact', 'deleteArtifact');
 $canCreateDir      = hasPriv('artifact', 'createDir') && $artifact->type == 'file' && !$leaf;
 $canUploadArtifact = hasPriv('artifact', 'uploadArtifact') && !empty($selectPath) && $artifact->type == 'file' && !$leaf;
 
-$gitfoxURL = $config->devops->gitfoxURL;
+$gitfoxURL = str_replace(array('http://', 'https://'), '', $config->devops->gitfoxURL);
 if($config->devops->gitfoxPort) $gitfoxURL .= ":{$config->devops->gitfoxPort}";
 $typeCode  = '';
 if($artifact->scope == 'repo')
