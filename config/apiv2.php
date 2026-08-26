@@ -79,6 +79,7 @@ $routes['/projects/:projectID/stories']     = array(
 );
 $routes['/executions/:executionID/stories'] = array('redirect' => '/executions/story?executionID=:executionID', 'search' => array('enabled' => true, 'searchModule' => 'executionStory', 'querySessionKey' => 'executionStory'));
 $routes['/stories/:storyID']                = array('response' => 'story,actions(array)');
+$routes['/storygrades']                     = array('redirect' => '/story/ajaxGetGradeList', 'response' => 'grades(array)');
 
 $routes['/products/:productID/epics']     = array('redirect' => '/products/browse?productID=:productID&storyType=epic', 'response' => 'stories(array)|epics,pager', 'search' => array('enabled' => true));
 $routes['/epics/:storyID'] = array(

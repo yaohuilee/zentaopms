@@ -77,6 +77,7 @@ $lang->story->batchAssignTo      = "Mehere zuordnen";
 $lang->story->batchChangeModule  = "Mehere Module ändern";
 $lang->story->batchChangeParent  = "Batch Change Parent";
 $lang->story->batchChangeGrade   = "Batch Change Grade";
+$lang->story->errorInvalidGrade  = 'The selected story hierarchy is not available.';
 $lang->story->changeParent       = "Change Parent";
 $lang->story->viewAll            = "Alle";
 $lang->story->toTask             = 'Convert to Task';

@@ -494,6 +494,7 @@ $config->ajaxDependencies['story.ajaxgetduplicatedstories']                   = 
 $config->ajaxDependencies['story.ajaxgetduplicatedstory']                     = 'story.batchclose';
 $config->ajaxDependencies['story.ajaxgetexecutionstories']                    = ['task.create', 'task.edit', 'bug.edit', 'story.batchtotask', 'bug.showimport'];
 $config->ajaxDependencies['story.ajaxgetgrade']                               = ['story.create', 'story.edit', 'story.batchcreate'];
+$config->ajaxDependencies['story.ajaxgetgradelist']                           = array('story.create', 'requirement.create', 'epic.create');
 $config->ajaxDependencies['story.ajaxgetinfo']                                = ['task.batchedit', 'task.create', 'task.edit', 'task.batchcreate', 'execution.kanban'];
 $config->ajaxDependencies['story.ajaxgetproductstories']                      = ['bug.edit', 'testcase.batchedit', 'testcase.showimport', 'testcase.create', 'testcase.edit'];
 $config->ajaxDependencies['story.ajaxgetcasestories']                         = ['testcase.create', 'testcase.edit'];

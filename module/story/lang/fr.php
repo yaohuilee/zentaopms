@@ -77,6 +77,7 @@ $lang->story->batchAssignTo      = "Affecter par lot";
 $lang->story->batchChangeModule  = "Changer Modules par lot";
 $lang->story->batchChangeParent  = "Batch Change Parent";
 $lang->story->batchChangeGrade   = "Batch Change Grade";
+$lang->story->errorInvalidGrade  = 'The selected story hierarchy is not available.';
 $lang->story->changeParent       = "Change Parent";
 $lang->story->viewAll            = "Voir Tout";
 $lang->story->toTask             = 'Convert to Task';
