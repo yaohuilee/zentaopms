@@ -50,7 +50,7 @@ jsVar('timerAgentTag', $timerTag);
 $cols = $config->ai->dtable->prompts;
 $cols['actions']['list'] = $config->ai->actionList;
 $prompts = initTableData($prompts, $cols, $this->ai);
-if(isset($cols['actions']['actionsMap']['promptbasicinfo'])) $cols['actions']['actionsMap']['timerbasicinfo'] = $cols['actions']['actionsMap']['promptbasicinfo'];
+initTableActions($cols, 'timerbasicinfo');
 foreach($prompts as $prompt)
 {
     if($prompt->actionPurpose)
@@ -191,7 +191,7 @@ $promptCard = function($prompt) use ($lang, $buildDropdown, $userListMap, $timer
             h3(
                 setClass('card-title'),
                 set::title($prompt->name),
-                span($prompt->name),
+                span(setClass('prompt-name'), $prompt->name),
                 $timerLabel,
                 $draftTag
             ),

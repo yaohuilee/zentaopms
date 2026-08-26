@@ -1065,7 +1065,6 @@ class bugZen extends bug
         $bug = $this->getProjectsForCreate($bug);
         $bug = $this->getExecutionsForCreate($bug);
         $bug = $this->getBuildsForCreate($bug);
-        $bug = $this->getStoriesForCreate($bug);
         $bug = $this->gettasksForCreate($bug);
 
         $productMembers = $this->getProductMembersForCreate($bug);
@@ -1102,11 +1101,10 @@ class bugZen extends bug
         $this->view->bug                   = $bug;
         $this->view->allBuilds             = !empty($bug->allBuilds) ? $bug->allBuilds : '';
         $this->view->allUsers              = !empty($bug->allUsers)  ? $bug->allUsers  : '';
-        $this->view->releasedBuilds        = $this->loadModel('release')->getReleasedBuilds((int)$bug->productID, (string)$bug->branch);
         $this->view->resultFiles           = $resultFiles;
         $this->view->contactList           = $this->loadModel('user')->getContactLists();
         $this->view->branchID              = $bug->branch != 'all' ? $bug->branch : '0';
-        $this->view->cases                 = $this->loadModel('testcase')->getPairsByProduct((int)$bug->product, array(0, $this->view->branchID));
+        $this->view->cases                 = array();
         $this->view->copyBugID             = isset($bugID) ? $bugID : 0;
         $this->view->plans                 = $this->loadModel('productplan')->getPairs($bug->productID, $bug->branch, 'noclosed', true);
     }

@@ -1690,17 +1690,25 @@ class bug extends control
      *
      * @param  int    $productID
      * @param  int    $branchID
+     * @param  string $search
+     * @param  int    $limit
+     * @param  int    $caseID
      * @access public
      * @return string
      */
-    public function ajaxGetProductCases(int $productID, int $branchID = 0)
+    public function ajaxGetProductCases(int $productID, int $branchID = 0, string $search = '', int $limit = 0, int $caseID = 0)
     {
         $items = array();
-        $cases = $this->loadModel('testcase')->getPairsByProduct($productID, array(0, $branchID));
-        foreach($cases as $caseID => $caseTitle)
+        $cases = $this->loadModel('testcase')->getPairsByProduct($productID, array(0, $branchID), $search, $limit);
+        if($caseID && empty($cases[$caseID]))
         {
-            if(empty($caseID)) continue;
-            $items[] = array('text' => $caseTitle, 'value' => $caseID);
+            $caseInfo = $this->testcase->fetchByID($caseID);
+            if($caseInfo) $cases[$caseID] = $caseInfo->id . ':' . $caseInfo->title;
+        }
+        foreach($cases as $id => $caseTitle)
+        {
+            if(empty($id)) continue;
+            $items[] = array('text' => $caseTitle, 'value' => $id);
         }
 
         return print(helper::jsonEncode($items));
