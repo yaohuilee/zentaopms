@@ -202,6 +202,7 @@ $lang->repo->openedDate = 'CreatedDate';
 $lang->repo->actionInfo     = "Add by %s in %s";
 $lang->repo->changes        = "Change Log";
 $lang->repo->reviewLocation = "File: %s@%s, Line: %s - %s";
+$lang->repo->ppmLocation    = "review request #%s";
 $lang->repo->commentEdit    = '<i class="icon-pencil"></i>';
 $lang->repo->commentDelete  = '<i class="icon-remove"></i>';
 $lang->repo->allChanges     = "Other Changes";
