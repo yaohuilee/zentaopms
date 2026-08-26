@@ -495,6 +495,7 @@ class myModel extends model
         $searchConfig['params']['execution']['values'] = $executions + array('all' => $this->lang->execution->allExecutions);
 
         $searchConfig['params']['module']['values'] = $this->loadModel('tree')->getAllModulePairs();
+        $searchConfig['params']['story']['values'] = $this->loadModel('story')->getProductStoryPairs();
 
         $this->loadModel('search')->setSearchParams($searchConfig);
 
