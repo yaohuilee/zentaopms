@@ -588,6 +588,17 @@ function loadTestTasks(productID, executionID)
     });
 }
 
+function toggleAllBuilds(event)
+{
+    if($(event.target).prop('checked'))
+    {
+        const productID = $('[name="product"]').val();
+        loadProductBuilds(productID, 'all', 'openedBuild');
+        return;
+    }
+    loadBuilds();
+}
+
 function loadAllBuilds(event)
 {
     const productID     = $('[name="product"]').val();
