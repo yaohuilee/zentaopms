@@ -1266,7 +1266,7 @@ class codescan extends control
             if(empty($serviceRepoID)) $serviceRepoID = $repo->id;
 
             $urlTpl   = inLink('issue', "repoID={$repoID}&taskID=0&serviceRepoID={$serviceRepoID}&type=" . ($type == 'bySearch' ? 'wait' : $type) . "&queryID=0&severity={$severity}&extras=%s&orderBy={$orderBy}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}");
-            $fileTree = $this->codescan->getIssueTreeList($repoID, $taskID);
+            $fileTree = $this->codescan->getIssueTreeList($repoID, $taskID, 'file', array('check', 'smell'));
             $ruleTree = $this->codescan->getIssueTreeList($repoID, $taskID, 'rule');
 
             $this->view->fileTree = $this->codescanZen->processIssueFileTree($fileTree, $urlTpl, $params);
