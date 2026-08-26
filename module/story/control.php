@@ -1944,6 +1944,26 @@ class story extends control
     }
 
     /**
+     * 获取可用的需求层级。
+     * Get available story grades.
+     *
+     * @param  string $type story|requirement|epic
+     * @access public
+     * @return void
+     */
+    public function ajaxGetGradeList(string $type = 'story')
+    {
+        $grades = array();
+        foreach($this->story->getGradeList($type) as $grade)
+        {
+            if($grade->status != 'enable') continue;
+            $grades[] = $grade;
+        }
+
+        return $this->send(array('grades' => $grades));
+    }
+
+    /**
      * 检查需求的等级是否超出系统设置。
      * AJAX: check the grade of a story.
      *

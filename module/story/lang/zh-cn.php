@@ -77,6 +77,7 @@ $lang->story->batchAssignTo      = "批量指派";
 $lang->story->batchChangeModule  = "批量修改模块";
 $lang->story->batchChangeParent  = "批量修改父需求";
 $lang->story->batchChangeGrade   = "批量修改层级";
+$lang->story->errorInvalidGrade  = '所选需求层级不可用。';
 $lang->story->changeParent       = "修改父需求";
 $lang->story->viewAll            = '查看全部';
 $lang->story->toTask             = '转任务';

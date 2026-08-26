@@ -1238,6 +1238,11 @@ class storyZen extends story
         }
 
         if(!empty($_POST['estimate']) && $_POST['estimate'] < 0) dao::$errors['estimate'] = sprintf($this->lang->story->errorRecordMinus, $this->lang->story->estimateAB);
+        if(helper::isApiRequest() && isset($_POST['grade']) && $_POST['grade'] !== '')
+        {
+            $gradePairs = $this->story->getGradePairs($storyType);
+            if(!isset($gradePairs[(int)$_POST['grade']])) dao::$errors['grade'] = $this->lang->story->errorInvalidGrade;
+        }
 
         if(dao::isError()) return false;
 
