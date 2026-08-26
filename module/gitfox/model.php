@@ -107,7 +107,19 @@ class gitfoxModel extends model
         $originURL = $url;
         if($method == 'GET')
         {
-            $url .= '?' . http_build_query($data);
+            $queryParts = array();
+            foreach((array)$data as $key => $value)
+            {
+                if(is_array($value))
+                {
+                    foreach($value as $item) $queryParts[] = $key . '=' . (string)$item;
+                }
+                else
+                {
+                    $queryParts[] = $key . '=' . (string)$value;
+                }
+            }
+            $url .= '?' . implode('&', $queryParts);
             $data = array();
         }
         $options = array();
