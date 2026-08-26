@@ -1363,6 +1363,7 @@ class taskModel extends model
 
         /* 计算此工时所对应任务的变更。*/
         $oldTask = new stdclass();
+        $oldTask->id       = $task->id;
         $oldTask->consumed = $task->consumed;
         $oldTask->left     = $task->left;
         $oldTask->status   = $task->status;
@@ -1372,7 +1373,7 @@ class taskModel extends model
         $newTask->left     = $data->left;
         $newTask->status   = $data->status;
 
-        if(!dao::isError()) return common::createChanges($oldTask, $newTask);
+        if(!dao::isError()) return common::createChanges($oldTask, $newTask, 'task');
     }
 
     /**
@@ -3392,6 +3393,7 @@ class taskModel extends model
         if($task->story)      $this->loadModel('story')->setStage($task->story, array('type' => 'editEffort', 'objectID' => $task->id));
 
         $oldTask = new stdclass();
+        $oldTask->id       = $task->id;
         $oldTask->consumed = $task->consumed;
         $oldTask->left     = $task->left;
         $oldTask->status   = $task->status;
@@ -3403,7 +3405,7 @@ class taskModel extends model
         $newTask->status   = $data->status;
         $newTask->date     = $effort->date;
 
-        return common::createChanges($oldTask, $newTask);
+        return common::createChanges($oldTask, $newTask, 'task');
     }
 
     /**
