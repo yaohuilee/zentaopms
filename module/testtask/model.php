@@ -1217,8 +1217,10 @@ class testtaskModel extends model
             ->orderBy('grade_desc, sort_asc')
             ->fetchAll('id', false);
 
+        $displayScenes = array();
         foreach($runs as $run)
         {
+            if(!empty($run->scene)) $displayScenes[] = $run->scene;
             if(empty($run->scene) || !isset($scenes[$run->scene])) continue;
             $run->parent  = 'scene-' . $run->scene;
             $run->isScene = false;
