@@ -27,8 +27,17 @@ $taskNavs['closedBy']   = array('text' => sprintf($lang->user->closedBy,   $that
 $taskNavs['canceledBy'] = array('text' => sprintf($lang->user->canceledBy, $that), 'url' => inlink('task', "userID={$user->id}&browseType=canceledBy&orderBy={$orderBy}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}"), 'load' => 'table');
 if(isset($taskNavs[$browseType])) $taskNavs[$browseType]['active'] = true;
 
-$this->loadModel('my');
+if(isset($config->user->task->dtable->fieldList['relatedObject']))
+{
+    $config->user->task->dtable->fieldList['relatedObject']['link'] = hasPriv('custom', 'showRelationGraph') ? "RAWJS<function(info){ if(info.row.data.relatedObject == 0) return 0; else return '" . helper::createLink('custom', 'showRelationGraph', 'objectID={id}&objectType=task') . "'; }>RAWJS" : null;
+}
 $cols = $this->loadModel('datatable')->getSetting('user', 'task');
+
+if($config->edition != 'open' && !empty($tasks))
+{
+    $relatedObjectList = $this->loadModel('custom')->getRelatedObjectList(array_keys($tasks), 'task', 'byRelation', true);
+    foreach($tasks as $task) $task->relatedObject = zget($relatedObjectList, $task->id, 0);
+}
 
 $tasks = initTableData($tasks, $config->user->task->dtable->fieldList, $this->task);
 foreach($tasks as $task)
