@@ -473,6 +473,7 @@ $config->ajaxDependencies['repo.ajaxgetprojects']                             = 
 $config->ajaxDependencies['repo.ajaxgetrelationinfo']                         = 'repo.ajaxgeteditorcontent';
 $config->ajaxDependencies['repo.ajaxhiddenrepo']                              = 'repo.import';
 $config->ajaxDependencies['repo.ajaxloadproducts']                            = ['ppm.view', 'ppm.create', 'pipeline.create', 'pipeline.edit'];
+$config->ajaxDependencies['repo.ajaxgetmodulesbyproduct']                     = ['ppm.view', 'ppm.create', 'pipeline.create', 'pipeline.edit'];
 $config->ajaxDependencies['pipeline.ajaxgetrepos']                            = ['ppm.view', 'ppm.create', 'pipeline.create', 'pipeline.edit'];
 $config->ajaxDependencies['repo.ajaxshowrepo']                                = 'repo.import';
 $config->ajaxDependencies['repo.ajaxsyncbranchcommit']                        = ['repo.showsynccommit', 'repo.browse'];
