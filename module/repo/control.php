@@ -517,6 +517,7 @@ class repo extends control
         $this->loadModel('setting')->setItem("{$this->app->user->account}.common.lastRepo", $repoID);
 
         $mirrorLastExecuted = '';
+        $mirrorNextExecuted = '';
         $mirrorFailure      = '';
         $mirrorStatus       = zget($repo, 'status', 'active');
         if(!empty($repo->mirror) && $mirrorStatus != 'syncing')
@@ -525,6 +526,7 @@ class repo extends control
             if(!empty($progress) && is_object($progress))
             {
                 if(!empty($progress->lastExecuted)) $mirrorLastExecuted = (string)$progress->lastExecuted;
+                if(!empty($progress->nextExecuted)) $mirrorNextExecuted = (string)$progress->nextExecuted;
                 if(!empty($progress->failure))      $mirrorFailure      = (string)$progress->failure;
             }
         }
@@ -572,6 +574,7 @@ class repo extends control
         $this->view->branchOrTag        = $branchOrTag;
         $this->view->users              = $this->loadModel('user')->getPairs('noletter');
         $this->view->mirrorLastExecuted = $mirrorLastExecuted;
+        $this->view->mirrorNextExecuted = $mirrorNextExecuted;
         $this->view->mirrorFailure      = $mirrorFailure;
 
         $this->display();
