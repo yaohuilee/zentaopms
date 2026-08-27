@@ -191,3 +191,5 @@ REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `typ
 ('30', '8', '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents', '执行定时智能体', 'zentao', 1, 'normal', NULL);
 
 ALTER TABLE `zt_ai_useragent` ADD COLUMN `type` varchar(30) NOT NULL DEFAULT '' COMMENT '类型：'' | executor' AFTER `agent`;
+
+ALTER TABLE `zt_notify` MODIFY COLUMN `action` int unsigned NOT NULL DEFAULT 0;
