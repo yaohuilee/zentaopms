@@ -13,8 +13,6 @@ window.addItem = function(e)
     const thisRow = $(obj).closest('.form-row');
     const newItem = thisRow.clone();
 
-    newItem.find('.add-btn').on('click', addItem);
-    newItem.find('.del-btn').on('click', removeItem);
     $newBranch = newItem.find('.picker-box [name^=branch]');
     $pickerBox = null;
     if($newBranch.length > 0)
