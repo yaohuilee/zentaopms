@@ -198,6 +198,7 @@ $lang->repo->openedDate = '创建日期';
 $lang->repo->actionInfo     = "由%s在%s添加";
 $lang->repo->changes        = "修改记录";
 $lang->repo->reviewLocation = "%s@%s，%s行 - %s行";
+$lang->repo->ppmLocation    = "评审请求#%s";
 $lang->repo->commentEdit    = '<i class="icon-pencil"></i>';
 $lang->repo->commentDelete  = '<i class="icon-remove"></i>';
 $lang->repo->allChanges     = "其他改动";

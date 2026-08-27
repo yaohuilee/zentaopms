@@ -18,26 +18,12 @@ dropmenu
 );
 
 $app->loadLang('reporeviewflow');
-$entry        = count($diffs) ? $diffs[0]->fileName : '';
-$currentEntry = $this->repo->encodePath($entry);
-$fileInfo     = $entry ? pathinfo($entry) : array();
-$showBug      = isset($showBug) ? $showBug : 0;
 $objectID     = isset($objectID) ? $objectID : 0;
-$tree         = $this->repo->getFileTree($repo, '', $diffs);
 $oldRevision  = helper::safe64Encode($oldRevision);
 $newRevision  = helper::safe64Encode($newRevision);
-$diffLink     = $this->repo->createLink('diff', "repoID={$ppm->repoID}&objectID={$objectID}&entry=&oldrevision={oldRevision}&newRevision={newRevision}");
 
-jsVar('diffs', $diffs);
 jsVar('mrID', $ppm->id);
-jsVar('tree', $tree);
-jsVar('file', $currentEntry);
-jsVar('entry', $entry);
-jsVar('diffLink', $diffLink);
-jsVar('urlParams', "repoID={$ppm->repoID}&objectID=$objectID&entry=%s&oldRevision=$oldRevision&newRevision=$newRevision&showBug=$showBug&encoding=$encoding");
 jsVar('sseURL', "{$config->devops->gitfoxURL}:{$config->devops->gitfoxPort}/api/v2/spaces/{$repo->spaceID}/events");
-
-h:css("#monacoTree .text-clip {overflow: visible;}");
 
 $encoding      = empty($encoding) ? '' : $encoding;
 $checkMessage  = zget($checkResult, 'message', '');
@@ -151,7 +137,7 @@ div
                             setClass('nav-item'),
                             a
                             (
-                                $lang->ppm->changeFiles . ' (' . count($diffs) . ')',
+                                $lang->ppm->changeFiles,
                                 setClass('font-medium font-bold text-md'),
                                 set::href(createLink('ppm', 'view', "id={$ppm->id}&type=files")),
                                 set('data-app', $app->tab),
