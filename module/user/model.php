@@ -1240,6 +1240,10 @@ class userModel extends model
 
         session_regenerate_id(true);
 
+        /* 同步 app->sessionID，避免 www/index.php 的还原逻辑把轮换后的会话还原回旧 ID。*/
+        /* Keep app->sessionID in sync to prevent the restore logic in www/index.php reverting the rotated session. */
+        if(isset($this->app->sessionID)) $this->app->sessionID = session_id();
+
         /* 同步重发会话 cookie，确保浏览器和客户端使用新的会话 ID。*/
         /* Resend the session cookie so clients use the new session ID. */
         helper::setcookie($this->config->sessionVar, session_id(), 0);
