@@ -370,25 +370,9 @@ class ppm extends control
         $bugPager    = new pager($type == 'bug'    ? $recTotal : 0, $recPerPage, $type == 'bug'    ? $pageID : 1);
         $objectPager = new pager($type == 'object' ? $recTotal : 0, $recPerPage, $type == 'object' ? $pageID : 1);
 
-        $encoding = 'utf-8';
-        if($type == 'files')
-        {
-            $encoding = empty($param) ? 'utf-8' : $param;
-            $encoding = strtolower(str_replace('_', '-', $encoding)); /* Revert $config->requestFix in $encoding. */
-        }
         $fromRevision = !empty($ppm->mergeBaseSHA) ? $ppm->mergeBaseSHA : $ppm->targetBranch;
         $toRevision   = !empty($ppm->sourceSHA) ? $ppm->sourceSHA : $ppm->sourceBranch;
-        $diffs        = $scm->diff('', $fromRevision, $toRevision, 'yes', 'isBranchOrTag', true);
-        $arrange      = $this->cookie->arrange ? $this->cookie->arrange : 'inline';
-        if($this->server->request_method == 'POST')
-        {
-            if($this->post->arrange)
-            {
-                $arrange = $this->post->arrange;
-                helper::setcookie('arrange', $arrange);
-            }
-            if($this->post->encoding) $encoding = $this->post->encoding;
-        }
+
         $reviewID         = !empty($flow) && !empty($flow->definition->reviewFlow) ? $flow->definition->reviewFlow->approvals->approvalID : 0;
         $reviewers        = !empty($reviewID) ? array() : $this->ppm->getReviewers($id);
         $reviewResult     = $this->ppm->getReviewResult($reviewers, empty($flow) ? array() : $flow);
@@ -408,9 +392,7 @@ class ppm extends control
         $this->view->bugPager         = $bugPager;
         $this->view->objectPager      = $objectPager;
         $this->view->type             = $type;
-        $this->view->encoding         = $encoding;
-        $this->view->diffs            = $arrange == 'appose' ? $this->repo->getApposeDiff($diffs) : $diffs;
-        //$this->view->diffText         = $this->loadModel('gitfox')->apiGetRepoDiffs($ppm->repoID, $fromRevision, $toRevision);
+        $this->view->diffText         = $this->loadModel('gitfox')->apiGetRepoDiffs($ppm->repoID, $fromRevision, $toRevision);
         $this->view->users            = $this->loadModel('user')->getPairs('noletter');
         $this->view->oldRevision      = $ppm->targetBranch;
         $this->view->newRevision      = $ppm->sourceBranch;

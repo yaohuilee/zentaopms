@@ -149,7 +149,6 @@ class ciModel extends model
             $this->loadModel('action')->create('testtask', $taskID, 'opened');
         }
 
-        if($compileID) $this->dao->update(TABLE_COMPILE)->set('testtask')->eq($taskID)->where('id')->eq($compileID)->exec();
         if(dao::isError()) return dao::isError();
         return $taskID;
     }
