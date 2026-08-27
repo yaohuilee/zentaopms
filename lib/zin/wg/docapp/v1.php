@@ -192,7 +192,7 @@ class docApp extends wg
         );
         $docFetcher          = createLink('doc', 'ajaxGetDoc', 'docID={docID}&version={version}');
         $filesFetcher        = createLink('doc', 'ajaxGetFiles', 'type={objectType}&objectID={objectID}');
-        $libSummariesFetcher = createLink('doc', 'ajaxGetLibSummaries', 'spaceType={spaceType}&spaceList={spaceList}');
+        $libSummariesFetcher = createLink('doc', 'ajaxGetLibSummaries', 'spaceType={spaceType}');
         $uploadUrl           = createLink('file', 'ajaxUpload', 'uid={uid}&objectType={objectType}&objectID={objectID}&extra={extra}&field={field}&api={api}&gid={gid}');
         $downloadUrl         = createLink('file', 'ajaxQuery', 'fileID={gid}&objectType={objectType}&objectID={objectID}&title={title}&extra={extra}');
         $fileInfoUrl         = createLink('file', 'ajaxQuery', 'fileID={gid}&objectType={objectType}&objectID={objectID}&title={title}&extra={extra}', 'json');
