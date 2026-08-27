@@ -86,8 +86,6 @@ class aiAgentEntry extends wg
                 $promptIds     = array_column($prompts, 'id');
                 $teammateItems = $this->fetchTeammates($promptIds, $app, $config);
 
-                $this->buildSuggestions($prompts, $teammateItems, $module, $method, $type, $config);
-
                 $entryNode = $this->buildEntry($prompts, $teammateItems, $module, $method, $type, $app, $config);
             }
         }
