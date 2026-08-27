@@ -1998,7 +1998,7 @@ class treeModel extends model
                 $data = new stdClass();
                 $data->name   = strip_tags(trim($moduleName));
                 $data->short  = $short;
-                $data->order  = $order;
+                $data->order  = $oldModule->order;
                 $data->branch = isset($branches[$originID]) ? (int)$branches[$originID] : 0;
 
                 $this->dao->update(TABLE_MODULE)->data($data)->autoCheck()->where('id')->eq($moduleID)->exec();
