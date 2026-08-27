@@ -1926,6 +1926,9 @@ class screenModel extends model
             $conditions = array();
             foreach($this->filter->charts[$chart->id] as $key => $field)
             {
+                /* 字段白名单校验，防止拼接时注入 SQL。Only accept valid field identifiers. */
+                if(!validater::checkFieldName($field)) continue;
+
                 switch($key)
                 {
                     case 'year':
@@ -1938,15 +1941,18 @@ class screenModel extends model
                         if($this->filter->dept and !$this->filter->account)
                         {
                             $accountField = $this->filter->charts[$chart->id]['account'];
-                            $users = $this->dao->select('account')->from(TABLE_USER)->alias('t1')
-                                ->leftJoin(TABLE_DEPT)->alias('t2')
-                                ->on('t1.dept = t2.id')
-                                ->where('t2.path')->like(',' . $this->filter->dept . ',%')
-                                ->fetchPairs('account');
-                            $accounts = array();
-                            foreach($users as $account) $accounts[] = "'" . $account . "'";
+                            if(validater::checkFieldName($accountField))
+                            {
+                                $users = $this->dao->select('account')->from(TABLE_USER)->alias('t1')
+                                    ->leftJoin(TABLE_DEPT)->alias('t2')
+                                    ->on('t1.dept = t2.id')
+                                    ->where('t2.path')->like(',' . $this->filter->dept . ',%')
+                                    ->fetchPairs('account');
+                                $accounts = array();
+                                foreach($users as $account) $accounts[] = "'" . $account . "'";
 
-                            $conditions[] = $accountField . ' IN (' . implode(',', $accounts) . ')';
+                                $conditions[] = $accountField . ' IN (' . implode(',', $accounts) . ')';
+                            }
                         }
                         break;
                     case 'account':
