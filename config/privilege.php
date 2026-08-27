@@ -537,6 +537,7 @@ $config->ajaxDependencies['user.ajaxgetgroups']                               = 
 $config->ajaxDependencies['user.ajaxgetoldcontactlist']                       = 'my.buildcontactlists';
 $config->ajaxDependencies['user.ajaxgetoldcontactusers']                      = ['workflowaction.setnotice'];
 $config->ajaxDependencies['webhook.ajaxgetfeishudeptlist']                    = 'webhook.choosedept';
+$config->ajaxDependencies['weekly.ajaxgetreport']                             = 'weekly.view';
 $config->ajaxDependencies['zahost.ajaxgethosts']                              = 'zanode.create';
 $config->ajaxDependencies['zahost.ajaxgetservicestatus']                      = 'zahost.view';
 $config->ajaxDependencies['zahost.ajaximagedownloadprogress']                 = ['zahost.browseimage', 'host.browseimage'];
