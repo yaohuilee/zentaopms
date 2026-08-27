@@ -187,7 +187,7 @@ $promptCard = function($prompt) use ($lang, $buildDropdown, $userListMap, $timer
     return div(
         setClass('prompt-card'),
         a(
-            set::href(inlink('promptview', "id={$prompt->id}")),
+            hasPriv('ai', 'promptview') ? set::href(inlink('promptview', "id={$prompt->id}")) : null,
             h3(
                 setClass('card-title'),
                 set::title($prompt->name),
