@@ -2616,13 +2616,14 @@ class doc extends control
      * Get lib summaries by space type and space list.
      *
      * @param  string $spaceType
-     * @param  string $spaceList
      * @access public
      * @return void
      */
-    public function ajaxGetLibSummaries(string $spaceType, string $spaceList)
+    public function ajaxGetLibSummaries(string $spaceType)
     {
-        $libsMap = $this->doc->getLibsOfSpaces($spaceType, $spaceList, 0);
+        $spaceList = !empty($_POST['spaceList']) ? $_POST['spaceList'] : array();
+        $spaceList = is_array($spaceList) ? implode(',', $spaceList) : $spaceList;
+        $libsMap   = $this->doc->getLibsOfSpaces($spaceType, $spaceList, 0);
         echo json_encode($libsMap);
     }
 
