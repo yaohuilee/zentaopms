@@ -90,32 +90,31 @@ $domBox = div
 (
     $ppm->status == 'opened' ? div
     (
-        $canMerge ? section
+        section
         (
             setClass('flex w-full checkMerge'),
-            $defaultMergeType == 'fast' && $ppm->mergeBaseSHA != $ppm->mergeTargetSHA ? div(setClass('py-6 border-l-4 border-r-4 border-danger')) : div(setClass('py-6 border-l-4 border-r-4 border-success')),
+            !$canMerge ? div(setClass('py-6 border-l-4 border-r-4 border-danger')) : div(setClass('py-6 border-l-4 border-r-4 border-success')),
             div
             (
-                $defaultMergeType == 'fast' && $ppm->mergeBaseSHA != $ppm->mergeTargetSHA ? setClass('flex flex-auto items-center pl-4 bg-danger bg-opacity-5 items-center') :
+                !$canMerge ? setClass('flex flex-auto items-center pl-4 bg-danger bg-opacity-5 items-center') :
                 setClass('flex flex-auto items-center pl-4 bg-success bg-opacity-5 items-center success-box'),
                 set::style(array('justify-content' => 'space-between')),
-                $defaultMergeType == 'fast' && $ppm->mergeBaseSHA != $ppm->mergeTargetSHA ?
+                !$canMerge ?
                 div
                 (
-                    setClass('flex flex-auto items-center pl-4 bg-danger bg-opacity-5 items-center'),
-                    span(setClass('text-danger font-bold'), $lang->ppm->notice->fastNotice)
+                    setClass('flex flex-auto items-center pl-4 bg-opacity-5 items-center'),
+                    span(setClass('text-danger font-bold'), $lang->ppm->checkFailed . ($checkMessage ? "({$checkMessage})" : ''))
                 ) : div(span(setClass('text-success font-bold'), $lang->ppm->checkSuccess)),
                 hasPriv('ppm', 'merge') && !empty($mergeBtnItems) && $ppm->status == 'opened' ? div(btnGroup
                 (
                     setClass('merge-btn-group'),
                     btn
                     (
-                        setClass('btn primary ajax-submit'),
-                        set::disabled($defaultMergeType == 'fast' && $ppm->mergeBaseSHA != $ppm->mergeTargetSHA),
+                        $canMerge ? setClass('btn ajax-submit primary') : setClass('btn bg-gray-100 text-black'),
+                        set::disabled(!$canMerge),
                         set::url(createLink('ppm', 'merge', "ppmID={$ppm->id}&type={$defaultMergeType}")),
                         $lang->reporeviewflow->mergeOptionList[$defaultMergeType]
                     ),
-
                     count($mergeBtnItems) > 1 ? dropDown
                     (
                         btn(setClass('btn primary dropdown-toggle'),
@@ -125,16 +124,7 @@ $domBox = div
                     ) : null
                 )) : null
             )
-        ) : section
-        (
-            setClass('flex w-full mt-2 checkMerge'),
-            div(setClass('py-6 border-l-4 border-r-4 border-danger')),
-            div
-            (
-                setClass('flex flex-auto items-center pl-4 bg-danger bg-opacity-5 items-center'),
-                span(setClass('text-danger font-bold'), $lang->ppm->checkFailed . ($checkMessage ? "({$checkMessage})" : '')),
-            )
-        ),
+        )
     ) : null,
     section
     (
