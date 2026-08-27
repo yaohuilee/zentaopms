@@ -726,7 +726,12 @@ class file extends control
         $handle = fopen($file->realPath, "r");
         if($handle)
         {
-            while(!feof($handle)) echo fgets($handle);
+            while(!feof($handle))
+            {
+                $line = fgets($handle);
+                if($line && $mime == 'text/plain') $line = helper::convertEncoding($line, '');
+                echo $line;
+            }
             fclose($handle);
         }
     }
