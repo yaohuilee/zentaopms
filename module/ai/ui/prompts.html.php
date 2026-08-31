@@ -7,7 +7,7 @@ $viewType = $this->cookie->aiPromptsViewType ? $this->cookie->aiPromptsViewType 
 featureBar(set::current($status), set::linkParams("module={$module}&status={key}"));
 
 $canCreate       = $this->config->edition != 'open' && common::hasPriv('ai', 'createprompt');
-$createLink      = inlink('promptbasicinfo');
+$createLink      = inlink('promptbasicinfo', "promptID=0&module={$module}");
 $timerCreateItem = $canCreate ? array('text' => $lang->ai->timer->create, 'url' => inlink('timerbasicinfo')) : null;
 toolbar
 (
