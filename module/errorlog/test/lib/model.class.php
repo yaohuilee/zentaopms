@@ -22,7 +22,7 @@ class errorlogModelTest extends baseTest
      */
     public function getListTest(string $query = '', string $orderBy = 'id_desc', int $recTotal = 0, int $recPerPage = 20, int $pageID = 1): array
     {
-        $this->app->loadClass('pager', true);
+        $this->instance->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
 
         $logs = $this->instance->getList($query, $orderBy, $pager);
