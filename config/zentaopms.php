@@ -475,6 +475,14 @@ if(!defined('TABLE_MARKETREPORT'))   define('TABLE_MARKETREPORT',   '`' . $confi
 if(!defined('TABLE_MARKETRESEARCH')) define('TABLE_MARKETRESEARCH', '`' . $config->db->prefix . 'project`');
 if(!defined('TABLE_SYSTEM'))         define('TABLE_SYSTEM', '`' . $config->db->prefix . 'system`');
 
+if(!defined('TABLE_ART'))         define('TABLE_ART', '`' . $config->db->prefix . 'art`');
+if(!defined('TABLE_PI'))          define('TABLE_PI',            '`' . $config->db->prefix . 'pi`');
+if(!defined('TABLE_PIEXECUTION')) define('TABLE_PIEXECUTION',   '`' . $config->db->prefix . 'piexecution`');
+if(!defined('TABLE_PISTORY'))     define('TABLE_PISTORY',       '`' . $config->db->prefix . 'pistory`');
+if(!defined('TABLE_TEAMGROUP'))   define('TABLE_TEAMGROUP',     '`' . $config->db->prefix . 'teamgroup`');
+if(!defined('TABLE_OBJECTIVE'))   define('TABLE_OBJECTIVE',     '`' . $config->db->prefix . 'objective`');
+if(!defined('TABLE_KANBANLINKS')) define('TABLE_KANBANLINKS',   '`' . $config->db->prefix . 'kanbanlinks`');
+
 define('JIRA_TMPRELATION',       '`jiratmprelation`');
 define('CONFLUENCE_TMPRELATION', '`confluencetmprelation`');
 
