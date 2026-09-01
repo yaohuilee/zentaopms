@@ -26,7 +26,7 @@ $lang->ppm->removeAction      = '%s, <strong>%s</strong> deleted <a href="%s">Me
 $lang->ppm->submitType        = 'Submit type';
 $lang->ppm->linkedObject      = 'Linked items';
 $lang->ppm->object            = 'Object';
-$lang->ppm->mergeInfo         = 'Merge View';
+$lang->ppm->mergeInfo         = 'check Info';
 $lang->ppm->locateView        = 'View';
 $lang->ppm->codeConflict      = 'Conflict';
 $lang->ppm->hasConflict       = 'Check Conflict';

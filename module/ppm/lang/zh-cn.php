@@ -26,7 +26,7 @@ $lang->ppm->removeAction      = '%s, 由 <strong>%s</strong> 删除了 <a href="
 $lang->ppm->submitType        = '提交方式';
 $lang->ppm->linkedObject      = '关联项';
 $lang->ppm->object            = '对象';
-$lang->ppm->mergeInfo         = '合并概览';
+$lang->ppm->mergeInfo         = '检查项';
 $lang->ppm->locateView        = '查看详情';
 $lang->ppm->codeConflict      = '代码冲突检查';
 $lang->ppm->hasConflict       = '是否有代码冲突';
