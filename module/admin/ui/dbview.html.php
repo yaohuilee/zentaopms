@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /**
- * The table engine view file of admin module of ZenTaoPMS.
+ * The database view view file of admin module of ZenTaoPMS.
  * @copyright   Copyright 2009-2023 禅道软件（青岛）集团有限公司(ZenTao Software (Qingdao) Co., Ltd. www.zentao.net)
  * @license     ZPL(https://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
  * @author      Gang Liu <liugang@easycorp.ltd>
@@ -10,23 +10,21 @@ declare(strict_types=1);
  */
 namespace zin;
 
-$isMysql = $config->db->driver == 'mysql';
-$count   = count($tableEngines);
+$count = $viewCount;
 
-jsVar('refresh', $lang->refresh);
-jsVar('tableEngines', $tableEngines);
-jsVar('changingTable', $lang->admin->changingTable);
-jsVar('changeSuccess', $lang->admin->changeSuccess);
-jsVar('changeFinished', $lang->admin->changeFinished);
-jsVar('tableEngineFail', $lang->admin->tableEngineFail);
-jsVar('hasMyISAM', $lang->admin->engineSummary);
+jsVar('viewNames', $viewNames);
+jsVar('dbViewRegenerate', $lang->admin->dbViewRegenerate);
+jsVar('dbViewSuccess', $lang->admin->dbViewSuccess);
+jsVar('dbViewFail', $lang->admin->dbViewFail);
+jsVar('dbViewResult', sprintf($lang->admin->dbViewResult, '%s', '%s'));
+jsVar('dbViewFailed', $lang->admin->dbViewFailed);
 
-if(!$isMysql || empty($tableEngines))
+if(empty($viewNames))
 {
     panel
     (
         setClass('m-auto w-2/3'),
-        set::title($lang->admin->tableEngine),
+        set::title($lang->admin->dbView),
         set::headingClass('border-b'),
         div
         (
@@ -41,32 +39,31 @@ else
     panel
     (
         setClass('m-auto w-2/3'),
-        set::title($lang->admin->tableEngine),
+        set::title($lang->admin->dbView),
         set::headingClass('border-b'),
         to::headingActions
         (
-            span(setID('engineProgress'), '0 / ' . $count)
+            span(setID('viewProgress'), '0 / ' . $count)
         ),
         div
         (
             setClass('mb-4'),
-            sprintf($lang->admin->tableEngineTips, $count)
+            sprintf($lang->admin->dbViewTips, $count)
         ),
         div
         (
-            setID('engineBox'),
+            setID('viewBox'),
             setClass('mb-4 overflow-y-auto overflow-x-hidden'),
             setStyle(['max-height' => 'calc(100vh - 16rem)'])
         ),
         div
         (
-            setID('engineAction'),
             setClass('center'),
             a
             (
                 setID('startUpdate'),
                 setClass('btn primary'),
-                on::click('changeTableEngines()'),
+                on::click('regenerateDbViews()'),
                 $lang->admin->startUpdate
             )
         )
