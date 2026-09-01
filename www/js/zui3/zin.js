@@ -52,6 +52,33 @@
         onChangeApp: null
     };
 
+    function generateRequestID()
+    {
+        return window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'zid-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    }
+
+    /**
+     * 为所有 ajax 请求补充请求ID请求头。
+     * Add request id header to all ajax requests.
+     *
+     * @param {Request} request
+     * @return {void}
+     */
+    function addRequestIDToAjax(request)
+    {
+        if(!request || !request.headers) return;
+
+        let hasHeader = false;
+        if(typeof request.headers.has === 'function') hasHeader = request.headers.has('X-ZIN-Request-ID');
+        else hasHeader = Object.prototype.hasOwnProperty.call(request.headers, 'X-ZIN-Request-ID');
+        if(hasHeader) return;
+
+        if(typeof request.headers.set === 'function') request.headers.set('X-ZIN-Request-ID', generateRequestID());
+        else request.headers['X-ZIN-Request-ID'] = generateRequestID();
+    }
+
+    if(zui.Ajax && zui.Ajax.globalBeforeSends) zui.Ajax.globalBeforeSends.push(addRequestIDToAjax);
+
     /**
      * 注册Zin回调函数。
      * Register a Zin callback function.
@@ -574,7 +601,7 @@
         const target    = options.target || '#main';
         const selectors = (Array.isArray(options.selector) ? options.selector : options.selector.split(',')).map(selector => selector.replace(':component', ':type=json&data=props'));
         const url       = options.url;
-        const requestID = options.requestID || (window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'zid-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10));
+        const requestID = options.requestID || generateRequestID();
         if(DEBUG && !selectors.includes('zinDebug()')) selectors.push('zinDebug()');
         const isDebugRequest = DEBUG && selectors.length === 1 || selectors[0] === 'zinDebug()';
         if(options.modal === undefined) options.modal = $(target[0] !== '#' && target[0] !== '.' ? `#${target}` : target).closest('.modal').length;
