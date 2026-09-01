@@ -20,6 +20,9 @@ $lang->errorlog->line        = '行号';
 $lang->errorlog->trace       = '堆栈';
 $lang->errorlog->createdDate = '发生时间';
 
+$lang->errorlog->featureBar = array();
+$lang->errorlog->featureBar['browse'] = array('all' => '全部');
+
 $lang->errorlog->notice = new stdclass();
 $lang->errorlog->notice->int = '『%s』应当是正整数。';
 

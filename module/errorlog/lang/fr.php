@@ -20,6 +20,9 @@ $lang->errorlog->line        = 'Ligne';
 $lang->errorlog->trace       = 'Trace';
 $lang->errorlog->createdDate = 'Survenu le';
 
+$lang->errorlog->featureBar = array();
+$lang->errorlog->featureBar['browse'] = array('all' => 'Tous');
+
 $lang->errorlog->notice = new stdclass();
 $lang->errorlog->notice->int = '『 %s 』 devrait être un entier positif.';
 
