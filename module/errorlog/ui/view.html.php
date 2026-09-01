@@ -11,22 +11,48 @@ declare(strict_types=1);
  */
 namespace zin;
 
+if(isInModal()) set::size('xl');
+
+$fatalLevels   = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE | E_RECOVERABLE_ERROR;
+$warningLevels = E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
+$levelType     = ($log->level & $fatalLevels)   ? 'danger'  :
+                 (($log->level & $warningLevels) ? 'warning' : 'primary');
+
 modalHeader(set::title($this->lang->errorlog->view . ' #' . $log->id));
 
 div
 (
-    setClass('space-y-2'),
+    setClass('px-4 pt-3 pb-5'),
     div
     (
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->requestID), div(setClass('flex-auto break-all'), $log->requestID)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->module),   div(setClass('flex-auto break-all'), $log->module . ' / ' . $log->method)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->level),    div(setClass('flex-auto'), $log->levelName)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->account),  div(setClass('flex-auto break-all'), $log->account)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->url),      div(setClass('flex-auto break-all'), $log->url)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->createdDate), div(setClass('flex-auto'), $log->createdDate)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->message),  div(setClass('flex-auto break-all whitespace-pre-wrap'), $log->message)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->file),     div(setClass('flex-auto break-all'), $log->file . ':' . $log->line)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->trace),    div(setClass('flex-auto break-all whitespace-pre-wrap font-mono'), $log->trace))
+        setClass('flex items-center gap-3 pb-3 border-b'),
+        span(setClass("label $levelType"), $log->levelName),
+        span(setClass('font-bold'), $log->module . ' / ' . $log->method),
+        span(setClass('text-muted text-sm flex-auto text-right'), $log->createdDate)
+    ),
+    div
+    (
+        setClass('space-y-2 pt-3'),
+        div(setClass('flex gap-2'), div(setClass('w-28 flex-none text-muted'), $lang->errorlog->requestID),  div(setClass('flex-auto font-mono break-all'), $log->requestID)),
+        div(setClass('flex gap-2'), div(setClass('w-28 flex-none text-muted'), $lang->errorlog->account),    div(setClass('flex-auto break-all'), $log->account)),
+        div(setClass('flex gap-2'), div(setClass('w-28 flex-none text-muted'), $lang->errorlog->url),        div(setClass('flex-auto break-all'), $log->url)),
+        div(setClass('flex gap-2'), div(setClass('w-28 flex-none text-muted'), $lang->errorlog->file),       div(setClass('flex-auto font-mono break-all'), $log->file . ':' . $log->line)),
+        div(setClass('flex gap-2'), div(setClass('w-28 flex-none text-muted'), $lang->errorlog->message),    div(setClass('flex-auto break-all whitespace-pre-wrap'), $log->message)),
+        div
+        (
+            setClass('flex gap-2'),
+            div(setClass('w-28 flex-none text-muted'), $lang->errorlog->trace),
+            div
+            (
+                setClass('flex-auto'),
+                div
+                (
+                    setClass('font-mono text-sm whitespace-pre overflow-auto rounded border bg-gray-50 p-3'),
+                    setStyle(array('max-height' => '60vh')),
+                    $log->trace
+                )
+            )
+        )
     )
 );
 
