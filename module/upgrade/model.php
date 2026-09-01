@@ -508,6 +508,19 @@ class upgradeModel extends model
     }
 
     /**
+     * 判断数据表是否存在于当前数据库。
+     * Judge whether a table exists in the current database.
+     *
+     * @param  string $table
+     * @access public
+     * @return bool
+     */
+    public function isTable(string $table): bool
+    {
+        return isset($this->dao->getTableEngines()[$table]);
+    }
+
+    /**
      * 通过版本号获取产品版本类型。
      * Get edition by version.
      *

@@ -778,7 +778,10 @@ class upgrade extends control
 
         $response = array('result' => 'success', 'message' => '');
         $table    = str_replace('`', '', $table);
-        if(empty($table) || !preg_match('/^[a-zA-Z0-9_]+$/', $table) || $this->config->db->driver != 'mysql') return $this->send($response);
+        if(empty($table) || $this->config->db->driver != 'mysql') return $this->send($response);
+
+        /* 白名单校验，避免传入任意表名执行 ALTER。Whitelist check to avoid arbitrary ALTER. */
+        if(!$this->upgrade->isTable($table)) return $this->send($response);
 
         /* 表引擎已经不是 MyISAM 时直接返回成功。*/
         if(strtolower($this->upgrade->getTableEngine($table)) != 'myisam') return $this->send($response);
@@ -828,7 +831,11 @@ class upgrade extends control
         session_write_close();
 
         $response = array('result' => 'success', 'message' => '');
-        if(empty($table) || !preg_match('/^[a-zA-Z0-9_]+$/', $table) || $this->config->db->driver != 'mysql') return $this->send($response);
+        $table    = str_replace('`', '', $table);
+        if(empty($table) || $this->config->db->driver != 'mysql') return $this->send($response);
+
+        /* 白名单校验，避免传入任意表名执行 ALTER。Whitelist check to avoid arbitrary ALTER. */
+        if(!$this->upgrade->isTable($table)) return $this->send($response);
 
         if($this->upgrade->convertTableCharset($table))
         {
