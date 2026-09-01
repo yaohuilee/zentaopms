@@ -135,29 +135,22 @@ $domBox = div
             $hasConflict ? label(setClass('danger ml-4'), $lang->ppm->checkStatusList['fail']) : label(setClass('success ml-4'), $lang->ppm->checkStatusList['success']),
             //div(setClass('flex flex-auto justify-end'), btn(setClass('ghost text-primary'), span(icon(setClass('mr-2'), 'about'), $lang->ppm->locateView)))
         ),
-        div
+        $hasConflict ? div
         (
             setClass('border px-4 py-4'),
             setStyle(array('margin-top' => '-1px')),
             div
             (
-                setClass('flex items-center'),
-                $hasConflict ? icon(setClass('text-danger font-bold mr-1'), 'close') : icon(setClass('text-success font-bold mr-1'), 'check'),
-                span("{$lang->ppm->hasConflict}: ", $lang->ppm->hasConflictList[$hasConflict ? 'yes' : 'no']),
-                div(setClass('flex flex-auto justify-end'), span(setClass('mr-2'), "({$lang->ppm->request}: {$lang->ppm->hasConflictList['no']})"))
-            ),
-            $hasConflict ? div
-            (
                 div
                 (
-                    setClass('flex items-center mt-1'),
+                    setClass('flex items-center'),
                     icon(setClass('text-danger font-bold mr-1'), 'close'),
                     span("{$lang->ppm->conflictFiles}: "),
                     div(setClass('flex flex-auto justify-end'), span(setClass('mr-2'), "({$lang->ppm->request}: {$lang->ppm->hasConflictList['no']})"))
                 ),
                 $conflictFiles,
-            ) : null
-        )
+            )
+        ) : null
     ),
     //section
     //(
