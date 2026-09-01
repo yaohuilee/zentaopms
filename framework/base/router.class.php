@@ -440,6 +440,30 @@ class baseRouter
     public $zinErrors = array();
 
     /**
+     * 当前请求的ID。
+     * The request id of current request.
+     *
+     * @var string
+     */
+    public $requestID = '';
+
+    /**
+     * 当前请求已经记录的错误数量，防止错误刷爆日志表。
+     * The count of errors recorded in current request, prevent flooding the errorlog table.
+     *
+     * @var int
+     */
+    public $errorLogCount = 0;
+
+    /**
+     * 是否正在保存错误日志，防止递归记录。
+     * Whether is saving error log, prevent recursion.
+     *
+     * @var bool
+     */
+    public $savingErrorLog = false;
+
+    /**
      * 是否将mysql的错误作为异常抛出。
      * Whether to throw mysql error as exception.
      *
@@ -823,6 +847,9 @@ class baseRouter
         $_GET    = validater::filterSuper($_GET);
         $_COOKIE = validater::filterSuper($_COOKIE);
         $_SERVER = validater::filterSuper($_SERVER);
+
+        /* 记录请求ID。Record the request id from header. */
+        if(isset($_SERVER['HTTP_X_ZIN_REQUEST_ID'])) $this->requestID = trim((string)$_SERVER['HTTP_X_ZIN_REQUEST_ID']);
 
         /* Filter common get and cookie vars. */
         if($this->config->framework->filterParam == 2)
@@ -3305,10 +3332,14 @@ class baseRouter
      */
     public function saveError(int $level, string $message, string $file, int $line)
     {
+        if(!(error_reporting() & $level)) return true; // 代码里使用错误抑制符(@)不输出错误日志
+
+        /* 保存错误信息到错误日志表。Save error info to the errorlog table. */
+        $this->saveErrorLog($level, $message, $file, $line);
+
         if(empty($this->config->debug))   return true;
         if(!is_dir($this->logRoot))       return true;
         if(!is_writable($this->logRoot))  return true;
-        if(!(error_reporting() & $level)) return true; // 代码里使用错误抑制符(@)不输出错误日志
 
         /*
          * 删除设定时间之前的日志。
@@ -3409,6 +3440,45 @@ class baseRouter
         }
 
         return true;
+    }
+
+    /**
+     * 保存错误信息到错误日志表。
+     * Save error info to the errorlog table.
+     *
+     * @param  int    $level
+     * @param  string $message
+     * @param  string $file
+     * @param  int    $line
+     * @access public
+     * @return void
+     */
+    public function saveErrorLog(int $level, string $message, string $file, int $line)
+    {
+        $enabled = isset($this->config->errorlog->enabled) ? $this->config->errorlog->enabled : true;
+        if(!$enabled)                       return;
+        if($this->savingErrorLog)           return;
+        if($this->moduleName == 'errorlog') return;
+        if(empty($this->dbh))               return;
+        if($this->errorLogCount >= 100)     return;
+
+        $account = isset($_SESSION['user']->account) ? $_SESSION['user']->account : '';
+        $trace   = (new Exception())->getTraceAsString();
+
+        $this->savingErrorLog = true;
+        $this->errorLogCount ++;
+
+        try
+        {
+            $stmt = $this->dbh->prepare('INSERT INTO ' . TABLE_ERRORLOG . ' (`requestID`, `account`, `module`, `method`, `url`, `level`, `message`, `file`, `line`, `trace`, `createdDate`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute(array($this->requestID, $account, $this->moduleName, $this->rawMethod, substr($this->getURI(), 0, 255), $level, $message, $file, $line, $trace, helper::now()));
+        }
+        catch(Throwable $e)
+        {
+            /* 记录失败不影响主流程。If failed to save, do not affect the main flow. */
+        }
+
+        $this->savingErrorLog = false;
     }
 
     /**
