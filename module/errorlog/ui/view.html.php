@@ -23,7 +23,7 @@ modalBody
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->level),    div(setClass('flex-auto'), $log->levelName)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->account),  div(setClass('flex-auto break-all'), $log->account)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->url),      div(setClass('flex-auto break-all'), $log->url)),
-        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->createdDate'), div(setClass('flex-auto'), $log->createdDate)),
+        div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->createdDate), div(setClass('flex-auto'), $log->createdDate)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->message),  div(setClass('flex-auto break-all whitespace-pre-wrap'), $log->message)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->file),     div(setClass('flex-auto break-all'), $log->file . ':' . $log->line)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->trace),    div(setClass('flex-auto break-all whitespace-pre-wrap font-mono'), $log->trace))
