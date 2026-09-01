@@ -522,7 +522,7 @@ class productModel extends model
         $changes = common::createChanges($oldProduct, $product);
         if(!empty($product->comment) or !empty($changes))
         {
-            $actionID = $this->loadModel('action')->create('product', $productID, 'Closed', $product->comment);
+            $actionID = $this->loadModel('action')->create('product', $productID, 'Closed', (string)$product->comment);
             $this->action->logHistory($actionID, $changes);
 
             if(!empty($product->comment))
@@ -559,7 +559,7 @@ class productModel extends model
         $changes = common::createChanges($oldProduct, $product);
         if(!empty($product->comment) or !empty($changes))
         {
-            $actionID = $this->loadModel('action')->create('product', $productID, 'Activated', $product->comment);
+            $actionID = $this->loadModel('action')->create('product', $productID, 'Activated', (string)$product->comment);
             $this->action->logHistory($actionID, $changes);
 
             if(!empty($product->comment))
