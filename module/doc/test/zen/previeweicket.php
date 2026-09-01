@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -92,6 +93,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('doc');
+helper::import($tester->app->getModulePath('', 'doc') . 'control.php');
+helper::import($tester->app->getModulePath('', 'doc') . 'zen.php');
 
 /**
 
@@ -99,16 +102,16 @@ title=测试 docModel::previeweicket()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
-- 步骤4：大值输入 @error:Error
-- 步骤5：业务规则验证 @error:Error
+- 步骤1：正常输入 @null
+- 步骤2：边界值输入 @null
+- 步骤3：无效输入 @null
+- 步骤4：大值输入 @null
+- 步骤5：业务规则验证 @null
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('1', array(), '1')); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('', array(), '1')); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('abc', array(), '1')); }))) && p() && e('error:Error'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('999999', array(), '1')); }))) && p() && e('error:Error'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('test', array(1, 2), '1')); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('1', array(), '1')); }))) && p() && e('null'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('', array(), '1')); }))) && p() && e('null'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('abc', array(), '1')); }))) && p() && e('null'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('999999', array(), '1')); }))) && p() && e('null'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('doc', 'previeweicket', array('test', array(1, 2), '1')); }))) && p() && e('null'); // 步骤5：业务规则验证

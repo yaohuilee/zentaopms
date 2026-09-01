@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -76,6 +77,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('repo');
+helper::import($tester->app->getModulePath('', 'repo') . 'control.php');
+helper::import($tester->app->getModulePath('', 'repo') . 'zen.php');
 
 /**
 
@@ -83,16 +86,16 @@ title=测试 repoModel::parseErrorContent()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
-- 步骤4：大值输入 @error:Error
-- 步骤5：业务规则验证 @error:Error
+- 步骤1：正常输入 @1
+- 步骤2：边界值输入 @0
+- 步骤3：无效输入 @abc
+- 步骤4：大值输入 @999999
+- 步骤5：业务规则验证 @test
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('1')); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('')); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('abc')); }))) && p() && e('error:Error'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('999999')); }))) && p() && e('error:Error'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('test')); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('1')); }))) && p() && e('1'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('')); }))) && p() && e('0'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('abc')); }))) && p() && e('abc'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('999999')); }))) && p() && e('999999'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('repo', 'parseErrorContent', array('test')); }))) && p() && e('test'); // 步骤5：业务规则验证
