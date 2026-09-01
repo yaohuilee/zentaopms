@@ -1293,6 +1293,27 @@ CREATE TABLE IF NOT EXISTS `zt_log` (
 CREATE INDEX `objectType` ON `zt_log`(`objectType`);
 CREATE INDEX `obejctID`   ON `zt_log`(`objectID`);
 
+-- DROP TABLE IF EXISTS `zt_errorlog`;
+CREATE TABLE IF NOT EXISTS `zt_errorlog` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `requestID` varchar(64) NOT NULL DEFAULT '',
+  `account` varchar(30) NOT NULL DEFAULT '',
+  `module` varchar(30) NOT NULL DEFAULT '',
+  `method` varchar(30) NOT NULL DEFAULT '',
+  `url` varchar(255) NOT NULL DEFAULT '',
+  `level` smallint unsigned NOT NULL DEFAULT 0,
+  `message` text DEFAULT NULL,
+  `file` varchar(255) NOT NULL DEFAULT '',
+  `line` int unsigned NOT NULL DEFAULT 0,
+  `trace` text DEFAULT NULL,
+  `createdDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE INDEX `requestID`   ON `zt_errorlog`(`requestID`);
+CREATE INDEX `module`      ON `zt_errorlog`(`module`);
+CREATE INDEX `level`       ON `zt_errorlog`(`level`);
+CREATE INDEX `createdDate` ON `zt_errorlog`(`createdDate`);
+
 -- DROP TABLE IF EXISTS `zt_module`;
 CREATE TABLE IF NOT EXISTS `zt_module` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -2450,6 +2471,7 @@ REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `typ
 ('*/1', '*',  '*', '*', '*', 'moduleName=mail&methodName=asyncSend',                     '异步发信',           'zentao', 1, 'normal', NULL),
 ('*/1', '*',  '*', '*', '*', 'moduleName=webhook&methodName=asyncSend',                  '异步发送Webhook',    'zentao', 1, 'normal', NULL),
 ('*/5', '*',  '*', '*', '*', 'moduleName=admin&methodName=deleteLog',                    '删除过期日志',        'zentao', 1, 'normal', NULL),
+('*/5', '*',  '*', '*', '*', 'moduleName=errorlog&methodName=deleteLog',                 '删除过期错误日志',    'zentao', 1, 'normal', NULL),
 ('*/5', '*',  '*', '*', '*', 'moduleName=program&methodName=refreshStats',               '刷新项目集统计数据',  'zentao', 1, 'normal', NULL),
 ('*/5', '*',  '*', '*', '*', 'moduleName=product&methodName=refreshStats',               '刷新产品统计数据',    'zentao', 1, 'normal', NULL),
 ('0',   '0',  '*', '*', '*', 'moduleName=weekly&methodName=createCycleReport',           '定时生成报告',        'zentao', 1, 'normal', NULL),

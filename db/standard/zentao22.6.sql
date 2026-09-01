@@ -3079,6 +3079,25 @@ CREATE TABLE `zt_log` (
   KEY `objectType` (`objectType`),
   KEY `obejctID` (`objectID`)
 ) ENGINE=InnoDB;
+CREATE TABLE `zt_errorlog` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `requestID` varchar(64) NOT NULL DEFAULT '',
+  `account` varchar(30) NOT NULL DEFAULT '',
+  `module` varchar(30) NOT NULL DEFAULT '',
+  `method` varchar(30) NOT NULL DEFAULT '',
+  `url` varchar(255) NOT NULL DEFAULT '',
+  `level` smallint unsigned NOT NULL DEFAULT '0',
+  `message` text,
+  `file` varchar(255) NOT NULL DEFAULT '',
+  `line` int unsigned NOT NULL DEFAULT '0',
+  `trace` text,
+  `createdDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `requestID` (`requestID`),
+  KEY `module` (`module`),
+  KEY `level` (`level`),
+  KEY `createdDate` (`createdDate`)
+) ENGINE=InnoDB;
 CREATE TABLE `zt_mark` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `objectType` varchar(10) NOT NULL DEFAULT '',
