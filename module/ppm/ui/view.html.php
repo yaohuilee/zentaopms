@@ -113,11 +113,11 @@ div
                             setClass('nav-item'),
                             a
                             (
-                                $lang->ppm->issueList . " ({$issueListTotal})",
+                                $lang->ppm->changeFiles,
                                 setClass('font-medium font-bold text-md'),
-                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=bug")),
+                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=files")),
                                 set('data-app', $app->tab),
-                                $type == 'bug' ? setClass('active') : null
+                                $type == 'files' ? setClass('active') : null
                             )
                         ),
                         li
@@ -137,25 +137,25 @@ div
                             setClass('nav-item'),
                             a
                             (
-                                $lang->ppm->changeFiles,
+                                $lang->ppm->issueList . " ({$issueListTotal})",
                                 setClass('font-medium font-bold text-md'),
-                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=files")),
+                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=bug")),
                                 set('data-app', $app->tab),
-                                $type == 'files' ? setClass('active') : null
+                                $type == 'bug' ? setClass('active') : null
                             )
                         ),
-                        li
-                        (
-                            setClass('nav-item'),
-                            a
-                            (
-                                $lang->pipeline->common,
-                                setClass('font-medium font-bold text-md'),
-                                set('data-app', $app->tab),
-                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=pipeline")),
-                                $type == 'pipeline' ? setClass('active') : null
-                            )
-                        ),
+                        //li
+                        //(
+                        //    setClass('nav-item'),
+                        //    a
+                        //    (
+                        //        $lang->pipeline->common,
+                        //        setClass('font-medium font-bold text-md'),
+                        //        set('data-app', $app->tab),
+                        //        set::href(createLink('ppm', 'view', "id={$ppm->id}&type=pipeline")),
+                        //        $type == 'pipeline' ? setClass('active') : null
+                        //    )
+                        //),
                         li
                         (
                             setClass('nav-item'),
