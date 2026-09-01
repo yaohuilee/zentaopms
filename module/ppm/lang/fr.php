@@ -31,7 +31,6 @@ $lang->ppm->locateView        = 'View';
 $lang->ppm->codeConflict      = 'Conflict';
 $lang->ppm->hasConflict       = 'Check Conflict';
 $lang->ppm->request           = 'Request';
-$lang->ppm->AIReview          = 'AI Review';
 $lang->ppm->AICodeScore       = 'Score';
 $lang->ppm->AISevereIssue     = 'Severe Issue';
 $lang->ppm->AIOrdinaryIssue   = 'Ordinary Issue';

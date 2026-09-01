@@ -31,7 +31,6 @@ $lang->ppm->locateView        = '查看详情';
 $lang->ppm->codeConflict      = '代码冲突检查';
 $lang->ppm->hasConflict       = '是否有代码冲突';
 $lang->ppm->request           = '要求';
-$lang->ppm->AIReview          = 'AI评审';
 $lang->ppm->AICodeScore       = '代码评分';
 $lang->ppm->AISevereIssue     = '高危问题';
 $lang->ppm->AIOrdinaryIssue   = '一般问题';
