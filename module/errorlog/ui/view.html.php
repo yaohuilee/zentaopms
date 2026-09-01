@@ -13,11 +13,11 @@ namespace zin;
 
 modalHeader(set::title($this->lang->errorlog->view . ' #' . $log->id));
 
-modalBody
+div
 (
+    setClass('space-y-2'),
     div
     (
-        setClass('space-y-2'),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->requestID), div(setClass('flex-auto break-all'), $log->requestID)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->module),   div(setClass('flex-auto break-all'), $log->module . ' / ' . $log->method)),
         div(setClass('flex gap-2'), div(setClass('w-24 flex-none text-muted'), $lang->errorlog->level),    div(setClass('flex-auto'), $log->levelName)),

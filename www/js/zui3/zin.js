@@ -609,7 +609,7 @@
             if(errorLogFetched || !requestID) return;
             errorLogFetched = true;
             const logURL = $.createLink('errorlog', 'ajaxGetLog', 'requestID=' + encodeURIComponent(requestID));
-            fetch(logURL, {headers: {'X-Zin-Request-ID': requestID}}).then(res => res.json()).then(data =>
+            fetch(logURL, {headers: {'X-Zin-Request-ID': requestID, 'X-Requested-With': 'XMLHttpRequest'}}).then(res => res.json()).then(data =>
             {
                 if(data && data.result === 'success' && data.data) showErrorLog(data.data, options);
                 else if(DEBUG) console.warn('[ZIN] ', 'Fetch error log failed', data);
