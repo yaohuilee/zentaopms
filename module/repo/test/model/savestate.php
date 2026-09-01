@@ -61,6 +61,13 @@ $spaceUserTable->role->range('manager');
 $spaceUserTable->account->range('admin');
 $spaceUserTable->gen(1);
 
+$productTable = zenData('product');
+$productTable->id->range('1');
+$productTable->name->range('repo-test-product');
+$productTable->status->range('normal');
+$productTable->deleted->range('0');
+$productTable->gen(1);
+
 su('admin');
 
 $repo = new repoModelTest();
