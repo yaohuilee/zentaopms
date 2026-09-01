@@ -218,17 +218,18 @@ define('TABLE_USERQUERY',     '`' . $config->db->prefix . 'userquery`');
 define('TABLE_USERCONTACT',   '`' . $config->db->prefix . 'usercontact`');
 define('TABLE_USERVIEW',      '`' . $config->db->prefix . 'userview`');
 
-define('TABLE_BUG',           '`' . $config->db->prefix . 'bug`');
-define('TABLE_CASE',          '`' . $config->db->prefix . 'case`');
-define('TABLE_CASESTEP',      '`' . $config->db->prefix . 'casestep`');
-define('TABLE_CASESPEC',      '`' . $config->db->prefix . 'casespec`');
-define('TABLE_TESTTASK',      '`' . $config->db->prefix . 'testtask`');
-define('TABLE_TESTRUN',       '`' . $config->db->prefix . 'testrun`');
-define('TABLE_TESTRESULT',    '`' . $config->db->prefix . 'testresult`');
-define('TABLE_USERTPL',       '`' . $config->db->prefix . 'usertpl`');
-define('TABLE_ZAHOST',        '`' . $config->db->prefix . 'host`');
-define('TABLE_IMAGE',         '`' . $config->db->prefix . 'image`');
-define('TABLE_AUTOMATION',    '`' . $config->db->prefix . 'automation`');
+define('TABLE_BUG',             '`' . $config->db->prefix . 'bug`');
+define('TABLE_CASE',            '`' . $config->db->prefix . 'case`');
+define('TABLE_CASESTEP',        '`' . $config->db->prefix . 'casestep`');
+define('TABLE_CASESPEC',        '`' . $config->db->prefix . 'casespec`');
+define('TABLE_TESTTASK',        '`' . $config->db->prefix . 'testtask`');
+define('TABLE_TESTRUN',         '`' . $config->db->prefix . 'testrun`');
+define('TABLE_TESTRESULT',      '`' . $config->db->prefix . 'testresult`');
+define('TABLE_TESTTASKPRODUCT', '`' . $config->db->prefix . 'testtaskproduct`');
+define('TABLE_USERTPL',         '`' . $config->db->prefix . 'usertpl`');
+define('TABLE_ZAHOST',          '`' . $config->db->prefix . 'host`');
+define('TABLE_IMAGE',           '`' . $config->db->prefix . 'image`');
+define('TABLE_AUTOMATION',      '`' . $config->db->prefix . 'automation`');
 
 if(!defined('TABLE_ASSET'))  define('TABLE_ASSET', '`' . $config->db->prefix . 'asset`');
 
@@ -412,6 +413,8 @@ define('TABLE_REVIEWISSUE',            '`' . $config->db->prefix . 'reviewissue`
 define('TABLE_REVIEWRESULT',           '`' . $config->db->prefix . 'reviewresult`');
 define('TABLE_RISK',                   '`' . $config->db->prefix . 'risk`');
 define('TABLE_RISKISSUE',              '`' . $config->db->prefix . 'riskissue`');
+define('TABLE_RULE',                   '`' . $config->db->prefix . 'rule`');
+define('TABLE_RULEQUEUE',              '`' . $config->db->prefix . 'rulequeue`');
 define('TABLE_SOLUTIONS',              '`' . $config->db->prefix . 'solutions`');
 define('TABLE_SQLVIEW',                '`' . $config->db->prefix . 'sqlview`');
 define('TABLE_SQLBUILDER',             '`' . $config->db->prefix . 'sqlbuilder`');
