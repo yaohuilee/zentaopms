@@ -5,6 +5,7 @@ $config->errorlog->saveDays   = 30;
 $config->errorlog->maxRecords = 100;
 
 global $lang;
+if(!isset($lang->errorlog)) $lang->errorlog = new stdclass();
 
 $config->errorlog->search['module']   = 'errorlog';
 $config->errorlog->search['fields']['id']          = $lang->idAB;
