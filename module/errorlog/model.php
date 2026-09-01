@@ -1,0 +1,84 @@
+<?php
+/**
+ * The model file of errorlog module of ZenTaoPMS.
+ *
+ * @copyright   Copyright 2009-2026 禅道软件（青岛）集团有限公司(ZenTao Software (Qingdao) Co., Ltd. www.zentao.net)
+ * @license     ZPL(https://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
+ * @author      ZenTao Team
+ * @package     errorlog
+ * @link        https://www.zentao.net
+ */
+class errorlogModel extends model
+{
+    /**
+     * 获取错误日志列表。
+     * Get error log list.
+     *
+     * @param  string $query
+     * @param  string $orderBy
+     * @param  object $pager
+     * @access public
+     * @return array
+     */
+    public function getList(string $query = '', string $orderBy = 'id_desc', ?object $pager = null): array
+    {
+        return $this->dao->select('*')->from(TABLE_ERRORLOG)->alias('t1')
+            ->where('1=1')
+            ->beginIF(!empty($query))->andWhere($query)->fi()
+            ->orderBy($orderBy)
+            ->page($pager)
+            ->fetchAll();
+    }
+
+    /**
+     * 根据ID获取错误日志。
+     * Get an error log by id.
+     *
+     * @param  int $id
+     * @access public
+     * @return object|false
+     */
+    public function getByID(int $id): object|false
+    {
+        return $this->dao->select('*')->from(TABLE_ERRORLOG)->where('id')->eq($id)->fetch();
+    }
+
+    /**
+     * 根据请求ID获取错误日志。
+     * Get an error log by request id.
+     *
+     * @param  string $requestID
+     * @access public
+     * @return object|false
+     */
+    public function getByRequestID(string $requestID): object|false
+    {
+        return $this->dao->select('*')->from(TABLE_ERRORLOG)->where('requestID')->eq($requestID)->orderBy('id_desc')->limit(1)->fetch();
+    }
+
+    /**
+     * 获取有错误日志的模块列表。
+     * Get modules which have error logs.
+     *
+     * @access public
+     * @return array
+     */
+    public function getModulePairs(): array
+    {
+        return $this->dao->select('DISTINCT `module`')->from(TABLE_ERRORLOG)->where('module')->ne('')->orderBy('module')->fetchPairs('module', 'module');
+    }
+
+    /**
+     * 删除指定日期之前的错误日志。
+     * Delete error logs before the date.
+     *
+     * @param  string $date
+     * @access public
+     * @return bool
+     */
+    public function deleteByDate(string $date): bool
+    {
+        $this->dao->delete()->from(TABLE_ERRORLOG)->where('createdDate')->lt($date)->exec();
+        return !dao::isError();
+    }
+}
