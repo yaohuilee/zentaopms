@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -84,6 +85,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('bug');
+helper::import($tester->app->getModulePath('', 'bug') . 'control.php');
+helper::import($tester->app->getModulePath('', 'bug') . 'zen.php');
 
 /**
 
@@ -91,16 +94,16 @@ title=测试 bugModel::updateTodoAfterCreate()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
-- 步骤4：大值输入 @error:Error
-- 步骤5：业务规则验证 @error:Error
+- 步骤1：正常输入 @1
+- 步骤2：边界值输入 @1
+- 步骤3：无效输入 @1
+- 步骤4：大值输入 @1
+- 步骤5：业务规则验证 @1
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(1, 1)); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(0, 1)); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(-1, 1)); }))) && p() && e('error:Error'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(999999, 1)); }))) && p() && e('error:Error'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(2, 2)); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(1, 1)); }))) && p() && e('1'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(0, 1)); }))) && p() && e('1'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(-1, 1)); }))) && p() && e('1'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(999999, 1)); }))) && p() && e('1'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('bug', 'updateTodoAfterCreate', array(2, 2)); }))) && p() && e('1'); // 步骤5：业务规则验证

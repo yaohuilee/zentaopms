@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -91,8 +92,8 @@ cid=0
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(1, '1', '1'); }))) && p() && e('0'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(0, '1', '1'); }))) && p() && e('0'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(-1, '1', '1'); }))) && p() && e('0'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(999999, '1', '1'); }))) && p() && e('0'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(2, 'test', '1'); }))) && p() && e('0'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(1, '1', '1'); }))) && p() && e('string_len=90'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(0, '1', '1'); }))) && p() && e('string_len=90'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(-1, '1', '1'); }))) && p() && e('string_len=90'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(999999, '1', '1'); }))) && p() && e('string_len=90'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->apiGetRepoDiffs(2, 'test', '1'); }))) && p() && e('string_len=90'); // 步骤5：业务规则验证

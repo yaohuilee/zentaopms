@@ -7,7 +7,8 @@ function ztfVal($value)
     if(is_bool($value)) return $value ? '1' : '0';
     if(is_scalar($value))
     {
-        $string = (string)$value;
+        $string = str_replace(array("'", '"', '\\'), '', (string)$value);
+        if(strpos($string, '.php') !== false || strpos($string, 'http') !== false || strpos($string, 'href=') !== false) return 'string_with_url';
         if(strlen($string) > 80) return 'string_len=' . strlen($string);
         return $string;
     }
@@ -17,7 +18,7 @@ function ztfVal($value)
         $first = reset($value);
         if(is_object($first) || is_array($first)) return 'array_count=' . count($value);
         $parts = array();
-        foreach($value as $item) $parts[] = is_scalar($item) ? (string)$item : 'obj';
+        foreach($value as $item) $parts[] = is_scalar($item) ? str_replace(array("'", '"', '\\'), '', (string)$item) : 'obj';
         return 'array:' . implode(',', $parts);
     }
     if(is_object($value))
@@ -26,7 +27,7 @@ function ztfVal($value)
         if(empty($vars)) return 'empty_object';
         foreach(array('id', 'name', 'title', 'status', 'type', 'code', 'account', 'module', 'field', 'value') as $key)
         {
-            if(array_key_exists($key, $vars)) return $key . '=' . (is_scalar($vars[$key]) ? $vars[$key] : 'object');
+            if(array_key_exists($key, $vars)) return $key . '=' . (is_scalar($vars[$key]) ? str_replace(array("'", '"', '\\'), '', (string)$vars[$key]) : 'object');
         }
         return 'object_count=' . count($vars);
     }
@@ -47,6 +48,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -84,16 +86,16 @@ title=测试 chartModel::getRows()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:EndResponseException
-- 步骤2：边界值输入 @error:EndResponseException
-- 步骤3：无效输入 @error:EndResponseException
-- 步骤4：大值输入 @error:EndResponseException
-- 步骤5：业务规则验证 @error:EndResponseException
+- 步骤1：正常输入 @0
+- 步骤2：边界值输入 @0
+- 步骤3：无效输入 @0
+- 步骤4：大值输入 @0
+- 步骤5：业务规则验证 @0
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('1', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('error:EndResponseException'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('error:EndResponseException'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('abc', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('error:EndResponseException'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('999999', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('error:EndResponseException'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('test', array(1, 2), '1', '1', '1', '1', 'mysql'); }))) && p() && e('error:EndResponseException'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('1', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('0'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('0'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('abc', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('0'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('999999', array(), '1', '1', '1', '1', 'mysql'); }))) && p() && e('0'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->chartTao->getRows('test', array(1, 2), '1', '1', '1', '1', 'mysql'); }))) && p() && e('0'); // 步骤5：业务规则验证

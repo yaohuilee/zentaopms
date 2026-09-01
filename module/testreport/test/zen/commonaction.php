@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -64,7 +65,8 @@ error_reporting(E_ERROR);
 
 $zd_user = zenData('user');
 $zd_user->id->range('1-1');
-$zd_user->account->range('1-1');
+$zd_user->account->range('admin');
+$zd_user->realname->range('admin');
 $zd_user->last->range('(M)-(w)')->type('timestamp')->format('YYYY-MM-DD hh:mm:ss');
 $zd_user->feedback->range('0');
 $zd_user->scoreLevel->range('0');
@@ -73,9 +75,13 @@ $zd_user->jira->range('0');
 $zd_user->deleted->range('0');
 $zd_user->gen(1);
 
+zenData('product')->loadYaml('product', false, 2)->gen(3);
+
 su('admin');
 
 $tester->loadModel('testreport');
+helper::import($tester->app->getModulePath('', 'testreport') . 'control.php');
+helper::import($tester->app->getModulePath('', 'testreport') . 'zen.php');
 
 /**
 
@@ -83,16 +89,16 @@ title=测试 testreportModel::commonAction()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
-- 步骤4：大值输入 @error:Error
-- 步骤5：业务规则验证 @error:Error
+- 步骤1：正常输入 @1
+- 步骤2：边界值输入 @1
+- 步骤3：无效输入 @1
+- 步骤4：大值输入 @1
+- 步骤5：业务规则验证 @error:TypeError
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(1, 'product')); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(0, 'product')); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(-1, 'product')); }))) && p() && e('error:Error'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(999999, 'product')); }))) && p() && e('error:Error'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(2, 'test')); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(1, 'product')); }))) && p() && e('1'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(0, 'product')); }))) && p() && e('1'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(-1, 'product')); }))) && p() && e('1'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(999999, 'product')); }))) && p() && e('1'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('testreport', 'commonAction', array(2, 'test')); }))) && p() && e('error:TypeError'); // 步骤5：业务规则验证

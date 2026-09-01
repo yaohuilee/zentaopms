@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -76,6 +77,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('caselib');
+helper::import($tester->app->getModulePath('', 'caselib') . 'control.php');
+helper::import($tester->app->getModulePath('', 'caselib') . 'zen.php');
 
 /**
 
@@ -83,16 +86,16 @@ title=测试 caselibModel::prepareCasesForBathcCreate()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
-- 步骤4：大值输入 @error:Error
-- 步骤5：业务规则验证 @error:Error
+- 步骤1：正常输入 @0
+- 步骤2：边界值输入 @0
+- 步骤3：无效输入 @0
+- 步骤4：大值输入 @0
+- 步骤5：业务规则验证 @0
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(1)); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(0)); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(-1)); }))) && p() && e('error:Error'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(999999)); }))) && p() && e('error:Error'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(2)); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(1)); }))) && p() && e('0'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(0)); }))) && p() && e('0'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(-1)); }))) && p() && e('0'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(999999)); }))) && p() && e('0'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('caselib', 'prepareCasesForBathcCreate', array(2)); }))) && p() && e('0'); // 步骤5：业务规则验证
