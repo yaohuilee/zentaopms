@@ -22,6 +22,9 @@ formPanel
         input
         (
             set::name('days'),
+            set::type('number'),
+            set::min(1),
+            set::max(365),
             set::value($config->errorlog->saveDays)
         )
     ),
