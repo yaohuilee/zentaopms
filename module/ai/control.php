@@ -343,10 +343,11 @@ class ai extends control
      * Set basic info of prompt.
      *
      * @param  int    $promptID
+     * @param  string $module
      * @access public
      * @return void
      */
-    public function promptBasicInfo(int $promptID = 0)
+    public function promptBasicInfo(int $promptID = 0, string $module = '')
     {
         if(!common::hasPriv('ai', 'designPrompt')) $this->loadModel('common')->deny('ai', 'designPrompt', false);
 
@@ -388,7 +389,7 @@ class ai extends control
 
         if(empty($prompt->id)) $prompt->id = 0;
         if(!isset($prompt->name)) $prompt->name = '';
-        if(!isset($prompt->module)) $prompt->module = '';
+        if(!isset($prompt->module)) $prompt->module = $module;
         if(!isset($prompt->actionPurpose)) $prompt->actionPurpose = '';
         if(!isset($prompt->displayPosition)) $prompt->displayPosition = '';
         if(!isset($prompt->model)) $prompt->model = '';

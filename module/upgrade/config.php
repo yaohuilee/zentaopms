@@ -1,5 +1,14 @@
 <?php
 $config->upgrade = new stdclass();
+
+/* 升级完成后数据处理页的步骤配置，左侧步骤列表按此渲染，后续需要可追加（如文档升级、项目报告升级）。*/
+/* Data process steps after upgrade, the left step list is rendered by this config and can be extended later (e.g. docs, project reports). */
+$config->upgrade->dataProcessSteps = ['tableEngine', 'charset', 'dbView'];
+
+/* 升级数据处理流程自动执行时跳过的数据大表，残留检测与后台页面仍会处理。*/
+/* Large tables skipped during the automatic data process, which can still be handled by the residual check and admin pages. */
+$config->upgrade->dataProcessSkipTables = [TABLE_ACTION, TABLE_HISTORY, TABLE_METRICLIB];
+
 $config->upgrade->maxVersion = array();
 $config->upgrade->maxVersion['max2_0_rc1']     = '15_0_rc3';
 $config->upgrade->maxVersion['max2_0']         = '15_0';
