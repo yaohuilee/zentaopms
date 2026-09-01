@@ -210,6 +210,35 @@
         zui.Modal.showError({error: isNormalPage ? data : `<b>URL</b>: ${options.url}<br>${data}`, size: 'lg', html: !isNormalPage})
     }
 
+    function escapeHtml(value)
+    {
+        return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showErrorLog(log, options)
+    {
+        if(!log) return;
+
+        console.groupCollapsed(`%c ZIN %c errorlog %c ${log.requestID}`, 'color:#fff;font-weight:bold;background:#dc2626', 'color:#dc2626;font-weight:bold', 'font-weight:bold');
+        console.log('[ErrorLog]', {level: log.levelName || log.level, module: log.module, method: log.method, message: log.message, file: log.file, line: log.line, url: log.url, account: log.account, createdDate: log.createdDate});
+        console.log('[ErrorLog] trace', log.trace);
+        console.groupEnd();
+
+        const rows = [
+            ['URL', options.url],
+            ['RequestID', log.requestID],
+            ['Module', `${log.module} / ${log.method}`],
+            ['Level', log.levelName || log.level],
+            ['Account', log.account],
+            ['Time', log.createdDate],
+            ['Message', log.message],
+            ['File', `${log.file}:${log.line}`],
+            ['Trace', log.trace]
+        ];
+        const html = rows.map(([label, value]) => `<details${label === 'Trace' ? ' open' : ''}><summary><b>${escapeHtml(label)}</b></summary><pre style="white-space:pre-wrap;word-break:break-all;margin:4px 0 12px;font-family:ui-monospace,monospace">${escapeHtml(value)}</pre></details>`).join('');
+        zui.Modal.showError({error: html, size: 'lg', html: true});
+    }
+
     function initZinbar()
     {
         if(!hasZinBar) return;
@@ -553,6 +582,7 @@
         const target    = options.target || '#main';
         const selectors = (Array.isArray(options.selector) ? options.selector : options.selector.split(',')).map(selector => selector.replace(':component', ':type=json&data=props'));
         const url       = options.url;
+        const requestID = options.requestID || (window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'zid-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10));
         if(DEBUG && !selectors.includes('zinDebug()')) selectors.push('zinDebug()');
         const isDebugRequest = DEBUG && selectors.length === 1 || selectors[0] === 'zinDebug()';
         if(options.modal === undefined) options.modal = $(target[0] !== '#' && target[0] !== '.' ? `#${target}` : target).closest('.modal').length;
@@ -561,6 +591,7 @@
             'X-ZIN-Options': JSON.stringify($.extend({selector: selectors, type: 'list'}, options.zinOptions)),
             'X-ZIN-App': currentCode,
             'X-Zin-Cache-Time': 0,
+            'X-ZIN-Request-ID': requestID,
             'X-ZIN-UID': zui.uid ? zui.uid() : ''
         };
         if(options.modal) headers['X-Zui-Modal'] = 'true';
@@ -572,6 +603,21 @@
         const rid = options.rid;
         let cache;
         let cacheHit;
+        let errorLogFetched = false;
+        const fetchErrorLog = () =>
+        {
+            if(errorLogFetched || !requestID) return;
+            errorLogFetched = true;
+            const logURL = $.createLink('errorlog', 'ajaxGetLog', 'requestID=' + encodeURIComponent(requestID));
+            fetch(logURL, {headers: {'X-Zin-Request-ID': requestID}}).then(res => res.json()).then(data =>
+            {
+                if(data && data.result === 'success' && data.data) showErrorLog(data.data, options);
+                else if(DEBUG) console.warn('[ZIN] ', 'Fetch error log failed', data);
+            }).catch(err =>
+            {
+                if(DEBUG) console.warn('[ZIN] ', 'Fetch error log failed', err);
+            });
+        };
         const renderPageData = (data, onlyZinDebug) =>
         {
             const renderOptions = $.extend({noMorph: !config.morphUpdate || (!options.partial && options.isDiffPage)}, options);
@@ -645,6 +691,7 @@
                     return;
                 }
                 ajax.canceled = false;
+                if(!rawData) fetchErrorLog();
 
                 try
                 {
@@ -657,6 +704,7 @@
                     hasFatal = rawData.includes('Fatal error') || rawData.includes('Uncaught TypeError:') || rawData.startsWith('<!DOCTYPE html');
                     ;
                     data = [{name: hasFatal ? 'fatal' : 'html', data: rawData}];
+                    fetchErrorLog();
                 }
                 if(typeof options.success === 'function' && options.success.call(ajax, data, options) === false) return;
                 if(Array.isArray(data))
@@ -787,6 +835,7 @@
                     ajax.canceled = false;
                 }
 
+                if(data || ajax.sendedAgain) fetchErrorLog();
                 if(ajax.canceled) return;
                 updatePerfInfo(options, 'requestEnd', {error: error});
                 if(type === 'abort') return console.log('[ZIN] ', 'Abord fetch data from ' + url, {type, error});
