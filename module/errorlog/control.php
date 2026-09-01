@@ -103,7 +103,7 @@ class errorlog extends control
         if($_POST)
         {
             $days = form::data()->get()->days;
-            if(!validater::checkInt($days, 1)) return $this->send(array('result' => 'fail', 'message' => array('days' => sprintf($this->lang->errorlog->notice->int, $this->lang->errorlog->days))));
+            if(!validater::checkInt($days, 1, $this->config->errorlog->maxSaveDays)) return $this->send(array('result' => 'fail', 'message' => array('days' => sprintf($this->lang->errorlog->notice->int, $this->lang->errorlog->days))));
 
             $this->loadModel('setting')->setItem('system.errorlog.saveDays', (string)$days);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));

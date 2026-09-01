@@ -1,8 +1,9 @@
 <?php
 $config->errorlog = new stdclass();
-$config->errorlog->enabled    = true;
-$config->errorlog->saveDays   = 30;
-$config->errorlog->maxRecords = 100;
+$config->errorlog->enabled     = true;
+$config->errorlog->saveDays    = 30;
+$config->errorlog->maxSaveDays = 90;
+$config->errorlog->maxRecords  = 100;
 
 global $lang;
 if(!isset($lang->errorlog)) $lang->errorlog = new stdclass();

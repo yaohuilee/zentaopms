@@ -24,7 +24,7 @@ formPanel
             set::name('days'),
             set::type('number'),
             set::min(1),
-            set::max(365),
+            set::max($config->errorlog->maxSaveDays),
             set::value($config->errorlog->saveDays)
         )
     ),
