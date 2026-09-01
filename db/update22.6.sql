@@ -15,10 +15,10 @@ CREATE TABLE IF NOT EXISTS `zt_errorlog` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB COMMENT='错误日志';
 
-CREATE INDEX `requestID`   ON `zt_errorlog`(`requestID`);
-CREATE INDEX `module`      ON `zt_errorlog`(`module`);
-CREATE INDEX `level`       ON `zt_errorlog`(`level`);
-CREATE INDEX `createdDate` ON `zt_errorlog`(`createdDate`);
+CREATE INDEX `idx_requestID`   ON `zt_errorlog`(`requestID`);
+CREATE INDEX `idx_module`      ON `zt_errorlog`(`module`);
+CREATE INDEX `idx_level`       ON `zt_errorlog`(`level`);
+CREATE INDEX `idx_createdDate` ON `zt_errorlog`(`createdDate`);
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=errorlog&methodName=deleteLog', '删除过期错误日志', 'zentao', 1, 'normal', NULL);

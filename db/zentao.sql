@@ -1309,10 +1309,10 @@ CREATE TABLE IF NOT EXISTS `zt_errorlog` (
   `createdDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-CREATE INDEX `requestID`   ON `zt_errorlog`(`requestID`);
-CREATE INDEX `module`      ON `zt_errorlog`(`module`);
-CREATE INDEX `level`       ON `zt_errorlog`(`level`);
-CREATE INDEX `createdDate` ON `zt_errorlog`(`createdDate`);
+CREATE INDEX `idx_requestID`   ON `zt_errorlog`(`requestID`);
+CREATE INDEX `idx_module`      ON `zt_errorlog`(`module`);
+CREATE INDEX `idx_level`       ON `zt_errorlog`(`level`);
+CREATE INDEX `idx_createdDate` ON `zt_errorlog`(`createdDate`);
 
 -- DROP TABLE IF EXISTS `zt_module`;
 CREATE TABLE IF NOT EXISTS `zt_module` (
