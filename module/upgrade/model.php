@@ -13678,7 +13678,7 @@ class upgradeModel extends model
             $workflowField->createdDate = helper::now();
             $this->dao->insert(TABLE_WORKFLOWFIELD)->data($workflowField)->autoCheck()->exec();
 
-            $maxOrder = $this->dao->select('MAX(order) as maxOrder')->from(TABLE_WORKFLOWLABEL)->where('module')->eq($module)->andWhere('action')->eq('browse')->fetch('maxOrder');
+            $maxOrder = $this->dao->select('MAX(`order`) as `maxOrder`')->from(TABLE_WORKFLOWLABEL)->where('module')->eq($module)->andWhere('action')->eq('browse')->fetch('maxOrder');
             $workflowlabel = new stdclass();
             $workflowlabel->module      = $module;
             $workflowlabel->action      = 'browse';
