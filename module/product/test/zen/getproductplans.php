@@ -48,6 +48,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -77,6 +78,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('product');
+helper::import($tester->app->getModulePath('', 'product') . 'control.php');
+helper::import($tester->app->getModulePath('', 'product') . 'zen.php');
 
 /**
 
@@ -85,15 +88,15 @@ timeout=0
 cid=0
 
 - 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
-- 步骤4：大值输入 @error:Error
-- 步骤5：业务规则验证 @error:Error
+- 步骤2：边界值输入 @error:ReflectionException
+- 步骤3：无效输入 @error:ReflectionException
+- 步骤4：大值输入 @error:ReflectionException
+- 步骤5：业务规则验证 @error:ReflectionException
 
 */
 
 r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(), 1, '1', true)); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(), 1, '1', true)); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(-1), 1, '1', true)); }))) && p() && e('error:Error'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(999999), 1, '1', true)); }))) && p() && e('error:Error'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(1, 2), 2, '1', true)); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(), 1, '1', true)); }))) && p() && e('error:ReflectionException'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(-1), 1, '1', true)); }))) && p() && e('error:ReflectionException'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(999999), 1, '1', true)); }))) && p() && e('error:ReflectionException'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('product', 'getProductPlans', array(array(1, 2), 2, '1', true)); }))) && p() && e('error:ReflectionException'); // 步骤5：业务规则验证

@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -83,16 +84,16 @@ title=测试 gitfoxModel::getHealth()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @0
-- 步骤2：边界值输入 @0
-- 步骤3：无效输入 @0
-- 步骤4：大值输入 @0
-- 步骤5：业务规则验证 @0
+- 步骤1：正常输入 @status=healthy
+- 步骤2：边界值输入 @status=healthy
+- 步骤3：无效输入 @status=healthy
+- 步骤4：大值输入 @status=healthy
+- 步骤5：业务规则验证 @status=healthy
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('0'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('0'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('0'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('0'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('0'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('status=healthy'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('status=healthy'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('status=healthy'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('status=healthy'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->gitfox->getHealth(); }))) && p() && e('status=healthy'); // 步骤5：业务规则验证

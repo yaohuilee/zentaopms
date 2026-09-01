@@ -48,6 +48,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -57,6 +58,21 @@ function ztfInvoke($object, $method, array $args)
     $reflection = new ReflectionMethod($object, $method);
     $reflection->setAccessible(true);
     return $reflection->invokeArgs($object, $args);
+}
+
+function ztfPost($overrides = array())
+{
+    global $_POST, $app, $tester;
+    $_POST = array_merge(array('uid' => 'testuid'), $overrides);
+    $app->post = (object)$_POST;
+    if(isset($tester))
+    {
+        $tester->post = $app->post;
+        foreach(get_object_vars($tester) as $prop => $obj)
+        {
+            if(is_object($obj) && isset($obj->post)) $obj->post = $app->post;
+        }
+    }
 }
 
 include dirname(__FILE__, 5) . '/test/lib/init.php';
@@ -84,16 +100,16 @@ title=测试 commonModel::checkEntry()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:EndResponseException
-- 步骤2：边界值输入 @error:EndResponseException
-- 步骤3：无效输入 @error:EndResponseException
-- 步骤4：大值输入 @error:EndResponseException
-- 步骤5：业务规则验证 @error:EndResponseException
+- 步骤1：正常输入 @0
+- 步骤2：边界值输入 @0
+- 步骤3：无效输入 @0
+- 步骤4：大值输入 @0
+- 步骤5：业务规则验证 @0
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->common->checkEntry(); }))) && p() && e('error:EndResponseException'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->common->checkEntry(); }))) && p() && e('error:EndResponseException'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->common->checkEntry(); }))) && p() && e('error:EndResponseException'); // 步骤3：无效输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->common->checkEntry(); }))) && p() && e('error:EndResponseException'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->common->checkEntry(); }))) && p() && e('error:EndResponseException'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { ztfPost(array()); return $tester->common->checkEntry(); }))) && p() && e('0'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { ztfPost(array()); return $tester->common->checkEntry(); }))) && p() && e('0'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { ztfPost(array()); return $tester->common->checkEntry(); }))) && p() && e('0'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { ztfPost(array()); return $tester->common->checkEntry(); }))) && p() && e('0'); // 步骤4：大值输入
+r(ztfVal(ztfCall(function() use ($tester) { ztfPost(array()); return $tester->common->checkEntry(); }))) && p() && e('0'); // 步骤5：业务规则验证

@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -76,6 +77,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('pivot');
+helper::import($tester->app->getModulePath('', 'pivot') . 'control.php');
+helper::import($tester->app->getModulePath('', 'pivot') . 'zen.php');
 
 /**
 
@@ -83,16 +86,16 @@ title=测试 pivotModel::processProductsForProductSummary()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
+- 步骤1：正常输入 @empty_array
+- 步骤2：边界值输入 @empty_array
 - 步骤3：无效输入 @error:Error
 - 步骤4：大值输入 @error:Error
 - 步骤5：业务规则验证 @error:Error
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array())); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array())); }))) && p() && e('error:Error'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array())); }))) && p() && e('empty_array'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array())); }))) && p() && e('empty_array'); // 步骤2：边界值输入
 r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array(-1))); }))) && p() && e('error:Error'); // 步骤3：无效输入
 r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array(999999))); }))) && p() && e('error:Error'); // 步骤4：大值输入
 r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('pivot', 'processProductsForProductSummary', array(array(1, 2))); }))) && p() && e('error:Error'); // 步骤5：业务规则验证

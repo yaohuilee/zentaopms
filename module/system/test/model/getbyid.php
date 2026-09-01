@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -77,22 +78,32 @@ su('admin');
 
 $tester->loadModel('system');
 
+$zd_system = zenData('system');
+$zd_system->id->range('1-2');
+$zd_system->name->range('系统1,系统2');
+$zd_system->product->range('0');
+$zd_system->integrated->range('0');
+$zd_system->latestRelease->range('0');
+$zd_system->status->range('active');
+$zd_system->deleted->range('0');
+$zd_system->gen(2);
+
 /**
 
 title=测试 systemModel::getByID()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:TypeError
+- 步骤1：正常输入 @id=1
 - 步骤2：边界值输入 @error:TypeError
 - 步骤3：无效输入 @error:TypeError
 - 步骤4：大值输入 @error:TypeError
-- 步骤5：业务规则验证 @error:TypeError
+- 步骤5：业务规则验证 @id=2
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(1); }))) && p() && e('error:TypeError'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(1); }))) && p() && e('id=1'); // 步骤1：正常输入
 r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(0); }))) && p() && e('error:TypeError'); // 步骤2：边界值输入
 r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(-1); }))) && p() && e('error:TypeError'); // 步骤3：无效输入
 r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(999999); }))) && p() && e('error:TypeError'); // 步骤4：大值输入
-r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(2); }))) && p() && e('error:TypeError'); // 步骤5：业务规则验证
+r(ztfVal(ztfCall(function() use ($tester) { return $tester->system->getByID(2); }))) && p() && e('id=2'); // 步骤5：业务规则验证

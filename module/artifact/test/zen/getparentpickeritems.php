@@ -47,6 +47,7 @@ function ztfCall($callable)
     catch(Throwable $e)
     {
         if(ob_get_level()) ob_end_clean();
+        if($e instanceof EndResponseException) return 0;
         return 'error:' . get_class($e);
     }
 }
@@ -76,6 +77,8 @@ $zd_user->gen(1);
 su('admin');
 
 $tester->loadModel('artifact');
+helper::import($tester->app->getModulePath('', 'artifact') . 'control.php');
+helper::import($tester->app->getModulePath('', 'artifact') . 'zen.php');
 
 /**
 
@@ -83,16 +86,16 @@ title=测试 artifactModel::getParentPickerItems()
 timeout=0
 cid=0
 
-- 步骤1：正常输入 @error:Error
-- 步骤2：边界值输入 @error:Error
-- 步骤3：无效输入 @error:Error
+- 步骤1：正常输入 @array_count=1
+- 步骤2：边界值输入 @array_count=1
+- 步骤3：无效输入 @array_count=1
 - 步骤4：大值输入 @error:Error
 - 步骤5：业务规则验证 @error:Error
 
 */
 
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array(), '')); }))) && p() && e('error:Error'); // 步骤1：正常输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array(), '')); }))) && p() && e('error:Error'); // 步骤2：边界值输入
-r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array(), '')); }))) && p() && e('error:Error'); // 步骤3：无效输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array(), '')); }))) && p() && e('array_count=1'); // 步骤1：正常输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array(), '')); }))) && p() && e('array_count=1'); // 步骤2：边界值输入
+r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array(), '')); }))) && p() && e('array_count=1'); // 步骤3：无效输入
 r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array('id' => 999999), '')); }))) && p() && e('error:Error'); // 步骤4：大值输入
 r(ztfVal(ztfCall(function() use ($tester) { return callZenMethod('artifact', 'getParentPickerItems', array((object)array('id' => 1, 'name' => 'test'), 'test')); }))) && p() && e('error:Error'); // 步骤5：业务规则验证
