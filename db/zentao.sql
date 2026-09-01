@@ -1295,20 +1295,20 @@ CREATE INDEX `obejctID`   ON `zt_log`(`objectID`);
 
 -- DROP TABLE IF EXISTS `zt_errorlog`;
 CREATE TABLE IF NOT EXISTS `zt_errorlog` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `requestID` varchar(64) NOT NULL DEFAULT '',
-  `account` varchar(30) NOT NULL DEFAULT '',
-  `module` varchar(30) NOT NULL DEFAULT '',
-  `method` varchar(100) NOT NULL DEFAULT '',
-  `url` varchar(255) NOT NULL DEFAULT '',
-  `level` smallint unsigned NOT NULL DEFAULT 0,
-  `message` text DEFAULT NULL,
-  `file` varchar(255) NOT NULL DEFAULT '',
-  `line` int unsigned NOT NULL DEFAULT 0,
-  `trace` text DEFAULT NULL,
-  `createdDate` datetime DEFAULT NULL,
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `requestID` varchar(64) NOT NULL DEFAULT '' COMMENT '请求ID',
+  `account` varchar(30) NOT NULL DEFAULT '' COMMENT '用户账号',
+  `module` varchar(30) NOT NULL DEFAULT '' COMMENT '模块',
+  `method` varchar(100) NOT NULL DEFAULT '' COMMENT '方法',
+  `url` varchar(255) NOT NULL DEFAULT '' COMMENT '请求地址',
+  `level` smallint unsigned NOT NULL DEFAULT 0 COMMENT '错误级别',
+  `message` text DEFAULT NULL COMMENT '错误信息',
+  `file` varchar(255) NOT NULL DEFAULT '' COMMENT '错误文件',
+  `line` int unsigned NOT NULL DEFAULT 0 COMMENT '错误行号',
+  `trace` text DEFAULT NULL COMMENT '错误堆栈',
+  `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB COMMENT='错误日志';
 CREATE INDEX `idx_requestID`   ON `zt_errorlog`(`requestID`);
 CREATE INDEX `idx_module`      ON `zt_errorlog`(`module`);
 CREATE INDEX `idx_level`       ON `zt_errorlog`(`level`);
