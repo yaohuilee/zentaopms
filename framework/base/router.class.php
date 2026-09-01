@@ -3334,8 +3334,26 @@ class baseRouter
     {
         if(!(error_reporting() & $level)) return true; // 代码里使用错误抑制符(@)不输出错误日志
 
+        /*
+         * 生成错误堆栈：致命错误的错误信息中带有真实的调用栈，直接提取；其他错误通过调试回溯生成。
+         * Generate error trace: extract the real stack trace from the message for fatal errors, otherwise generate it with debug backtrace.
+         **/
+        $dbMessage = $message;
+        $trace     = '';
+        if(str_contains($message, 'Stack trace:'))
+        {
+            $parts     = explode('Stack trace:', $message, 2);
+            $dbMessage = rtrim($parts[0]);
+            $trace     = trim($parts[1]);
+            $trace     = preg_replace('/\s+thrown\s*$/', '', $trace);
+        }
+        else
+        {
+            $trace = (new Exception())->getTraceAsString();
+        }
+
         /* 保存错误信息到错误日志表。Save error info to the errorlog table. */
-        $this->saveErrorLog($level, $message, $file, $line);
+        $this->saveErrorLog($level, $dbMessage, $file, $line, $trace);
 
         if(empty($this->config->debug))   return true;
         if(!is_dir($this->logRoot))       return true;
@@ -3453,7 +3471,7 @@ class baseRouter
      * @access public
      * @return void
      */
-    public function saveErrorLog(int $level, string $message, string $file, int $line)
+    public function saveErrorLog(int $level, string $message, string $file, int $line, string $trace = '')
     {
         $enabled = isset($this->config->errorlog->enabled) ? $this->config->errorlog->enabled : true;
         if(!$enabled)                       return;
@@ -3463,7 +3481,6 @@ class baseRouter
         if($this->errorLogCount >= 100)     return;
 
         $account = isset($_SESSION['user']->account) ? $_SESSION['user']->account : '';
-        $trace   = (new Exception())->getTraceAsString();
 
         $this->savingErrorLog = true;
         $this->errorLogCount ++;
