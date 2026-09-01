@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `zt_errorlog` (
   `requestID` varchar(64) NOT NULL DEFAULT '' COMMENT '请求ID',
   `account` varchar(30) NOT NULL DEFAULT '' COMMENT '用户账号',
   `module` varchar(30) NOT NULL DEFAULT '' COMMENT '模块',
-  `method` varchar(30) NOT NULL DEFAULT '' COMMENT '方法',
+  `method` varchar(100) NOT NULL DEFAULT '' COMMENT '方法',
   `url` varchar(255) NOT NULL DEFAULT '' COMMENT '请求地址',
   `level` smallint unsigned NOT NULL DEFAULT 0 COMMENT '错误级别',
   `message` text DEFAULT NULL COMMENT '错误信息',
@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS `zt_errorlog` (
   `line` int unsigned NOT NULL DEFAULT 0 COMMENT '错误行号',
   `trace` text DEFAULT NULL COMMENT '错误堆栈',
   `createdDate` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`),
-  KEY `requestID` (`requestID`),
-  KEY `module` (`module`),
-  KEY `level` (`level`),
-  KEY `createdDate` (`createdDate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='错误日志';
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT='错误日志';
+
+CREATE INDEX `requestID`   ON `zt_errorlog`(`requestID`);
+CREATE INDEX `module`      ON `zt_errorlog`(`module`);
+CREATE INDEX `level`       ON `zt_errorlog`(`level`);
+CREATE INDEX `createdDate` ON `zt_errorlog`(`createdDate`);
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=errorlog&methodName=deleteLog', '删除过期错误日志', 'zentao', 1, 'normal', NULL);

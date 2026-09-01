@@ -1299,7 +1299,7 @@ CREATE TABLE IF NOT EXISTS `zt_errorlog` (
   `requestID` varchar(64) NOT NULL DEFAULT '',
   `account` varchar(30) NOT NULL DEFAULT '',
   `module` varchar(30) NOT NULL DEFAULT '',
-  `method` varchar(30) NOT NULL DEFAULT '',
+  `method` varchar(100) NOT NULL DEFAULT '',
   `url` varchar(255) NOT NULL DEFAULT '',
   `level` smallint unsigned NOT NULL DEFAULT 0,
   `message` text DEFAULT NULL,
