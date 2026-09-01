@@ -224,18 +224,10 @@
         console.log('[ErrorLog] trace', log.trace);
         console.groupEnd();
 
-        const rows = [
-            ['URL', options.url],
-            ['RequestID', log.requestID],
-            ['Module', `${log.module} / ${log.method}`],
-            ['Level', log.levelName || log.level],
-            ['Account', log.account],
-            ['Time', log.createdDate],
-            ['Message', log.message],
-            ['File', `${log.file}:${log.line}`],
-            ['Trace', log.trace]
-        ];
-        const html = rows.map(([label, value]) => `<details${label === 'Trace' ? ' open' : ''}><summary><b>${escapeHtml(label)}</b></summary><pre style="white-space:pre-wrap;word-break:break-all;margin:4px 0 12px;font-family:ui-monospace,monospace">${escapeHtml(value)}</pre></details>`).join('');
+        const html = `<b>URL</b>: ${escapeHtml(options.url)}<br>` +
+            `<b>${escapeHtml(log.levelName || log.level)}</b>: ${escapeHtml(log.message)}<br>` +
+            (log.file ? `${escapeHtml(log.file)}:${escapeHtml(log.line)}<br>` : '') +
+            (log.trace ? `<pre style="white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,monospace">${escapeHtml(log.trace)}</pre>` : '');
         zui.Modal.showError({error: html, size: 'lg', html: true});
     }
 
