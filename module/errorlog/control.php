@@ -31,10 +31,10 @@ class errorlog extends control
         $this->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
 
-        $queryID   = $type == 'bySearch' ? $queryID : 0;
-        $actionURL = $this->createLink('errorlog', 'browse', "type=bySearch&queryID=myQueryID&orderBy={$orderBy}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}");
+        $queryID   = $type == 'bysearch' ? $queryID : 0;
+        $actionURL = $this->createLink('errorlog', 'browse', "type=bysearch&queryID=myQueryID&orderBy={$orderBy}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}");
         $this->errorlogZen->buildSearchForm($this->config->errorlog->search, $queryID, $actionURL);
-        $query   = $type == 'bySearch' ? $this->errorlogZen->getErrorLogQuery((int)$queryID) : '';
+        $query   = $type == 'bysearch' ? $this->errorlogZen->getErrorLogQuery((int)$queryID) : '';
         $logList = $this->errorlog->getList($query, $orderBy, $pager);
 
         foreach($logList as $log)

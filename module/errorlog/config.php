@@ -30,7 +30,7 @@ $config->errorlog->actionList['view']['text']        = '';
 $config->errorlog->actionList['view']['hint']        = $lang->errorlog->view;
 $config->errorlog->actionList['view']['url']         = array('module' => 'errorlog', 'method' => 'view', 'params' => 'id={id}');
 $config->errorlog->actionList['view']['data-toggle'] = 'modal';
-$config->errorlog->actionList['view']['data-size']   = 'xl';
+$config->errorlog->actionList['view']['data-size']   = 'lg';
 
 $config->errorlog->dtable = new stdclass();
 $config->errorlog->dtable->fieldList = array();

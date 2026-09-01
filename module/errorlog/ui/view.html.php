@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 namespace zin;
 
-if(isInModal()) set::size('xl');
+if(isInModal()) set::size('lg');
 
 $fatalLevels   = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE | E_RECOVERABLE_ERROR;
 $warningLevels = E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;

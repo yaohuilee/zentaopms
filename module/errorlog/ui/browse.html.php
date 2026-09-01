@@ -15,10 +15,10 @@ featureBar
 (
     set::current($type),
     set::link($this->createLink('errorlog', 'browse', "type={key}")),
-    div(searchToggle(set::module('errorlog'), set::open($type == 'bySearch')))
+    li(searchToggle(set::module('errorlog'), set::open($type == 'bysearch')))
 );
 
-if($type == 'bySearch')
+if($type == 'bysearch')
 {
     searchForm
     (
