@@ -25,6 +25,7 @@ formPanel
             set::type('number'),
             set::min(1),
             set::max($config->errorlog->maxSaveDays),
+            set::placeholder(sprintf('%d ~ %d', 1, $config->errorlog->maxSaveDays)),
             set::value($config->errorlog->saveDays)
         )
     ),
