@@ -29,4 +29,4 @@ su('admin');
 $errorlogModel = new errorlogModelTest();
 
 r($errorlogModel->getListTest()) && p('1.requestID,2.requestID') && e('req-002,req-002');
-r($errorlogModel->getListTest("t1.`module` = 'bug'")) && p('1.requestID,2.requestID') && e('req-002,req-001');
+r($errorlogModel->getListTest("`module` = 'bug'")) && p('1.requestID,2.requestID') && e('req-002,req-001');

@@ -38,7 +38,7 @@ class errorlogModelTest extends baseTest
      * @access public
      * @return object|array
      */
-    public function getByIDTest(int $id): object|array
+    public function getByIDTest(int $id): object|array|false
     {
         $log = $this->instance->getByID($id);
         if(dao::isError()) return dao::getError();
@@ -53,7 +53,7 @@ class errorlogModelTest extends baseTest
      * @access public
      * @return object|array
      */
-    public function getByRequestIDTest(string $requestID): object|array
+    public function getByRequestIDTest(string $requestID): object|array|false
     {
         $log = $this->instance->getByRequestID($requestID);
         if(dao::isError()) return dao::getError();
