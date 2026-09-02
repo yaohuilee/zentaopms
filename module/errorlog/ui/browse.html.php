@@ -18,16 +18,6 @@ featureBar
     li(searchToggle(set::module('errorlog'), set::open($type == 'bysearch')))
 );
 
-if($type == 'bysearch')
-{
-    searchForm
-    (
-        set::module('errorlog'),
-        set::show(true),
-        set::simple(true)
-    );
-}
-
 toolbar
 (
     btn
