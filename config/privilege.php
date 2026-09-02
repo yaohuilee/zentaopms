@@ -363,6 +363,7 @@ $config->ajaxDependencies['kanban.ajaxgetlanes']                              = 
 $config->ajaxDependencies['kanban.ajaxgetsortitems']                          = 'kanban.view';
 $config->ajaxDependencies['kanban.ajaxgetspaceteam']                          = ['kanban.create', 'kanban.edit'];
 $config->ajaxDependencies['kanban.ajaxloadusers']                             = ['kanban.create', 'kanban.edit'];
+$config->ajaxDependencies['kanban.ajaxmovecard']                              = ['execution.kanban', 'execution.taskkanban'];
 $config->ajaxDependencies['message.ajaxdelete']                               = ['message.ajaxgetdropmenu', 'message.ajaxgetdropmenuforold'];
 $config->ajaxDependencies['message.ajaxgetmessage']                           = 'index.index';
 $config->ajaxDependencies['message.ajaxmarkread']                             = ['index.index', 'message.ajaxgetdropmenu', 'message.ajaxgetdropmenuforold'];
