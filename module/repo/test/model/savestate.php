@@ -68,6 +68,12 @@ $productTable->status->range('normal');
 $productTable->deleted->range('0');
 $productTable->gen(1);
 
+$userTable = zenData('user');
+$userTable->id->range('1');
+$userTable->account->range('admin');
+$userTable->deleted->range('0');
+$userTable->gen(1);
+
 su('admin');
 
 $repo = new repoModelTest();
