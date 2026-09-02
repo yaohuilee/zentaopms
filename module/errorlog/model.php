@@ -27,7 +27,7 @@ class errorlogModel extends model
             ->beginIF(!empty($query))->andWhere($query)->fi()
             ->orderBy($orderBy)
             ->page($pager)
-            ->fetchAll();
+            ->fetchAll('', false);
     }
 
     /**
