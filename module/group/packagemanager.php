@@ -2804,14 +2804,13 @@ $config->group->package->dev->privs['dev-db']  = array('edition' => 'open,biz,ma
 
 $config->group->package->errorlog = new stdclass();
 $config->group->package->errorlog->order  = 6;
-$config->group->package->errorlog->subset = 'admin';
+$config->group->package->errorlog->subset = 'systemsetting';
 $config->group->package->errorlog->privs  = array();
-$config->group->package->errorlog->privs['errorlog-browse']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array('admin-index'), 'recommend' => array());
-$config->group->package->errorlog->privs['errorlog-view']       = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 10, 'depend' => array('errorlog-browse'), 'recommend' => array());
-$config->group->package->errorlog->privs['errorlog-delete']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 12, 'depend' => array('errorlog-browse'), 'recommend' => array());
-$config->group->package->errorlog->privs['errorlog-ajaxGetLog'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 15, 'depend' => array('errorlog-browse'), 'recommend' => array());
-$config->group->package->errorlog->privs['errorlog-setting']    = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20, 'depend' => array('errorlog-browse'), 'recommend' => array());
-$config->group->package->errorlog->privs['errorlog-deleteLog']  = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 25, 'depend' => array('errorlog-browse'), 'recommend' => array());
+$config->group->package->errorlog->privs['errorlog-browse']      = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array('admin-index'), 'recommend' => array());
+$config->group->package->errorlog->privs['errorlog-view']        = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 10, 'depend' => array('errorlog-browse'), 'recommend' => array());
+$config->group->package->errorlog->privs['errorlog-delete']      = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 12, 'depend' => array('errorlog-browse'), 'recommend' => array());
+$config->group->package->errorlog->privs['errorlog-batchDelete'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 15, 'depend' => array('errorlog-browse'), 'recommend' => array('errorlog-delete'));
+$config->group->package->errorlog->privs['errorlog-setting']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20, 'depend' => array('errorlog-browse'), 'recommend' => array());
 
 $config->group->package->browseCodeIssue = new stdclass();
 $config->group->package->browseCodeIssue->order  = 2600;

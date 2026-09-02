@@ -1,14 +1,19 @@
 <?php
 $lang->errorlog->common      = '错误日志';
 $lang->errorlog->browse      = '浏览错误日志';
+$lang->errorlog->browseAbbr  = '浏览';
 $lang->errorlog->view        = '查看错误日志';
+$lang->errorlog->viewAbbr    = '查看';
 $lang->errorlog->delete      = '删除';
+$lang->errorlog->batchDelete = '批量删除';
 $lang->errorlog->setting     = '设置';
-$lang->errorlog->days        = '保存天数';
-$lang->errorlog->info        = '超过保存天数的错误日志会被删除，需要开启计划任务。';
-$lang->errorlog->notFound    = '没有找到对应的错误日志。';
-$lang->errorlog->empty       = '暂无错误日志。';
-$lang->errorlog->confirmDelete = '您确认要删除该错误日志吗？';
+
+$lang->errorlog->days               = '保存天数';
+$lang->errorlog->info               = '超过保存天数的错误日志会被删除，需要开启计划任务。';
+$lang->errorlog->notFound           = '没有找到对应的错误日志。';
+$lang->errorlog->empty              = '暂无错误日志。';
+$lang->errorlog->confirmDelete      = '您确认要删除该错误日志吗？';
+$lang->errorlog->confirmBatchDelete = '您确认要删除选中的错误日志吗？';
 
 $lang->errorlog->requestID   = '请求ID';
 $lang->errorlog->account     = '账号';
@@ -44,11 +49,3 @@ $lang->errorlog->levelList[E_STRICT]            = 'Strict';
 $lang->errorlog->levelList[E_RECOVERABLE_ERROR] = 'Recoverable Error';
 $lang->errorlog->levelList[E_DEPRECATED]        = 'Deprecated';
 $lang->errorlog->levelList[E_USER_DEPRECATED]   = 'User Deprecated';
-
-$lang->resource->errorlog = new stdclass();
-$lang->resource->errorlog->browse     = 'browse';
-$lang->resource->errorlog->view       = 'view';
-$lang->resource->errorlog->delete     = 'delete';
-$lang->resource->errorlog->ajaxGetLog = 'ajaxGetLog';
-$lang->resource->errorlog->setting    = 'setting';
-$lang->resource->errorlog->deleteLog  = 'deleteLog';

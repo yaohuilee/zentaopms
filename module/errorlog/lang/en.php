@@ -1,14 +1,19 @@
 <?php
 $lang->errorlog->common      = 'Error Log';
 $lang->errorlog->browse      = 'Browse Error Logs';
+$lang->errorlog->browseAbbr  = 'Browse';
 $lang->errorlog->view        = 'View Error Log';
+$lang->errorlog->viewAbbr    = 'View';
 $lang->errorlog->delete      = 'Delete';
+$lang->errorlog->batchDelete = 'Batch Delete';
 $lang->errorlog->setting     = 'Settings';
-$lang->errorlog->days        = 'Save days';
-$lang->errorlog->info        = 'Error logs exceeding the retention period will be deleted. Please enable Scheduled Tasks (Cron).';
-$lang->errorlog->notFound    = 'No corresponding error log found.';
-$lang->errorlog->empty       = 'No error logs yet.';
-$lang->errorlog->confirmDelete = 'Are you sure you want to delete this error log?';
+
+$lang->errorlog->days               = 'Save days';
+$lang->errorlog->info               = 'Error logs exceeding the retention period will be deleted. Please enable Scheduled Tasks (Cron).';
+$lang->errorlog->notFound           = 'No corresponding error log found.';
+$lang->errorlog->empty              = 'No error logs yet.';
+$lang->errorlog->confirmDelete      = 'Are you sure you want to delete this error log?';
+$lang->errorlog->confirmBatchDelete = 'Are you sure you want to delete the selected error logs?';
 
 $lang->errorlog->requestID   = 'Request ID';
 $lang->errorlog->account     = 'Account';
@@ -44,11 +49,3 @@ $lang->errorlog->levelList[E_STRICT]            = 'Strict';
 $lang->errorlog->levelList[E_RECOVERABLE_ERROR] = 'Recoverable Error';
 $lang->errorlog->levelList[E_DEPRECATED]        = 'Deprecated';
 $lang->errorlog->levelList[E_USER_DEPRECATED]   = 'User Deprecated';
-
-$lang->resource->errorlog = new stdclass();
-$lang->resource->errorlog->browse     = 'browse';
-$lang->resource->errorlog->view       = 'view';
-$lang->resource->errorlog->delete     = 'delete';
-$lang->resource->errorlog->ajaxGetLog = 'ajaxGetLog';
-$lang->resource->errorlog->setting    = 'setting';
-$lang->resource->errorlog->deleteLog  = 'deleteLog';

@@ -1,14 +1,19 @@
 <?php
 $lang->errorlog->common      = 'Fehlerprotokoll';
 $lang->errorlog->browse      = 'Fehlerprotokolle durchsuchen';
+$lang->errorlog->browseAbbr  = 'Durchsuchen';
 $lang->errorlog->view        = 'Fehlerprotokoll anzeigen';
+$lang->errorlog->viewAbbr    = 'Anzeigen';
 $lang->errorlog->delete      = 'Löschen';
+$lang->errorlog->batchDelete = 'Mehrfach Löschung';
 $lang->errorlog->setting     = 'Einstellungen';
-$lang->errorlog->days        = 'Speichertage';
-$lang->errorlog->info        = 'Fehlerprotokolle, die älter als die Aufbewahrungsfrist sind, werden gelöscht. Bitte aktivieren Sie die geplanten Aufgaben (Cron).';
-$lang->errorlog->notFound    = 'Kein entsprechendes Fehlerprotokoll gefunden.';
-$lang->errorlog->empty       = 'Noch keine Fehlerprotokolle.';
-$lang->errorlog->confirmDelete = 'Möchten Sie dieses Fehlerprotokoll wirklich löschen?';
+
+$lang->errorlog->days               = 'Speichertage';
+$lang->errorlog->info               = 'Fehlerprotokolle, die älter als die Aufbewahrungsfrist sind, werden gelöscht. Bitte aktivieren Sie die geplanten Aufgaben (Cron).';
+$lang->errorlog->notFound           = 'Kein entsprechendes Fehlerprotokoll gefunden.';
+$lang->errorlog->empty              = 'Noch keine Fehlerprotokolle.';
+$lang->errorlog->confirmDelete      = 'Möchten Sie dieses Fehlerprotokoll wirklich löschen?';
+$lang->errorlog->confirmBatchDelete = 'Möchten Sie die ausgewählten Fehlerprotokolle wirklich löschen?';
 
 $lang->errorlog->requestID   = 'Anfrage-ID';
 $lang->errorlog->account     = 'Konto';
@@ -44,11 +49,3 @@ $lang->errorlog->levelList[E_STRICT]            = 'Strict';
 $lang->errorlog->levelList[E_RECOVERABLE_ERROR] = 'Recoverable Error';
 $lang->errorlog->levelList[E_DEPRECATED]        = 'Deprecated';
 $lang->errorlog->levelList[E_USER_DEPRECATED]   = 'User Deprecated';
-
-$lang->resource->errorlog = new stdclass();
-$lang->resource->errorlog->browse     = 'browse';
-$lang->resource->errorlog->view       = 'view';
-$lang->resource->errorlog->delete     = 'delete';
-$lang->resource->errorlog->ajaxGetLog = 'ajaxGetLog';
-$lang->resource->errorlog->setting    = 'setting';
-$lang->resource->errorlog->deleteLog  = 'deleteLog';
