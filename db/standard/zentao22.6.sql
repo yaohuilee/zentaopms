@@ -3080,7 +3080,7 @@ CREATE TABLE `zt_log` (
   KEY `obejctID` (`objectID`)
 ) ENGINE=InnoDB;
 CREATE TABLE `zt_errorlog` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `requestID` varchar(64) NOT NULL DEFAULT '' COMMENT '请求ID',
   `account` varchar(30) NOT NULL DEFAULT '' COMMENT '用户账号',
   `module` varchar(30) NOT NULL DEFAULT '' COMMENT '模块',
