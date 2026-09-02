@@ -53,7 +53,6 @@ class errorlogZen extends errorlog
         }
         if(!$this->session->$queryName) $this->session->set($queryName, ' 1 = 1');
         $errorLogQuery = $this->session->$queryName;
-        $errorLogQuery = preg_replace('/`(\w+)`/', 't1.`$1`', $errorLogQuery);
         return $errorLogQuery;
     }
 }

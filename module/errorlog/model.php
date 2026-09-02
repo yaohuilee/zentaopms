@@ -22,7 +22,7 @@ class errorlogModel extends model
      */
     public function getList(string $query = '', string $orderBy = 'id_desc', ?object $pager = null): array
     {
-        return $this->dao->select('*')->from(TABLE_ERRORLOG)->alias('t1')
+        return $this->dao->select('*')->from(TABLE_ERRORLOG)
             ->where('1=1')
             ->beginIF(!empty($query))->andWhere($query)->fi()
             ->orderBy($orderBy)
