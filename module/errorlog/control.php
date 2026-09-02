@@ -96,6 +96,21 @@ class errorlog extends control
     }
 
     /**
+     * 删除一条错误日志。
+     * Delete an error log.
+     *
+     * @param  int $id
+     * @access public
+     * @return void
+     */
+    public function delete(int $id)
+    {
+        $this->errorlog->deleteByID($id);
+        if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+        return $this->send(array('result' => 'success', 'message' => $this->lang->deleteSuccess, 'load' => true));
+    }
+
+    /**
      * 设置保存天数。
      * Set save days.
      *

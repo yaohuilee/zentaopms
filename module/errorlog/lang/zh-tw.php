@@ -2,11 +2,13 @@
 $lang->errorlog->common      = '錯誤日誌';
 $lang->errorlog->browse      = '瀏覽錯誤日誌';
 $lang->errorlog->view        = '查看錯誤日誌';
+$lang->errorlog->delete      = '刪除';
 $lang->errorlog->setting     = '設置';
 $lang->errorlog->days        = '保存天數';
 $lang->errorlog->info        = '超過保存天數的錯誤日誌會被刪除，需要開啟計劃任務。';
 $lang->errorlog->notFound    = '沒有找到對應的錯誤日誌。';
 $lang->errorlog->empty       = '暫無錯誤日誌。';
+$lang->errorlog->confirmDelete = '您確認要刪除該錯誤日誌嗎？';
 
 $lang->errorlog->requestID   = '請求ID';
 $lang->errorlog->account     = '賬號';
@@ -46,6 +48,7 @@ $lang->errorlog->levelList[E_USER_DEPRECATED]   = 'User Deprecated';
 $lang->resource->errorlog = new stdclass();
 $lang->resource->errorlog->browse     = 'browse';
 $lang->resource->errorlog->view       = 'view';
+$lang->resource->errorlog->delete     = 'delete';
 $lang->resource->errorlog->ajaxGetLog = 'ajaxGetLog';
 $lang->resource->errorlog->setting    = 'setting';
 $lang->resource->errorlog->deleteLog  = 'deleteLog';

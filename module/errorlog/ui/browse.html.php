@@ -40,6 +40,12 @@ toolbar
     )
 );
 
+if(!hasPriv('errorlog', 'delete'))
+{
+    unset($config->errorlog->dtable->fieldList['actions']['list']['delete']);
+    $config->errorlog->dtable->fieldList['actions']['menu'] = array_diff($config->errorlog->dtable->fieldList['actions']['menu'], array('delete'));
+}
+
 $tableData = initTableData($logList, $this->config->errorlog->dtable->fieldList, $this->errorlog);
 dtable
 (

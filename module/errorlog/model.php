@@ -57,6 +57,20 @@ class errorlogModel extends model
     }
 
     /**
+     * 根据ID删除错误日志。
+     * Delete an error log by id.
+     *
+     * @param  int $id
+     * @access public
+     * @return bool
+     */
+    public function deleteByID(int $id): bool
+    {
+        $this->dao->delete()->from(TABLE_ERRORLOG)->where('id')->eq($id)->exec();
+        return !dao::isError();
+    }
+
+    /**
      * 获取有错误日志的模块列表。
      * Get modules which have error logs.
      *

@@ -2,11 +2,13 @@
 $lang->errorlog->common      = 'Journal des erreurs';
 $lang->errorlog->browse      = 'Parcourir les journaux d\'erreurs';
 $lang->errorlog->view        = 'Afficher le journal d\'erreurs';
+$lang->errorlog->delete      = 'Supprimer';
 $lang->errorlog->setting     = 'Paramètres';
 $lang->errorlog->days        = 'Jours de conservation';
 $lang->errorlog->info        = 'Les journaux d\'erreurs dépassant la durée de conservation seront supprimés. Veuillez activer les tâches planifiées (Cron).';
 $lang->errorlog->notFound    = 'Aucun journal d\'erreurs correspondant trouvé.';
 $lang->errorlog->empty       = 'Aucun journal d\'erreurs pour le moment.';
+$lang->errorlog->confirmDelete = 'Voulez-vous vraiment supprimer ce journal d\'erreurs ?';
 
 $lang->errorlog->requestID   = 'ID de requête';
 $lang->errorlog->account     = 'Compte';
@@ -46,6 +48,7 @@ $lang->errorlog->levelList[E_USER_DEPRECATED]   = 'User Deprecated';
 $lang->resource->errorlog = new stdclass();
 $lang->resource->errorlog->browse     = 'browse';
 $lang->resource->errorlog->view       = 'view';
+$lang->resource->errorlog->delete     = 'delete';
 $lang->resource->errorlog->ajaxGetLog = 'ajaxGetLog';
 $lang->resource->errorlog->setting    = 'setting';
 $lang->resource->errorlog->deleteLog  = 'deleteLog';

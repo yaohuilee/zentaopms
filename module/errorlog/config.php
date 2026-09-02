@@ -33,6 +33,13 @@ $config->errorlog->actionList['view']['url']         = array('module' => 'errorl
 $config->errorlog->actionList['view']['data-toggle'] = 'modal';
 $config->errorlog->actionList['view']['data-size']   = 'lg';
 
+$config->errorlog->actionList['delete']['icon']         = 'trash';
+$config->errorlog->actionList['delete']['text']         = '';
+$config->errorlog->actionList['delete']['hint']         = $lang->errorlog->delete;
+$config->errorlog->actionList['delete']['url']          = array('module' => 'errorlog', 'method' => 'delete', 'params' => 'id={id}');
+$config->errorlog->actionList['delete']['className']    = 'ajax-submit';
+$config->errorlog->actionList['delete']['data-confirm'] = array('message' => $lang->errorlog->confirmDelete, 'icon' => 'icon-exclamation-sign', 'iconClass' => 'warning-pale rounded-full icon-2x');
+
 $config->errorlog->dtable = new stdclass();
 $config->errorlog->dtable->fieldList = array();
 $config->errorlog->dtable->fieldList['id']['name']     = 'id';
