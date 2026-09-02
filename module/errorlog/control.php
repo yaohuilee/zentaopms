@@ -86,6 +86,10 @@ class errorlog extends control
         $log = $this->errorlog->getByRequestID($requestID);
         if(!$log) return $this->send(array('result' => 'fail', 'message' => $this->lang->errorlog->notFound));
 
+        /* 只允许查看自己请求产生的错误日志，管理员可在后台查看任意日志。Only allow viewing error logs of own requests, admins can view all logs in the backend. */
+        $account = isset($this->app->user->account) ? $this->app->user->account : '';
+        if($log->account != $account) return $this->send(array('result' => 'fail', 'message' => $this->lang->errorlog->notFound));
+
         $log->levelName = isset($this->lang->errorlog->levelList[$log->level]) ? $this->lang->errorlog->levelList[$log->level] : $log->level;
 
         return $this->send(array('result' => 'success', 'data' => $log));

@@ -58,6 +58,7 @@ $config->logonMethods[] = 'company.index';
 $config->logonMethods[] = 'cron.consume';
 $config->logonMethods[] = 'cron.schedule';
 $config->logonMethods[] = 'custom.index';
+$config->logonMethods[] = 'errorlog.ajaxgetlog';
 $config->logonMethods[] = 'dimension.ajaxgetdropmenu';
 $config->logonMethods[] = 'custom.ajaxgetcustomfields';
 $config->logonMethods[] = 'custom.ajaxrestoremenu';
