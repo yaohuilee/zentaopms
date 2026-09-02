@@ -21,7 +21,8 @@ $config->errorlog->dtable = new stdclass();
 $config->errorlog->dtable->fieldList = array();
 $config->errorlog->dtable->fieldList['id']['name']     = 'id';
 $config->errorlog->dtable->fieldList['id']['title']    = $lang->idAB;
-$config->errorlog->dtable->fieldList['id']['type']     = 'id';
+$config->errorlog->dtable->fieldList['id']['type']     = 'checkID';
+$config->errorlog->dtable->fieldList['id']['checkbox'] = true;
 $config->errorlog->dtable->fieldList['id']['fixed']    = 'left';
 $config->errorlog->dtable->fieldList['id']['sortType'] = true;
 

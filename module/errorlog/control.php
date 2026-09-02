@@ -111,6 +111,23 @@ class errorlog extends control
     }
 
     /**
+     * 批量删除错误日志。
+     * Batch delete error logs.
+     *
+     * @access public
+     * @return void
+     */
+    public function batchDelete()
+    {
+        $idList = zget($_POST, 'idList', array());
+        if(empty($idList)) return $this->send(array('result' => 'fail', 'load' => true));
+
+        $this->errorlog->deleteByIDs($idList);
+        if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+        return $this->send(array('result' => 'success', 'message' => $this->lang->deleteSuccess, 'load' => true));
+    }
+
+    /**
      * 设置保存天数。
      * Set save days.
      *

@@ -40,7 +40,9 @@ toolbar
     )
 );
 
-if(!hasPriv('errorlog', 'delete'))
+$canDelete      = hasPriv('errorlog', 'delete');
+$canBatchDelete = hasPriv('errorlog', 'batchDelete');
+if(!$canDelete)
 {
     unset($config->errorlog->dtable->fieldList['actions']['list']['delete']);
     $config->errorlog->dtable->fieldList['actions']['menu'] = array_diff($config->errorlog->dtable->fieldList['actions']['menu'], array('delete'));
@@ -53,6 +55,23 @@ dtable
     set::data($tableData),
     set::orderBy($orderBy),
     set::sortLink(createLink('errorlog', 'browse', "type={$type}&queryID={$queryID}&orderBy={name}_{sortType}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}")),
+    set::checkable($canBatchDelete),
+    $canBatchDelete ? set::onCheckChange(jsRaw('window.toggleErrorlogBatchDelete')) : null,
+    $canBatchDelete ? set::footToolbar(array
+    (
+        'type'  => 'btn-group',
+        'items' => array(array
+        (
+            'text'         => $lang->errorlog->batchDelete,
+            'btnType'      => 'secondary',
+            'className'    => 'batch-btn errorlog-batch-delete hidden',
+            'data-on'      => 'click',
+            'data-call'    => 'batchDeleteErrorlog',
+            'data-params'  => 'event',
+            'data-url'     => helper::createLink('errorlog', 'batchDelete'),
+            'data-confirm' => $lang->errorlog->confirmBatchDelete
+        ))
+    )) : null,
     set::footPager(usePager())
 );
 

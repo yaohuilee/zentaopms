@@ -89,4 +89,19 @@ class errorlogModelTest extends baseTest
         if(dao::isError()) return dao::getError();
         return $result;
     }
+
+    /**
+     * 测试根据ID批量删除错误日志。
+     * Test delete error logs by ids.
+     *
+     * @param  array $ids
+     * @access public
+     * @return bool|array
+     */
+    public function deleteByIDsTest(array $ids): bool|array
+    {
+        $result = $this->instance->deleteByIDs($ids);
+        if(dao::isError()) return dao::getError();
+        return $result;
+    }
 }
