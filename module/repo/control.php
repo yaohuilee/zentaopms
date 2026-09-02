@@ -2355,9 +2355,9 @@ class repo extends control
             {
                 $file = $this->repo->encodePath($file);
                 $ppm  = $this->loadModel('ppm')->fetchByID((int)$ppmID);
-                if(!$this->post->assignedTo) $assignedTo = zget($ppm, 'createdBy', '');
+                if(empty($assignedTo)) $assignedTo = zget($ppm, 'createdBy', '');
             }
-            $bug   = form::data($config->repo->form->addBug)
+            $bug = form::data($config->repo->form->addBug)
                 ->setIF(!$this->post->entry, 'entry', $file)
                 ->setIF(!empty($assignedTo), 'assignedTo', $assignedTo)
                 ->add('openedBy', $this->app->user->account)
