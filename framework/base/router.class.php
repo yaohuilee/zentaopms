@@ -3485,6 +3485,15 @@ class baseRouter
         $this->savingErrorLog = true;
         $this->errorLogCount ++;
 
+        /* 隐藏安装目录的绝对路径，统一保存为相对路径。Hide absolute base path, store relative paths. */
+        $basePath = $this->getBasePath();
+        if($basePath)
+        {
+            $message = str_replace($basePath, '', $message);
+            $file    = str_replace($basePath, '', $file);
+            $trace   = str_replace($basePath, '', $trace);
+        }
+
         try
         {
             $stmt = $this->dbh->prepare('INSERT INTO ' . TABLE_ERRORLOG . ' (`requestID`, `account`, `module`, `method`, `url`, `level`, `message`, `file`, `line`, `trace`, `createdDate`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
