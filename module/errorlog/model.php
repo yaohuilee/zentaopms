@@ -57,6 +57,24 @@ class errorlogModel extends model
     }
 
     /**
+     * 根据错误级别获取对应的展示类型。
+     * Get display type by error level.
+     *
+     * @param  int $level
+     * @access public
+     * @return string
+     */
+    public function getLevelType(int $level): string
+    {
+        $fatalLevels   = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE | E_RECOVERABLE_ERROR;
+        $warningLevels = E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
+
+        if($level & $fatalLevels)   return 'danger';
+        if($level & $warningLevels) return 'warning';
+        return 'primary';
+    }
+
+    /**
      * 根据ID删除错误日志。
      * Delete an error log by id.
      *

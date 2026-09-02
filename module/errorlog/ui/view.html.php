@@ -13,10 +13,7 @@ namespace zin;
 
 if(isInModal()) set::size('lg');
 
-$fatalLevels   = E_ERROR | E_USER_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_PARSE | E_RECOVERABLE_ERROR;
-$warningLevels = E_WARNING | E_USER_WARNING | E_CORE_WARNING | E_COMPILE_WARNING;
-$levelType     = ($log->level & $fatalLevels)   ? 'danger'  :
-                 (($log->level & $warningLevels) ? 'warning' : 'primary');
+$levelType = $this->errorlog->getLevelType((int)$log->level);
 
 modalHeader(set::title($this->lang->errorlog->view . ' #' . $log->id));
 

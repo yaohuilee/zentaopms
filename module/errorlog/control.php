@@ -39,7 +39,8 @@ class errorlog extends control
 
         foreach($logList as $log)
         {
-            $log->level = isset($this->lang->errorlog->levelList[$log->level]) ? $this->lang->errorlog->levelList[$log->level] : $log->level;
+            $log->levelName = isset($this->lang->errorlog->levelList[$log->level]) ? $this->lang->errorlog->levelList[$log->level] : $log->level;
+            $log->levelType = $this->errorlog->getLevelType((int)$log->level);
         }
 
         $this->view->title    = $this->lang->errorlog->common . $this->lang->hyphen . $this->lang->errorlog->browse;

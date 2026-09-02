@@ -35,3 +35,23 @@ window.batchDeleteErrorlog = function(event)
         if(res) $.ajaxSubmit({url: $button.data('url'), data: postData});
     });
 };
+
+/**
+ * 错误级别列按级别显示 ZUI 配色标签。
+ * Render error level cell with ZUI colored label.
+ *
+ * @param  mixed  $result
+ * @param  object $info
+ * @return mixed
+ */
+window.renderErrorLogCell = function(result, info)
+{
+    if(!info || !info.col || info.col.name !== 'level') return result;
+
+    const row = info.row && info.row.data;
+    if(!row) return result;
+
+    const text = row.levelName || '';
+    const type = row.levelType || 'primary';
+    return [{html: `<span class="label ${type}-pale rounded-full size-sm">${text}</span>`}];
+};

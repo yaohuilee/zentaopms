@@ -45,6 +45,7 @@ dtable
     set::data($tableData),
     set::orderBy($orderBy),
     set::sortLink(createLink('errorlog', 'browse', "type={$type}&queryID={$queryID}&orderBy={name}_{sortType}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}")),
+    set::onRenderCell(jsRaw('window.renderErrorLogCell')),
     set::checkable($canBatchDelete),
     $canBatchDelete ? set::onCheckChange(jsRaw('window.toggleErrorlogBatchDelete')) : null,
     $canBatchDelete ? set::footToolbar(array
