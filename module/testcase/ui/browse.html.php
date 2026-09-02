@@ -173,6 +173,7 @@ $linkParams = '';
 foreach($app->rawParams as $key => $value) $linkParams = $key != 'orderBy' ? "{$linkParams}&{$key}={$value}" : "{$linkParams}&orderBy={name}_{sortType}";
 
 $caseCreateLink = $canCreateCase ? $createCaseLink : '';
+$canSort        = $canModify && hasPriv('testcase', 'updateOrder') && strpos($orderBy, 'sort_asc') !== false;
 
 div(
     on::click('[data-col="actions"] .ztf-case', 'window.checkZtf'),
@@ -180,9 +181,9 @@ div(
     (
         set::id('testcases'),
         set::plugins(array('sortable')),
-        set::sortable(strpos($orderBy, 'sort_asc') !== false),
-        set::onSortEnd(strpos($orderBy, 'sort_asc') !== false ? jsRaw('window.onSortEnd') : null),
-        set::canSortTo(strpos($orderBy, 'sort_asc') !== false ? jsRaw('window.canSortTo') : null),
+        set::sortable($canSort),
+        set::onSortEnd($canSort ? jsRaw('window.onSortEnd') : null),
+        set::canSortTo($canSort ? jsRaw('window.canSortTo') : null),
         ($isFromDoc || $isFromAI) ? set::afterRender(jsCallback()->call('toggleCheckRows', $idList)) : null,
         ($isFromDoc || $isFromAI) ? set::onCheckChange(jsRaw('window.checkedChange')) : null,
         ($isFromDoc || $isFromAI) ? set::height(400) : null,
