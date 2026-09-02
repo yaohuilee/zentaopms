@@ -65,7 +65,7 @@ $config->errorlog->dtable->fieldList['createdDate']['name']     = 'createdDate';
 $config->errorlog->dtable->fieldList['createdDate']['title']    = $lang->errorlog->createdDate;
 $config->errorlog->dtable->fieldList['createdDate']['type']     = 'datetime';
 $config->errorlog->dtable->fieldList['createdDate']['sortType'] = true;
-$config->errorlog->dtable->fieldList['createdDate']['width']    = '160';
+$config->errorlog->dtable->fieldList['createdDate']['width']    = '128';
 
 $config->errorlog->dtable->fieldList['message']['name']     = 'message';
 $config->errorlog->dtable->fieldList['message']['title']    = $lang->errorlog->message;
