@@ -97,7 +97,7 @@
         const logURL = $.createLink('errorlog', 'ajaxGetLog', 'requestID=' + encodeURIComponent(requestID));
         fetch(logURL, {headers: {'X-Zin-Request-ID': requestID, 'X-Requested-With': 'XMLHttpRequest'}}).then(res => res.json()).then(data =>
         {
-            if(data && data.result === 'success' && data.data) showErrorLog(data.data, options);
+            if(data && data.result === 'success' && data.data) showErrorLog(data.data);
             else if(DEBUG) console.warn('[ZIN] ', 'Fetch error log failed', data);
         }).catch(err =>
         {
@@ -292,12 +292,7 @@
         zui.Modal.showError({error: isNormalPage ? data : `<b>URL</b>: ${options.url}<br>${data}`, size: 'lg', html: !isNormalPage})
     }
 
-    function escapeHtml(value)
-    {
-        return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    function showErrorLog(log, options)
+    function showErrorLog(log)
     {
         if(!log) return;
 
@@ -305,12 +300,6 @@
         console.log('[ErrorLog]', {level: log.levelName || log.level, module: log.module, method: log.method, message: log.message, file: log.file, line: log.line, url: log.url, account: log.account, createdDate: log.createdDate});
         console.log('[ErrorLog] trace', log.trace);
         console.groupEnd();
-
-        const html = `<b>URL</b>: ${escapeHtml(options.url)}<br>` +
-            `<b>${escapeHtml(log.levelName || log.level)}</b>: ${escapeHtml(log.message)}<br>` +
-            (log.file ? `${escapeHtml(log.file)}:${escapeHtml(log.line)}<br>` : '') +
-            (log.trace ? `<pre style="white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,monospace">${escapeHtml(log.trace)}</pre>` : '');
-        zui.Modal.showError({error: html, size: 'lg', html: true});
     }
 
     function initZinbar()
