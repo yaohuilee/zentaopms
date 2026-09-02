@@ -92,10 +92,8 @@ class backBtn extends btn
             'researchtask'   => 'marketresearch-task,my-index,product-dynamic,project-dynamic,project-view,my-contribute',
             'review'         => 'review-browse,project-deliverable,my-index,product-dynamic,project-dynamic,project-view,programplan-browse,project-execution,my-contribute,my-audit',
             'charter'        => 'my-index,charter-browse,charter-view,my-audit,program-browse,project-view',
-            'roadmap'        => 'charter-view',
             'approvalflow'   => 'approvalflow-browse',
             'host'           => 'host-browse,my-index',
-            'deploy'         => 'deploy-browse',
             'program'        => 'program-browse,program-productview',
             'workflowgroup'  => 'workflowgroup-project,workflowgroup-deliverable',
             'cm'             => 'cm-browse,cm-view,my-contribute',
@@ -104,7 +102,7 @@ class backBtn extends btn
             'milestone'      => 'weekly-browse',
             'nc'             => 'nc-browse',
             'budget'         => 'budget-browse,action-trash',
-            'roadmap'        => 'roadmap-browse,roadmap-view',
+            'roadmap'        => 'roadmap-browse,roadmap-view,charter-view',
             'art'            => 'art-browse,pi-browse'
         );
 
