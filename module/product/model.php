@@ -912,7 +912,7 @@ class productModel extends model
             ->beginIF($product->type != 'normal' and $branch !== '' and $branch != 'all')->andWhere('t1.branch')->in($branch)->fi()
             ->markRight(1)
             ->beginIF($appendProject)->orWhere('t2.id')->in($appendProject)->fi()
-            ->orderBy('`order`_asc')
+            ->orderBy('t2.id_desc')
             ->fetchPairs('id', 'name');
     }
 
