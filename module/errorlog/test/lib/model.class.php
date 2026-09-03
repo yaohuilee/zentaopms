@@ -49,13 +49,13 @@ class errorlogModelTest extends baseTest
 
     /**
      * 测试根据请求ID获取错误日志。
-     * Test get error log by request id.
+     * Test get error logs by request id.
      *
      * @param  string $requestID
      * @access public
-     * @return object|array
+     * @return array
      */
-    public function getByRequestIDTest(string $requestID): object|array|false
+    public function getByRequestIDTest(string $requestID): array
     {
         $log = $this->instance->getByRequestID($requestID);
         if(dao::isError()) return dao::getError();
