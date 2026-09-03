@@ -2856,6 +2856,8 @@ $config->group->package->browseCodeIssue->order  = 2600;
 $config->group->package->browseCodeIssue->subset = 'codereview';
 $config->group->package->browseCodeIssue->privs  = array();
 $config->group->package->browseCodeIssue->privs['repo-review']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 0, 'depend' => array('repo-diff'), 'recommend' => array('repo-addBug', 'repo-editBug'));
+$config->group->package->browseCodeIssue->privs['codescan-issue']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 10, 'depend' => array('repo-maintain'), 'recommend' => array());
+$config->group->package->browseCodeIssue->privs['codescan-issueView'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 15, 'depend' => array('codescan-issue'), 'recommend' => array());
 $config->group->package->browseCodeIssue->privs['repo-addComment'] = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20, 'depend' => array('repo-diff'), 'recommend' => array('repo-addBug', 'repo-editBug', 'repo-editComment', 'repo-review'));
 
 $config->group->package->reviewCodeIssue = new stdclass();
@@ -4469,8 +4471,6 @@ $config->group->package->browseScanInfo->order  = 5;
 $config->group->package->browseScanInfo->subset = 'codeScan';
 $config->group->package->browseScanInfo->privs  = array();
 $config->group->package->browseScanInfo->privs['codescan-overview']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 5,  'depend' => array('codescan-task'), 'recommend' => array());
-$config->group->package->browseScanInfo->privs['codescan-issue']        = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 10,  'depend' => array('repo-maintain'), 'recommend' => array());
-$config->group->package->browseScanInfo->privs['codescan-issueView']    = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 15, 'depend' => array('codescan-issue'), 'recommend' => array());
 $config->group->package->browseScanInfo->privs['codescan-task']         = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 20,  'depend' => array('codescan-overview'), 'recommend' => array());
 $config->group->package->browseScanInfo->privs['codescan-taskView']     = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 25, 'depend' => array('codescan-task'), 'recommend' => array());
 $config->group->package->browseScanInfo->privs['codescan-plan']         = array('edition' => 'open,biz,max,ipd', 'vision' => 'rnd', 'order' => 30,  'depend' => array('codescan-overview'), 'recommend' => array());
