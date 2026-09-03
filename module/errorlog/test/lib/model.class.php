@@ -22,6 +22,8 @@ class errorlogModelTest extends baseTest
      */
     public function getListTest(string $query = '', string $orderBy = 'id_desc', int $recTotal = 0, int $recPerPage = 20, int $pageID = 1): array
     {
+        $this->instance->app->rawModule  = 'errorlog';
+        $this->instance->app->rawMethod  = 'browse';
         $this->instance->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
 
@@ -58,6 +60,33 @@ class errorlogModelTest extends baseTest
         $log = $this->instance->getByRequestID($requestID);
         if(dao::isError()) return dao::getError();
         return $log;
+    }
+
+    /**
+     * 测试获取错误级别对应的展示类型。
+     * Test get level type by error level.
+     *
+     * @param  int $level
+     * @access public
+     * @return string
+     */
+    public function getLevelTypeTest(int $level): string
+    {
+        return $this->instance->getLevelType($level);
+    }
+
+    /**
+     * 测试获取有错误日志的模块列表。
+     * Test get module pairs which have error logs.
+     *
+     * @access public
+     * @return array
+     */
+    public function getModulePairsTest(): array
+    {
+        $modules = $this->instance->getModulePairs();
+        if(dao::isError()) return dao::getError();
+        return $modules;
     }
 
     /**
