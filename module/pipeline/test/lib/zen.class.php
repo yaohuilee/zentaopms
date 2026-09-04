@@ -83,4 +83,56 @@ class pipelineZenTest extends baseTest
         if(dao::isError()) return false;
         return $result;
     }
+
+    /**
+     * Test buildJenkinsTree method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function buildJenkinsTreeTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('buildJenkinsTree', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
+
+    /**
+     * Test renderSchemaKeywords method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function renderSchemaKeywordsTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('renderSchemaKeywords', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }
