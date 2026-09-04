@@ -203,6 +203,7 @@ class messageModel extends model
 
         $this->loadModel('action');
         $user   = $this->loadModel('user')->getById($actor);
+        if(!$user && $actor != 'guest') return false;
         $table  = $this->config->objectTables[$objectType];
         $field  = $this->config->action->objectNameFields[$objectType];
         $object = $this->dao->select('*')->from($table)->where('id')->eq($objectID)->fetch();
