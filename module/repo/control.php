@@ -711,7 +711,7 @@ class repo extends control
         {
             $oldRevision = '^';
             if($revision) $oldRevision = "{$revision}^";
-            $newRevision = $log[0]->revision;
+            $newRevision = empty($log[0]) ? '' : $log[0]->revision;
         }
 
         $this->locate($this->repo->createLink('diff', "repoID=$repoID&objectID=$objectID&entry=&oldrevision=$oldRevision&newRevision={$newRevision}"));
@@ -1424,7 +1424,7 @@ class repo extends control
         $version  = empty($latestInDB) ? 1 : $latestInDB->commit + 1;
         $logs     = array();
         $revision = $version == 1 ? 'HEAD' : $latestInDB->commit;
-        if($repo->scmType == 'git' && $revision > 1) $revision = $latestInDB->revision;
+        if($repo->scmType == 'git' && $revision > 1 && !empty($latestInDB->revision)) $revision = $latestInDB->revision;
 
         $logs = $this->scm->getCommits($revision, $this->config->repo->batchNum, $branch);
         $commitCount = $this->repo->saveCommit($repoID, $logs, $version, $branch);
@@ -1437,7 +1437,7 @@ class repo extends control
             return print('finish');
         }
 
-        $this->dao->update(TABLE_REPO)->set('commits=commits + ' . $commitCount)->where('id')->eq($repoID)->exec();
+        //$this->dao->update(TABLE_REPO)->set('commits=commits + ' . $commitCount)->where('id')->eq($repoID)->exec();
         echo $commitCount;
     }
 
