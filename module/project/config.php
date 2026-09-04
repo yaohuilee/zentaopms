@@ -149,8 +149,8 @@ $config->project->projectPriv['execution']   = array('start', 'edit', 'close', '
 $config->project->projectPriv['report']      = array('projectSummary');
 $config->project->projectPriv['build']       = array();
 if($config->edition != 'max') $config->project->projectPriv['stakeholder'] = array('browse', 'create', 'batchCreate', 'edit', 'delete', 'view', 'communicate', 'expect', 'expectation', 'deleteExpect', 'createExpect', 'editExpect', 'viewExpect', 'userIssue');
-unset($config->project->includedPriv['projectstory']);
-unset($config->project->includedPriv['build']);
+unset($config->project->projectPriv['projectstory']);
+unset($config->project->projectPriv['build']);
 
 $config->project->noProductPriv['productplan'] = array('linkStory', 'unlinkStory', 'batchUnlinkStory', 'linkBug', 'unlinkBug', 'batchUnlinkBug', 'batchEdit', 'start', 'finish', 'close', 'activate', 'batchChangeStatus', 'delete');
 $config->project->noProductPriv['projectplan'] = array('browse', 'create', 'edit', 'view');
