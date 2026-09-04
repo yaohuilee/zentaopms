@@ -132,7 +132,7 @@ $config->testcase->dtable->fieldList['stepNumber']['type']     = 'number';
 $config->testcase->dtable->fieldList['stepNumber']['group']    = 5;
 $config->testcase->dtable->fieldList['stepNumber']['sortType'] = false;
 
-if($config->edition != 'open' || (defined('RUN_MODE') && RUN_MODE != 'api'))
+if($config->edition != 'open' || (defined('RUN_MODE') && !in_array(RUN_MODE, array('api', 'uitest'))))
 {
     $app->loadLang('custom');
     $config->testcase->dtable->fieldList['relatedObject']['name']        = 'relatedObject';
