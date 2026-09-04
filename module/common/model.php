@@ -1449,6 +1449,8 @@ eof;
         /* If is the program/project/product/execution admin, have all program privileges. */
         if($app->config->vision != 'lite' && commonTao::isProjectAdmin($module, $object)) return true;
 
+        if(empty($app->user->rights)) return false;
+
         /* If not super admin, check the rights. */
         $rights = $app->user->rights['rights'];
         $acls   = $app->user->rights['acls'];
