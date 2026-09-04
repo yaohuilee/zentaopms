@@ -711,7 +711,7 @@ class repo extends control
         {
             $oldRevision = '^';
             if($revision) $oldRevision = "{$revision}^";
-            $newRevision = empty($lang[0]) ? '' : $log[0]->revision;
+            $newRevision = empty($log[0]) ? '' : $log[0]->revision;
         }
 
         $this->locate($this->repo->createLink('diff', "repoID=$repoID&objectID=$objectID&entry=&oldrevision=$oldRevision&newRevision={$newRevision}"));
