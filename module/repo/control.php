@@ -1270,7 +1270,7 @@ class repo extends control
 
         $suffix   = '';
         if(isset($pathInfo["extension"])) $suffix = strtolower($pathInfo["extension"]);
-        if(!$suffix or (!array_key_exists($suffix, $this->config->program->suffix) and strpos($this->config->repo->images, "|$suffix|") === false)) $suffix = $this->repoZen->isBinary($content, $suffix) ? 'binary' : 'c';
+        if(!$suffix or (!array_key_exists($suffix, $this->config->repo->program->suffix) and strpos($this->config->repo->images, "|$suffix|") === false)) $suffix = $this->repoZen->isBinary($content, $suffix) ? 'binary' : 'c';
 
         if(strpos($this->config->repo->images, "|$suffix|") !== false)
         {
