@@ -1452,8 +1452,8 @@ eof;
         if(empty($app->user->rights)) return false;
 
         /* If not super admin, check the rights. */
-        $rights = $app->user->rights['rights'];
-        $acls   = $app->user->rights['acls'];
+        $rights = $app->user->rights['rights'] ?? [];
+        $acls   = $app->user->rights['acls'] ?? [];
 
         /* White list of import method. */
         $canImport = isset($rights[$module]['import']) && commonModel::hasDBPriv($object, $module, 'import');
