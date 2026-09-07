@@ -817,13 +817,23 @@ class pivotModel extends model
                 {
                     case 'select':
                         if(is_string($default) && strpos($default, ',') !== false) $default = explode(',', $default);
-                        if(is_array($default)) $default = implode("', '", array_filter($default, function($val){return trim($val) != '';}));
-                        if(empty($default)) break;
-                        $value = "('" . $default . "')";
+                        if(is_array($default))
+                        {
+                            $default = array_filter($default, function($val){return trim((string)$val) != '';});
+                            $quotedValues = array();
+                            foreach($default as $val) $quotedValues[] = $this->dao->quote($val);
+                            if(empty($quotedValues)) break;
+                            $value = '(' . implode(', ', $quotedValues) . ')';
+                        }
+                        else
+                        {
+                            if($default === '') break;
+                            $value = '(' . $this->dao->quote($default) . ')';
+                        }
                         $filterFormat[$field] = array('operator' => 'IN', 'value' => $value);
                         break;
                     case 'input':
-                        $filterFormat[$field] = array('operator' => 'LIKE', 'value' => "'%$default%'");
+                        $filterFormat[$field] = array('operator' => 'LIKE', 'value' => $this->dao->quote('%' . $default . '%'));
                         break;
                     case 'date':
                     case 'datetime':
