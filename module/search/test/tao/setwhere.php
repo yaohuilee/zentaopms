@@ -15,8 +15,10 @@ cid=18346
 - 测试下拉单选等于 @ and `status` = 'active' 
 - 测试下拉多选等于 @ and (`status` = 'active' OR `status` = 'closed' OR `status` = 'wait')
 - 测试下拉多选不等于 @ and (`status` != 'active' AND `status` != 'closed' AND `status` != 'wait')
+- 测试下拉多选包含 @ and (`status` = 'active' OR `status` = 'closed')
+- 测试下拉多选不包含 @ and (`status` != 'active' AND `status` != 'closed')
 - 测试下拉多选其他操作符 @ and (1 = 0)
-- 测试输入框逗号值不按多选处理 @ and `title` = 'a,b,c' 
+- 测试输入框逗号值不按多选处理 @ and `title` = 'a,b,c'
 
 */
 
@@ -39,5 +41,7 @@ r($search->setWhereTest($fields[1], $operators[4], $values[1], $andOrs[0])) && p
 r($search->setWhereTest('status', '=', 'active', 'and', 'select')) && p() && e(" and `status` = 'active' ");                                                               //测试下拉单选等于
 r($search->setWhereTest('status', '=', 'active,closed,wait', 'and', 'select')) && p() && e(" and (`status` = 'active' OR `status` = 'closed' OR `status` = 'wait')");     //测试下拉多选等于
 r($search->setWhereTest('status', '!=', 'active,closed,wait', 'and', 'select')) && p() && e(" and (`status` != 'active' AND `status` != 'closed' AND `status` != 'wait')"); //测试下拉多选不等于
-r($search->setWhereTest('status', 'include', 'active,closed', 'and', 'select')) && p() && e(" and (1 = 0)");                                                              //测试下拉多选其他操作符
+r($search->setWhereTest('status', 'include', 'active,closed', 'and', 'select')) && p() && e(" and (`status` = 'active' OR `status` = 'closed')");                         //测试下拉多选包含
+r($search->setWhereTest('status', 'notinclude', 'active,closed', 'and', 'select')) && p() && e(" and (`status` != 'active' AND `status` != 'closed')");                    //测试下拉多选不包含
+r($search->setWhereTest('status', '>', 'active,closed', 'and', 'select')) && p() && e(" and (1 = 0)");                                                                      //测试下拉多选其他操作符
 r($search->setWhereTest('title', '=', 'a,b,c', 'and', 'input')) && p() && e(" and `title` = 'a,b,c' ");                                                                    //测试输入框逗号值不按多选处理
