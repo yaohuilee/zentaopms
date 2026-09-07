@@ -235,6 +235,98 @@ class pipelineZen extends pipeline
     }
 
     /**
+     * 构建符合 schema 渲染器协议的多层嵌套下拉数据。
+     * Build nested picker items compatible with schema renderer.
+     *
+     * 协议：分组与叶子均为 {text, value?, items?}，text 为纯字符串；
+     * 分组无 value 时渲染为禁用分组头，叶子带 value 可选。层级：空间 > 代码库 > 制品库。
+     *
+     * @param  string $scope 制品库作用域，逗号分隔，取值 space/repo；空为不限
+     * @param  string $type  制品类型过滤，container(docker)/file 等；空为不限
+     * @access public
+     * @return array
+     */
+    public function buildArtifactLibSchemaItems(string $scope = 'space,repo', string $type = 'container'): array
+    {
+        $spaces = $this->loadModel('space')->getPairs($this->app->user->admin ? '' : $this->app->user->account);
+        $repos  = $this->loadModel('repo')->getRepoPairs();
+
+        $spaceIdList = array_keys($spaces);
+        $repoIdList  = array_keys($repos);
+
+        $libs     = array();
+        $artifact = $this->loadModel('artifact');
+        foreach(explode(',', $scope) as $scopeItem)
+        {
+            $scopeItem = trim($scopeItem);
+            if(empty($scopeItem)) continue;
+
+            $scopeLibs = $artifact->getLibListByScope($scopeItem, $type, $spaceIdList, $repoIdList);
+            foreach($scopeLibs as $lib) $libs[$lib->id] = $lib;
+        }
+
+        $buildKeys = function(string $text): string
+        {
+            $pinyin = common::convert2Pinyin(array($text));
+            return trim($text . ' ' . urldecode(zget($pinyin, $text, '')));
+        };
+
+        $groups = array();
+        foreach($spaces as $spaceID => $spaceName)
+        {
+            $spaceLeafs = array();
+            $repoGroups = array();
+
+            foreach($libs as $lib)
+            {
+                if((int)$lib->spaceID != $spaceID) continue;
+
+                if(empty($lib->repoID))
+                {
+                    $spaceLeafs[] = array('text' => $lib->name, 'value' => (int)$lib->id, 'keys' => $buildKeys($spaceName . ' ' . $lib->name));
+                }
+                else
+                {
+                    $repoGroups[$lib->repoID][] = $lib;
+                }
+            }
+
+            /* 空间下的可选项：直挂库收进「空间」容器，仓库级库收进「代码库」容器，结构对称。 */
+            $items = array();
+            if(!empty($spaceLeafs))
+            {
+                $items[] = array('text' => $this->lang->pipeline->typeList['space'], 'disabled' => true, 'items' => $spaceLeafs);
+            }
+
+            if(!empty($repoGroups))
+            {
+                $codeLibNodes = array();
+                foreach($repoGroups as $repoID => $repoLibs)
+                {
+                    if(!isset($repos[$repoID])) continue;
+                    $repoName = $repos[$repoID];
+
+                    $libLeafs = array();
+                    foreach($repoLibs as $lib)
+                    {
+                        $libLeafs[] = array('text' => $lib->name, 'value' => (int)$lib->id, 'keys' => $buildKeys($spaceName . ' ' . $repoName . ' ' . $lib->name));
+                    }
+
+                    $codeLibNodes[] = array('text' => $repoName, 'disabled' => true, 'items' => $libLeafs);
+                }
+
+                $items[] = array('text' => $this->lang->pipeline->typeList['repo'], 'disabled' => true, 'items' => $codeLibNodes);
+            }
+
+            if(empty($items)) continue;
+
+            $groups[] = array('text' => $spaceName, 'value' => (string)$spaceID, 'disabled' => true, 'items' => $items);
+        }
+
+        return $groups;
+    }
+
+    /**
      * 渲染关键字链接。
      * Render keywords link.
      *
