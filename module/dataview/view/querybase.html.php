@@ -4,6 +4,7 @@
 <?php js::set('currentTheme', $this->app->cookie->theme);?>
 <?php js::set('recTotalTip', $lang->dataview->recTotalTip);?>
 <?php js::set('recPerPageTip', $lang->dataview->recPerPageTip);?>
+<?php $this->app->loadLang('common');?>
 
 <div id='dictionary' class='dictionary panel' style="float: left; width: calc(15% - 15px); max-height: 600px; overflow:auto; margin-right: 15px">
   <ul id='dictionaryTree' class='tree' data-ride='tree'>
