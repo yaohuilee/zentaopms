@@ -240,6 +240,8 @@ class pipelineZen extends pipeline
      *
      * 协议：分组与叶子均为 {text, value?, items?}，text 为纯字符串；
      * 分组无 value 时渲染为禁用分组头，叶子带 value 可选。层级：空间 > 代码库 > 制品库。
+     * 叶子 value 语义：file 型为制品库 id；container 型为寻址串——空间级 space.code/lib.code，
+     * 仓库级 repo{repoID}/lib.code。
      *
      * @param  string $scope 制品库作用域，逗号分隔，取值 space/repo；空为不限
      * @param  string $type  制品类型过滤，container(docker)/file 等；空为不限
@@ -271,6 +273,41 @@ class pipelineZen extends pipeline
             return trim($text . ' ' . urldecode(zget($pinyin, $text, '')));
         };
 
+        /* container 制品叶子的 value 用制品库寻址标识而非库 id：空间级=space.code/lib.code，仓库级=repo{repoID}/lib.code；其余类型沿用库 id。 */
+        $spaceCodeMap = array();
+        if($type === 'container')
+        {
+            $spaceIdSet = array();
+            foreach($libs as $lib) $spaceIdSet[(int)$lib->spaceID] = (int)$lib->spaceID;
+            if($spaceIdSet)
+            {
+                $spaceList = $this->loadModel('space')->getByIdList($spaceIdSet, false);
+                foreach($spaceList as $space) $spaceCodeMap[(int)$space->id] = $space->code;
+            }
+        }
+
+        $buildLeaf = function(string $leafText, object $lib, string $keys) use ($type, $spaceCodeMap): array
+        {
+            if($type === 'container')
+            {
+                if(empty($lib->repoID))
+                {
+                    $spaceCode = isset($spaceCodeMap[(int)$lib->spaceID]) ? $spaceCodeMap[(int)$lib->spaceID] : '';
+                    $value     = (empty($spaceCode) ? (string)$lib->spaceID : $spaceCode) . '/' . $lib->code;
+                }
+                else
+                {
+                    $value = 'repo' . (int)$lib->repoID . '/' . $lib->code;
+                }
+            }
+            else
+            {
+                $value = (int)$lib->id;
+            }
+
+            return array('text' => $leafText, 'value' => $value, 'keys' => $keys);
+        };
+
         $groups = array();
         foreach($spaces as $spaceID => $spaceName)
         {
@@ -283,7 +320,7 @@ class pipelineZen extends pipeline
 
                 if(empty($lib->repoID))
                 {
-                    $spaceLeafs[] = array('text' => $lib->name, 'value' => (int)$lib->id, 'keys' => $buildKeys($spaceName . ' ' . $lib->name));
+                    $spaceLeafs[] = $buildLeaf($lib->name, $lib, $buildKeys($spaceName . ' ' . $lib->name));
                 }
                 else
                 {
@@ -309,7 +346,7 @@ class pipelineZen extends pipeline
                     $libLeafs = array();
                     foreach($repoLibs as $lib)
                     {
-                        $libLeafs[] = array('text' => $lib->name, 'value' => (int)$lib->id, 'keys' => $buildKeys($spaceName . ' ' . $repoName . ' ' . $lib->name));
+                        $libLeafs[] = $buildLeaf($lib->name, $lib, $buildKeys($spaceName . ' ' . $repoName . ' ' . $lib->name));
                     }
 
                     $codeLibNodes[] = array('text' => $repoName, 'disabled' => true, 'items' => $libLeafs);
