@@ -76,6 +76,7 @@ class doc extends control
             'mine'    => 'mySpace',
             'product' => 'productSpace',
             'project' => 'projectSpace',
+            'quick'   => 'quick',
             'custom'  => 'teamSpace'
         );
         $method = $spaceMap[$lastViewedSpaceHome];
