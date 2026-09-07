@@ -48,6 +48,7 @@ class xuanxuanMessage extends messageModel
                     ->fi()
                     ->where('obj.id')->eq($objectID)
                     ->fetch();
+                if(!$object) return;
                 $field = $this->config->action->objectNameFields[$objectType];
                 $title = $objectType == 'mr' ? '' : sprintf($this->lang->message->notifyTitle, $actorName, $this->lang->action->label->$actionType, 1, $this->lang->action->objectTypes[$objectType]);
                 if($objectType == 'story' && $actionType == 'reviewed' && !empty($extra))
