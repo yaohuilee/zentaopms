@@ -900,10 +900,13 @@ class bugZen extends bug
         $executionID = (int)$bug->executionID;
         $product     = $this->product->getByID($productID);
 
+        if(($this->app->tab == 'execution' || $this->app->tab == 'qa') && $executionID && !$projectID)
+        {
+            $projectID = $this->dao->select('project')->from(TABLE_EXECUTION)->where('id')->eq($executionID)->fetch('project');
+        }
+
         $projects  = $this->product->getProjectPairsByProduct($productID, $branch);
         $projectID = isset($projects[$projectID]) ? $projectID : '';
-
-        if($this->app->tab == 'execution' && $executionID && !$projectID) $projectID = $this->dao->select('project')->from(TABLE_EXECUTION)->where('id')->eq($executionID)->fetch('project');
         if($product->shadow && !$projectID) $projectID = key($projects);
 
         $project = array();
