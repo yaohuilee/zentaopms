@@ -141,7 +141,7 @@ dtable
     set::footToolbar($footToolbar),
     set::footPager(usePager()),
     set::emptyTip($lang->bug->notice->noBug),
-    set::customData($browseType == 'resolvedBy' ? array('pageSummary' => $summary) : array())
+    set::customData($browseType == 'resolvedBy' ? array('pageSummary' => isset($summary) ? $summary : '') : array())
 );
 
 render();

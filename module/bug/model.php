@@ -1037,7 +1037,7 @@ class bugModel extends model
                 ->beginIF(!empty($productID) and $branchID != 'all')->andWhere('t1.branch')->eq($branchID)->fi()
                 ->beginIF($type == 'unresolved')->andWhere('t1.status')->eq('active')->fi()
                 ->beginIF($type == 'unclosed' || $type == 'noclosed')->andWhere('t1.status')->ne('closed')->fi()
-                ->beginIF($type == 'assignedtome')->andWhere('t1.`assignedTo`')->eq($this->app->user->account)->fi()
+                ->beginIF($type == 'assigntome' || $type == 'assignedtome')->andWhere('t1.`assignedTo`')->eq($this->app->user->account)->fi()
                 ->beginIF($type == 'openedbyme')->andWhere('t1.`openedBy`')->eq($this->app->user->account)->fi()
                 ->beginIF($type == 'resolvedbyme')->andWhere('t1.`resolvedBy`')->eq($this->app->user->account)->fi()
                 ->beginIF($type == 'assigntonull')->andWhere('t1.`assignedTo`')->eq('')->fi()
