@@ -480,6 +480,7 @@ class user extends control
                 $_POST['password2']        = md5($_POST['password']);
                 $_POST['passwordLength']   = strlen($_POST['password']);
                 $_POST['passwordStrength'] = 2;
+                $_POST['passwordPlain']    = $_POST['password'];
                 $_POST['verifyPassword']   = 'PASSWORD';
             }
 
@@ -566,6 +567,7 @@ class user extends control
                 $_POST['password2']        = isset($_POST['password']) ? md5($_POST['password']) : '';
                 $_POST['passwordLength']   = isset($_POST['password']) ? strlen($_POST['password']) : 0;
                 $_POST['passwordStrength'] = 2;
+                $_POST['passwordPlain']    = isset($_POST['password']) ? $_POST['password'] : '';
             }
 
             $user = form::data($this->config->user->form->edit)
