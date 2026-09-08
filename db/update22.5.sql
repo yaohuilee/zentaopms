@@ -226,3 +226,6 @@ CREATE INDEX `idx_createdDate` ON `zt_errorlogreq`(`createdDate`);
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=errorlog&methodName=deleteLog', '删除过期错误日志', 'zentao', 1, 'normal', NULL);
+
+DELETE FROM `zt_workflowfield`  WHERE `module` = 'ticket' AND `field` = 'consumed';
+DELETE FROM `zt_workflowlayout` WHERE `module` = 'ticket' AND `field` = 'consumed';
