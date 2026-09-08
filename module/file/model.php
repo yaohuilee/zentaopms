@@ -496,7 +496,7 @@ class fileModel extends model
         }
 
         $this->lang->error->unique = $this->lang->error->repeat;
-        $condition = "`type` = " . $this->dao->quote("export$module") . " and `account` = " . $this->dao->quote($this->app->user->account);
+        $condition = "`type` = " . $this->dbh->quote("export$module") . " and `account` = " . $this->dbh->quote($this->app->user->account);
         $this->dao->insert(TABLE_USERTPL)->data($template)->batchCheck('title, content', 'notempty')->check('title', 'unique', $condition)->exec();
         if(dao::isError())
         {

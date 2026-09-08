@@ -735,12 +735,12 @@ class chartModel extends model
                     if(!is_array($default)) $default = array($default);
                     $default = array_filter($default, function($val){return !empty($val);});
                     $quotedValues = array();
-                    foreach($default as $val) $quotedValues[] = $this->dao->quote($val);
+                    foreach($default as $val) $quotedValues[] = $this->dbh->quote($val);
                     $value = '(' . implode(', ', $quotedValues) . ')';
                     $filterFormat[$field] = array('operator' => 'IN', 'value' => $value);
                     break;
                 case 'input':
-                    $filterFormat[$field] = array('operator' => 'like', 'value' => $this->dao->quote('%' . $default . '%'));
+                    $filterFormat[$field] = array('operator' => 'like', 'value' => $this->dbh->quote('%' . $default . '%'));
                     break;
                 case 'date':
                 case 'datetime':
@@ -762,7 +762,7 @@ class chartModel extends model
                     if(in_array($operator, array('IN', 'NOT IN')))
                     {
                         $valueArr = array_filter(array_map('trim', explode(',', (string)$value)), 'strlen');
-                        foreach($valueArr as $key => $val) $valueArr[$key] = $this->dao->quote($val);
+                        foreach($valueArr as $key => $val) $valueArr[$key] = $this->dbh->quote($val);
                         $value = '(' . implode(', ', $valueArr) . ')';
                     }
                     elseif(in_array($operator, array('IS NOT NULL', 'IS NULL')))

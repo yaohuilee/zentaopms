@@ -821,19 +821,19 @@ class pivotModel extends model
                         {
                             $default = array_filter($default, function($val){return trim((string)$val) != '';});
                             $quotedValues = array();
-                            foreach($default as $val) $quotedValues[] = $this->dao->quote($val);
+                            foreach($default as $val) $quotedValues[] = $this->dbh->quote($val);
                             if(empty($quotedValues)) break;
                             $value = '(' . implode(', ', $quotedValues) . ')';
                         }
                         else
                         {
                             if($default === '') break;
-                            $value = '(' . $this->dao->quote($default) . ')';
+                            $value = '(' . $this->dbh->quote($default) . ')';
                         }
                         $filterFormat[$field] = array('operator' => 'IN', 'value' => $value);
                         break;
                     case 'input':
-                        $filterFormat[$field] = array('operator' => 'LIKE', 'value' => $this->dao->quote('%' . $default . '%'));
+                        $filterFormat[$field] = array('operator' => 'LIKE', 'value' => $this->dbh->quote('%' . $default . '%'));
                         break;
                     case 'date':
                     case 'datetime':
