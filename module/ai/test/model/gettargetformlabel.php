@@ -34,6 +34,7 @@ cid=0
 - 步骤3：无效输入 @abc
 - 步骤4：大值输入 @999999
 - 步骤5：业务规则验证 @test
+- 步骤6：无需返回禅道表单 @无需返回禅道表单
 
 */
 
@@ -43,3 +44,5 @@ r($result === '') && p() && e('1'); // 步骤2：边界值输入
 r($testObj->getTargetFormLabelTest('abc', true, '')) && p() && e('abc'); // 步骤3：无效输入
 r($testObj->getTargetFormLabelTest('999999', true, '')) && p() && e('999999'); // 步骤4：大值输入
 r($testObj->getTargetFormLabelTest('test', true, '')) && p() && e('test'); // 步骤5：业务规则验证
+$noRedirect = $tester->lang->ai->prompts->noRedirect;
+r($testObj->getTargetFormLabelTest('empty.empty', true, '')) && p() && e($noRedirect); // 步骤6：无需返回禅道表单

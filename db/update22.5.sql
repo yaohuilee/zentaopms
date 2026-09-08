@@ -158,6 +158,8 @@ ALTER TABLE `zt_ai_agent` ADD `cycleConfig` text NULL DEFAULT NULL COMMENT '周�
 ALTER TABLE `zt_ai_agent` ADD `notifyRule` text NULL DEFAULT NULL COMMENT '通知规则JSON：roles/users/methods' AFTER `cycleConfig`;
 ALTER TABLE `zt_ai_agent` ADD `lastRunDate` datetime NULL DEFAULT NULL COMMENT '最近一次定时执行时间' AFTER `editedDate`;
 
+UPDATE `zt_ai_agent` SET `targetForm` = 'task.batchcreate', `actionPurpose` = 'task.batchcreate' WHERE `targetForm` = 'execution.batchcreatetask' OR `actionPurpose` = 'execution.batchcreatetask';
+
 CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `agent` int unsigned NOT NULL DEFAULT 0 COMMENT '智能体ID',
@@ -224,3 +226,6 @@ CREATE INDEX `idx_createdDate` ON `zt_errorlogreq`(`createdDate`);
 
 REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `type`, `buildin`, `status`, `lastTime`) VALUES
 ('*/5', '*', '*', '*', '*', 'moduleName=errorlog&methodName=deleteLog', '删除过期错误日志', 'zentao', 1, 'normal', NULL);
+
+DELETE FROM `zt_workflowfield`  WHERE `module` = 'ticket' AND `field` = 'consumed';
+DELETE FROM `zt_workflowlayout` WHERE `module` = 'ticket' AND `field` = 'consumed';
