@@ -132,7 +132,7 @@ class storyEntry extends entry
             $this->setPost('status', 'reviewing');
         }
 
-        $control->edit($storyID);
+        $control->edit((int)$storyID);
 
         $data = $this->getData();
 
@@ -153,7 +153,7 @@ class storyEntry extends entry
     public function delete($storyID)
     {
         $control = $this->loadController('story', 'delete');
-        $control->delete($storyID, 'yes');
+        $control->delete((int)$storyID, 'yes');
 
         $this->getData();
         return $this->sendSuccess(200, 'success');
