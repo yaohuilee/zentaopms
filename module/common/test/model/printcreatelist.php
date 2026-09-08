@@ -82,7 +82,7 @@ $zd_projectproduct->branch->range('1-5');
 $zd_projectproduct->gen(5);
 $zd_user = zenData('user');
 $zd_user->id->range('1-1');
-$zd_user->account->range('1-1');
+$zd_user->account->range('admin');
 $zd_user->last->range('(M)-(w)')->type('timestamp')->format('YYYY-MM-DD hh:mm:ss');
 $zd_user->feedback->range('0');
 $zd_user->scoreLevel->range('0');

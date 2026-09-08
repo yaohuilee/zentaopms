@@ -65,9 +65,16 @@ $r3 = $tester->buildArtifactLibSchemaItemsTest('space', 'container');
 $r4 = $tester->buildArtifactLibSchemaItemsTest('repo', 'container');
 $r5 = $tester->buildArtifactLibSchemaItemsTest('', 'container');
 
-r(is_array($r1) ? $r1 : array()) && p('groupCount') && e('2');
-r(is_array($r1) ? $r1 : array()) && p('values')     && e('alpha/nacos,beta/redis,repo11/api');
-r(is_array($r2) ? $r2 : array()) && p('values')     && e('3');
-r(is_array($r3) ? $r3 : array()) && p('values')     && e('alpha/nacos,beta/redis');
-r(is_array($r4) ? $r4 : array()) && p('values')     && e('repo11/api');
-r(is_array($r5) ? $r5 : array()) && p('groupCount') && e('0');
+$groupCount1  = is_array($r1) ? $r1['groupCount'] : '';
+$containerAll = is_array($r1) ? $r1['values'] : '';
+$fileValues   = is_array($r2) ? $r2['values'] : '';
+$spaceValues  = is_array($r3) ? $r3['values'] : '';
+$repoValues   = is_array($r4) ? $r4['values'] : '';
+$groupCount5  = is_array($r5) ? $r5['groupCount'] : '';
+
+r($groupCount1) && p() && e('2'); // 测试container类型树分组数
+r($containerAll) && p() && e('alpha/nacos,beta/redis,repo11/api'); // 测试container类型叶子value编码
+r($fileValues) && p() && e('3'); // 测试file类型叶子value沿用库id
+r($spaceValues) && p() && e('alpha/nacos,beta/redis'); // 测试scope=space仅含直挂库
+r($repoValues) && p() && e('repo11/api'); // 测试scope=repo仅含仓库级库
+r($groupCount5) && p() && e('0'); // 测试空scope返回空

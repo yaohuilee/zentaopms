@@ -70,9 +70,9 @@ class pipelineZenTest extends baseTest
         return $result;
     }
 
-    public function getPipelineSearchQueryTest(int $queryID): string
+    public function getPipelineSearchQueryTest(int $queryID, string $queryName = 'pipelineQuery'): string
     {
-        $result = $this->invokeArgs('getPipelineSearchQuery', [$queryID]);
+        $result = $this->invokeArgs('getPipelineSearchQuery', [$queryID, $queryName]);
         if(dao::isError()) return false;
         return $result;
     }
