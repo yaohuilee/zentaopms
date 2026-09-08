@@ -47,3 +47,13 @@ $result = $testObj->getFilterFormatTest(array(999999));
 r(count($result)) && p() && e('0'); // 步骤4：大值输入
 $result = $testObj->getFilterFormatTest(array(1, 2));
 r(count($result)) && p() && e('0'); // 步骤5：业务规则验证
+
+$injectionFilters = array
+(
+    array('type' => 'select', 'field' => 'year', 'default' => "x') or sleep(3)-- "),
+    array('type' => 'input',  'field' => 'name', 'default' => "x') or sleep(3)-- ")
+);
+$result = $testObj->getFilterFormatTest($injectionFilters);
+
+r(strpos($result['year']['value'], "') or") === false && substr($result['year']['value'], -1) === ')') && p('') && e(1); // 注入payload不能逃逸select过滤值
+r(strpos($result['name']['value'], "') or") === false && substr($result['name']['value'], -1) === "'") && p('') && e(1); // 注入payload不能逃逸input过滤值
