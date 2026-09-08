@@ -79,7 +79,7 @@ class doc extends control
             'quick'   => 'quick',
             'custom'  => 'teamSpace'
         );
-        $method = $spaceMap[$lastViewedSpaceHome];
+        $method = zget($spaceMap, $lastViewedSpaceHome, '');
         if(empty($method) || !common::hasPriv('doc', $method)) return $this->locate($this->createLink('doc', 'mySpace'));
 
         $lastViewedSpace = $this->doc->getLastViewed('lastViewedSpace');
