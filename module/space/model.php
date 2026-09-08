@@ -228,11 +228,16 @@ class spaceModel extends model
         $spacesPairs = array();
         foreach($spaces as $space)
         {
-            if($filterRepoCreate && $space->auth == 'reset')
+            if($filterRepoCreate)
             {
-                $privs = $this->loadModel('group')->getDevOpsSpacePrivs((int)$space->id);
-                if($privs === null) continue;
-                if(!isset($privs['repo']['create'])) continue;
+                /* 创建/导入代码库的可选空间：私有空间必须持有 repo.create 空间权限（管理员/空间管理员/被授权组），
+                 * 仅仓库成员（devopsrepouser）不再放行；auth=reset 的公开空间沿用原判定。浏览/列表语境不受影响。 */
+                $needRepoCreatePriv = ($space->acl == 'private') || ($space->auth == 'reset');
+                if($needRepoCreatePriv)
+                {
+                    $privs = $this->loadModel('group')->getDevOpsSpacePrivs((int)$space->id);
+                    if($privs === null || empty($privs['repo']['create'])) continue;
+                }
             }
             $spacesPairs[$space->id] = $space->name;
         }
