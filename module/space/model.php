@@ -302,6 +302,12 @@ class spaceModel extends model
         $manager = empty($formData->manager) ? array() : explode(',', $formData->manager);
         if(!in_array($this->app->user->account, $manager)) $manager[] = $this->app->user->account;
 
+        if(isset($formData->code) && preg_match('/[A-Z]/', $formData->code))
+        {
+            dao::$errors['code'][] = $this->lang->space->notice->codeNotSupportUppercase;
+            return false;
+        }
+
         unset($formData->team);
         $space = $this->loadModel('gitfox')->apiCreateSpace($formData);
         if(dao::isError()) return false;
@@ -351,6 +357,12 @@ class spaceModel extends model
     {
         $newManager = empty($formData->manager) ? array() : explode(',', $formData->manager);
         unset($formData->manager);
+
+        if(isset($formData->code) && preg_match('/[A-Z]/', $formData->code))
+        {
+            dao::$errors['code'][] = $this->lang->space->notice->codeNotSupportUppercase;
+            return false;
+        }
 
         $this->loadModel('gitfox')->apiUpdateSpace($space->id, $formData);
         if(dao::isError()) return false;
