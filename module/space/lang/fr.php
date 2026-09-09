@@ -71,6 +71,7 @@ $lang->space->notice->accessArtifact        = 'Only display users who can access
 $lang->space->notice->confirmRemoveMember   = 'Are you sure to remove this user from this space?';
 $lang->space->notice->confirmDelete         = 'Are you sure delete %s permission group?';
 $lang->space->notice->managerMemberConflict = '%s is a space user. To configure them as an administrator, you can remove the user first.';
+$lang->space->notice->codeNotSupportUppercase = 'Code cannot contain uppercase letters';
 
 $lang->space->placeholder = new stdclass();
 $lang->space->placeholder->desc = 'Description of this space';
