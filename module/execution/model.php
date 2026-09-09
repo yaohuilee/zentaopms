@@ -2546,7 +2546,53 @@ class executionModel extends model
         $oldProductKeys = array_keys($oldProducts);
         $needUpdate     = array_merge(array_diff($oldProductKeys, $products), array_diff($products, $oldProductKeys));
         if($needUpdate) $this->user->updateUserView($needUpdate, 'product', $members);
+
+        $this->syncPlansToProject($executionID, $plans);
         return true;
+    }
+
+    /**
+     * 将执行关联的计划同步到所属项目。
+     * Sync execution linked plans to the parent project.
+     *
+     * @param  int   $executionID
+     * @param  array $plans
+     * @access public
+     * @return bool
+     */
+    public function syncPlansToProject(int $executionID, array $plans): bool
+    {
+        if(empty($plans)) return true;
+
+        $execution = $this->fetchByID($executionID);
+
+        $projectProducts = $this->dao->select('*')->from(TABLE_PROJECTPRODUCT)
+            ->where('project')->eq((int)$execution->project)
+            ->fetchAll();
+        if(empty($projectProducts)) return true;
+
+        $syncedProducts = array();
+        foreach($projectProducts as $projectProduct)
+        {
+            if(isset($syncedProducts[$projectProduct->product])) continue;
+
+            $newPlans = array_values(array_filter(array_map('intval', (array)zget($plans, $projectProduct->product, array()))));
+            $syncedProducts[$projectProduct->product] = true;
+            if(empty($newPlans)) continue;
+
+            $oldPlans = array_values(array_filter(array_map('intval', explode(',', trim((string)$projectProduct->plan, ',')))));
+            $merged   = array_values(array_unique(array_merge($oldPlans, $newPlans)));
+            if($oldPlans == $merged) continue;
+
+            $plan = empty($merged) ? 0 : ',' . implode(',', $merged) . ',';
+            $this->dao->update(TABLE_PROJECTPRODUCT)
+                ->set('plan')->eq($plan)
+                ->where('project')->eq((int)$execution->project)
+                ->andWhere('product')->eq($projectProduct->product)
+                ->exec();
+        }
+
+        return !dao::isError();
     }
 
     /**
@@ -5114,6 +5160,7 @@ class executionModel extends model
             $execution->hasChild    = !empty($execution->isParent);
             $execution->isParent    = !empty($execution->isParent) or !empty($execution->tasks);
             $execution->actions     = array();
+            $execution->progress    = (float)$execution->progress;
 
             if(isset($this->config->project->execution->dtable->actionsRule[$execution->projectModel]))
             {
