@@ -3661,15 +3661,15 @@ class repoModel extends model
     public function backfillGitFoxWebhookSecret(): bool
     {
         /* 一次查出所有需要回填的 GitFox hook，避免在循环内逐条查询。 */
-        $hooks = $this->dao->select('w.id,w.repoID,w.url,r.gitUID')->from(TABLE_OPSWEBHOOK)->alias('w')
-            ->leftJoin(TABLE_REPO)->alias('r')->on('w.repoID = r.id')
+        $hooks = $this->dao->select('w.id,w.`repoID`,w.url,r.`gitUID`')->from(TABLE_OPSWEBHOOK)->alias('w')
+            ->leftJoin(TABLE_REPO)->alias('r')->on('w.`repoID` = r.id')
             ->where('w.deleted')->eq('0')
             ->andWhere('w.url')->like('%gitfox/webhook%')
             ->andWhere('r.deleted')->eq('0')
-            ->andWhere('r.scmType')->eq('git')
+            ->andWhere('r.`scmType`')->eq('git')
             ->andWhere('r.mirror')->eq('0')
-            ->andWhere('r.gitUID')->ne('')
-            ->andWhere('r.gitUID')->notLike('empty_gituid_%')
+            ->andWhere('r.`gitUID`')->ne('')
+            ->andWhere('r.`gitUID`')->notLike('empty_gituid_%')
             ->fetchAll('id', false);
         if(empty($hooks)) return true;
 
@@ -3687,10 +3687,10 @@ class repoModel extends model
         {
             $this->dao->update(TABLE_OPSWEBHOOK)
                 ->set('secret')->eq($gitUID)
-                ->set('authMethod')->eq('token')
-                ->set('authHeader')->eq('X-Gitfox-Token')
-                ->set('editedBy')->eq('system')
-                ->set('editedDate')->eq(helper::now())
+                ->set('`authMethod`')->eq('token')
+                ->set('`authHeader`')->eq('X-Gitfox-Token')
+                ->set('`editedBy`')->eq('system')
+                ->set('`editedDate`')->eq(helper::now())
                 ->where('id')->in($hookIDs)
                 ->exec();
             if(dao::isError()) return false;
