@@ -203,6 +203,22 @@ class gitfoxModelTest extends baseTest
     }
 
     /**
+     * Check if getWebhookByURL returns the hook with expected url.
+     *
+     * @param  int    $repoID
+     * @param  string $url
+     * @access public
+     * @return int
+     */
+    public function getWebhookByURLUrlMatchesTest(int $repoID, string $url): int
+    {
+        $result = $this->invokeForTest('getWebhookByURL', array($repoID, $url));
+        if(!is_object($result) || !isset($result->url)) return 0;
+
+        return $result->url === $url ? 1 : 0;
+    }
+
+    /**
      * Check if apiCreateBranch returns an object.
      *
      * @param  int    $repoID
