@@ -5114,6 +5114,7 @@ class executionModel extends model
             $execution->hasChild    = !empty($execution->isParent);
             $execution->isParent    = !empty($execution->isParent) or !empty($execution->tasks);
             $execution->actions     = array();
+            $execution->progress    = (float)$execution->progress;
 
             if(isset($this->config->project->execution->dtable->actionsRule[$execution->projectModel]))
             {
