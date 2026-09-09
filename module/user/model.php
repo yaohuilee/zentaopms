@@ -139,6 +139,7 @@ class userModel extends model
         }
         $user->passwordLength   = strlen($passwordPlain);
         $user->passwordStrength = $this->computePasswordStrength($passwordPlain);
+        unset($user->passwordPlain);
 
         /* 检查密码强度是否符合安全设置。*/
         /* Check if the password strength meets the security settings. */
