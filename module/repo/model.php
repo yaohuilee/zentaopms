@@ -269,6 +269,7 @@ class repoModel extends model
         if($repoID)
         {
             $repo->id = $repoID;
+            if(isset($response->gitUID)) $repo->gitUID = $response->gitUID;
             $res = $this->loadModel('gitfox')->addPushWebhook($repo);
             if(!$res)
             {
