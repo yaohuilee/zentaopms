@@ -37,9 +37,7 @@ if($browseType == 'bysearch') $browseType = $this->session->myBugType;
 if(!$canBatchAction) $config->my->bug->dtable->fieldList['id']['type'] = 'id';
 
 $projectBrowseLink = createLink('project', 'browse');
-$productLink       = explode('-', $config->productLink);
-$productParam      = $config->productLink == 'product-all' ? '' : "productID={product}";
-$productBrowseLink = createLink('product', $productLink[1], $productParam);
+$productBrowseLink = createLink('product', 'view', "productID={product}");
 $config->my->bug->dtable->fieldList['product']['link'] = 'RAWJS<function(info){ if(info.row.data.shadow) return \'' . $projectBrowseLink . '\'; else return \'' . $productBrowseLink . '\'; }>RAWJS';
 
 $storyIdList = $taskIdList = $productIdList = array();
