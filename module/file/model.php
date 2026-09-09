@@ -197,7 +197,7 @@ class fileModel extends model
     public function saveUpload(string $objectType = '', int $objectID = 0, int|string $extra = '', string $filesName = 'files', string $labelsName = 'labels'): array|false
     {
         $fileTitles = array();
-        $now        = helper::today();
+        $now        = helper::now();
         $files      = $this->getUpload($filesName, $labelsName);
 
         foreach($files as $file)
@@ -477,10 +477,13 @@ class fileModel extends model
      *
      * @param  string $module
      * @access public
-     * @return int|false
+     * @return array
      */
-    public function saveExportTemplate(string $module): int|false
+    public function saveExportTemplate(string $module): array
     {
+        $module = strtolower(trim($module));
+        if(!preg_match('/^[a-z0-9_]+$/', $module)) return array('result' => 'fail', 'message' => $this->lang->error->accessDenied);
+
         $template = fixer::input('post')
             ->add('account', $this->app->user->account)
             ->add('type', "export$module")
@@ -489,14 +492,18 @@ class fileModel extends model
 
         if($template->title == $this->lang->file->defaultTPL)
         {
-            dao::$errors[] = sprintf($this->lang->error->unique, $this->lang->file->tplTitle, $this->lang->file->defaultTPL);
-            return false;
+            return array('result' => 'fail', 'message' => sprintf($this->lang->error->unique, $this->lang->file->tplTitle, $this->lang->file->defaultTPL));
         }
 
         $this->lang->error->unique = $this->lang->error->repeat;
-        $condition = "`type`='export$module' and account='{$this->app->user->account}'";
+        $condition = "`type` = " . $this->dbh->quote("export$module") . " and `account` = " . $this->dbh->quote($this->app->user->account);
         $this->dao->insert(TABLE_USERTPL)->data($template)->batchCheck('title, content', 'notempty')->check('title', 'unique', $condition)->exec();
-        return $this->dao->lastInsertId();
+        if(dao::isError())
+        {
+            return array('result' => 'fail', 'message' => trim(dao::getError(true)));
+        }
+
+        return array('result' => 'success', 'templateID' => $this->dao->lastInsertId());
     }
 
     /**
