@@ -6,6 +6,8 @@ include dirname(__FILE__, 2) . '/lib/model.class.php';
 
 error_reporting(E_ERROR);
 
+zenData('entry')->loadYaml('entry')->gen(1);
+
 $zd_user = zenData('user');
 $zd_user->id->range('1-1');
 $zd_user->account->range('1-1');
