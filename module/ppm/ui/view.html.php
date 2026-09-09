@@ -175,7 +175,7 @@ div
         ),
         center
         (
-            setClass('pt-6 sticky bottom-0 mr-toolbar'),
+            setClass('pt-6 sticky bottom-0 mr-toolbar z-20'),
             floatToolbar
             (
                 set::prefix(array(array('icon' => 'back', 'text' => $lang->goback, 'hint' => $lang->goback, 'data-back' => 'ppm-browse', 'class' => 'open-url'))),
