@@ -806,7 +806,6 @@ class bugModel extends model
         $this->config->bug->search['queryID']   = $queryID;
         $this->config->bug->search['params']['project']['values']       = $projectParams;
         $this->config->bug->search['params']['product']['values']       = $productParams;
-        $this->config->bug->search['params']['story']['values']         = $projectID ? $this->loadModel('story')->getExecutionStoryPairs((int)$projectID, $productID, $branch, 0, 'full', 'all', 'story', false) : $this->loadModel('story')->getProductStoryPairs($productID, $branch, array(), 'all', 'id_desc', 0, '', 'story', false);
         $this->config->bug->search['params']['plan']['values']          = $this->loadModel('productplan')->getPairs($productID, $branch, '', true);
         $this->config->bug->search['params']['module']['values']        = $modules;
         $this->config->bug->search['params']['execution']['values']     = $this->loadModel('product')->getExecutionPairsByProduct($productID, $branch, (int)$projectID);
@@ -842,7 +841,6 @@ class bugModel extends model
     {
         unset($this->config->bug->search['fields']['product']);
         $this->config->bug->search['params']['project']['values']       = $this->loadModel('product')->getProjectPairsByProduct($productID, 'all');
-        $this->config->bug->search['params']['story']['values']         = $this->loadModel('story')->getProductStoryPairs($productID, 'all', array(), 'all', 'id_desc', 0, '', 'story', false);
         $this->config->bug->search['params']['plan']['values']          = $this->loadModel('productplan')->getPairs($productID);
         $this->config->bug->search['params']['module']['values']        = $this->loadModel('tree')->getOptionMenu($productID, 'bug');
         $this->config->bug->search['params']['execution']['values']     = $this->loadModel('product')->getExecutionPairsByProduct($productID);
