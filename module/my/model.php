@@ -583,7 +583,6 @@ class myModel extends model
         $this->config->bug->search['params']['project']['values']       = $this->loadModel('project')->getPairsByProgram() + array('all' => $this->lang->bug->allProject);
         $this->config->bug->search['params']['execution']['values']     = $this->loadModel('execution')->getPairs(0, 'all', 'multiple');
         $this->config->bug->search['params']['product']['values']       = $products;
-        $this->config->bug->search['params']['story']['values']         = $this->loadModel('story')->getProductStoryPairs(array_keys($products), 'all', array(), 'all', 'id_desc', 0, '', 'story', false);
         $this->config->bug->search['params']['plan']['values']          = $this->loadModel('productplan')->getPairs();
         $this->config->bug->search['params']['module']['values']        = $this->loadModel('tree')->getAllModulePairs();
         $this->config->bug->search['params']['severity']['values']      = array(0 => '') + $this->lang->bug->severityList;
