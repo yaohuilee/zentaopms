@@ -150,7 +150,7 @@ zentaoxx:
 	sed -i "s/text NOT NULL/text NULL/" zentaoxx/db_bak/*.sql
 	sed -i "s/ENGINE=MyISAM/ENGINE=InnoDB/" zentaoxx/db_bak/*.sql
 	sed -i -re "s/(CHARSET)=utf8(\w+)?;/\1=utf8mb4;/g" zentaoxx/db_bak/*.sql
-	sed -i '/`xxb_user` ADD `clientStatus`/d; /`xxb_user` ADD `clientLang`/d; /`xxb_file` CHANGE `pathname`/d' zentaoxx/db_bak/xuanxuan.sql
+	sed -i "/`xxb_user` ADD `clientStatus`/d; /`xxb_user` ADD `clientLang`/d; /`xxb_file` CHANGE `pathname`/d" zentaoxx/db_bak/xuanxuan.sql
 	cp zentaoxx/db_bak/upgradexuanxuan*.sql zentaoxx/db_bak/xuanxuan.sql zentaoxx/db/
 	rm -rf zentaoxx/db_bak/
 	sed -i "s/\$$accountAdmin = \$$this->dao->select('account, admin')->from(TABLE_USER)->where('id')->eq(\$$userID)->fetch();/\$$accountAdmin = \$$this->dao->select('account')->from(TABLE_USER)->where('id')->eq(\$$userID)->fetch();\n\$$sysAdmins = \$$this->dao->select('admins')->from(TABLE_COMPANY)->where('id')->eq(\$$this->app->company->id)->fetch('admins');\n\$$sysAdminArray = explode(',', \$$sysAdmins);\n\$$accountAdmin->admin = in_array(\$$accountAdmin->account, \$$sysAdminArray) ? 'super' : '';\n/" zentaoxx/extension/xuan/im/model/chat.php
