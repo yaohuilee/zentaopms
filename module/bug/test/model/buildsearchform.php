@@ -51,6 +51,10 @@ cid=15347
  - 属性actionURL @/bug-browse-3.html
  - 属性queryID @5
  - 属性hasProductParams @1
+- 执行bugTest模块的buildSearchFormTest方法，参数是1, array 
+ - 属性storyOperator @=
+ - 属性storyControl @select
+ - 属性hasStoryParams @1
 
 */
 
@@ -67,3 +71,4 @@ r($bugTest->buildSearchFormTest(0, array(), 2, '/bug-browse-all.html', '0')) && 
 r($bugTest->buildSearchFormTest(2, array('2' => 'Product2'), 3, '/bug-browse-2.html', 'all')) && p('actionURL,queryID,hasModuleParams') && e('/bug-browse-2.html,3,1');
 r($bugTest->buildSearchFormTest(1, array('1' => 'Product1'), 0, '/bug-search.html', '1')) && p('actionURL,queryID,hasProjectParams') && e('/bug-search.html,0,1');
 r($bugTest->buildSearchFormTest(3, array('3' => 'Product3'), 5, '/bug-browse-3.html', '0')) && p('actionURL,queryID,hasProductParams') && e('/bug-browse-3.html,5,1');
+r($bugTest->buildSearchFormTest(1, array('1' => 'Product1'), 1, '/bug-browse-1.html', '0')) && p('storyOperator,storyControl,hasStoryParams') && e('=,select,1');

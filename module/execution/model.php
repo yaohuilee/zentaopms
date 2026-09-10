@@ -4265,6 +4265,7 @@ class executionModel extends model
         $this->config->bug->search['queryID']   = $queryID;
 
         $this->config->bug->search['params']['project']['values']       = $projects + array('all' => $this->lang->project->allProjects);
+        $this->config->bug->search['params']['story']['values']         = $this->loadModel('story')->getProductStoryPairs(array_keys($products), 'all', array(), 'all', 'id_desc', 0, '', 'story', false);
         $this->config->bug->search['params']['plan']['values']          = $this->loadModel('productplan')->getForProducts(array_keys($products));
         $this->config->bug->search['params']['module']['values']        = $modules;
         $this->config->bug->search['params']['openedBuild']['values']   = $builds;
