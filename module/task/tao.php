@@ -524,7 +524,9 @@ class taskTao extends taskModel
         if(is_string($type)) $type = strtolower($type);
         $orderBy = str_replace('pri_', 'priOrder_', $orderBy);
         $orderBy = str_replace('status', 'statusOrder', $orderBy);
-        $fields  = "DISTINCT t1.*, t2.id AS storyID, t2.title AS storyTitle, t2.product, t2.branch, t2.version AS latestStoryVersion, t2.status AS storyStatus, IF(t1.`pri` = 0, {$this->config->maxPriValue}, t1.`pri`) as priOrder, INSTR('wait,doing,done,pause,cancel,closed,', t1.status) as statusOrder";
+        $orderBy = str_replace('executionName_', 't6.name_', $orderBy);
+        $orderBy = str_replace('projectName_', 't7.name_', $orderBy);
+        $fields  = "DISTINCT t1.*, t2.id AS storyID, t2.title AS storyTitle, t2.product, t2.branch, t2.version AS latestStoryVersion, t2.status AS storyStatus, t6.name AS executionName, t7.name AS projectName, IF(t1.`pri` = 0, {$this->config->maxPriValue}, t1.`pri`) as priOrder, INSTR('wait,doing,done,pause,cancel,closed,', t1.status) as statusOrder";
         ($this->config->edition == 'max' or $this->config->edition == 'ipd') && $fields .= ', t5.name as designName, t5.version as latestDesignVersion';
 
         $actionIDList = array();
@@ -538,6 +540,8 @@ class taskTao extends taskModel
             ->leftJoin(TABLE_TASKTEAM)->alias('t3')->on('t3.task = t1.id')
             ->beginIF($productID)->leftJoin(TABLE_MODULE)->alias('t4')->on('t1.module = t4.id')->fi()
             ->beginIF($this->config->edition == 'max' or $this->config->edition == 'ipd')->leftJoin(TABLE_DESIGN)->alias('t5')->on('t1.design= t5.id')->fi()
+            ->leftJoin(TABLE_EXECUTION)->alias('t6')->on('t1.execution = t6.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t7')->on('t1.project = t7.id')
             ->where('t1.execution')->in($executionID)
             ->beginIF(is_numeric($executionID) && !empty($execution->isTpl))->andWhere('t1.`isTpl`')->eq('1')->fi()
             ->beginIF($type == 'myinvolved')
