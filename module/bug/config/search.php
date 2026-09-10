@@ -61,7 +61,7 @@ $config->bug->search['params']['resolvedBy']    = array('operator' => '=',      
 
 $config->bug->search['params']['status']        = array('operator' => '=',       'control' => 'select', 'values' => $lang->bug->statusList);
 $config->bug->search['params']['confirmed']     = array('operator' => '=',       'control' => 'select', 'values' => $lang->bug->confirmedList);
-$config->bug->search['params']['story']         = array('operator' => 'include', 'control' => 'input',  'values' => '');
+$config->bug->search['params']['story']         = array('operator' => '=',       'control' => 'select', 'values' => '');
 
 $config->bug->search['params']['project']       = array('operator' => '=', 'control' => 'select', 'values' => '');
 $config->bug->search['params']['product']       = array('operator' => '=',       'control' => 'select', 'values' => '');

@@ -392,7 +392,8 @@ class ppm extends control
         $this->view->bugPager         = $bugPager;
         $this->view->objectPager      = $objectPager;
         $this->view->type             = $type;
-        $this->view->diffText         = $this->loadModel('gitfox')->apiGetRepoDiffs($ppm->repoID, $fromRevision, $toRevision);
+        $this->view->fromRevision     = helper::safe64Encode($fromRevision);
+        $this->view->toRevision       = helper::safe64Encode($toRevision);
         $this->view->users            = $this->loadModel('user')->getPairs('noletter');
         $this->view->oldRevision      = $ppm->targetBranch;
         $this->view->newRevision      = $ppm->sourceBranch;

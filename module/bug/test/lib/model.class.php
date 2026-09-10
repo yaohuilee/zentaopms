@@ -1187,10 +1187,13 @@ class bugModelTest extends baseTest
         $this->instance->buildSearchForm($productID, $products, $queryID, $actionURL, $branch);
         if(dao::isError()) return $this->getDaoErrorMessage();
 
-        $search                     = $this->instance->config->bug->search;
-        $search['hasProductParams'] = !empty($search['params']['product']['values']) ? 1 : 0;
-        $search['hasModuleParams']  = isset($search['params']['module']['values']) ? 1 : 0;
-        $search['hasProjectParams'] = isset($search['params']['project']['values']) ? 1 : 0;
+        $search                      = $this->instance->config->bug->search;
+        $search['hasProductParams']  = !empty($search['params']['product']['values']) ? 1 : 0;
+        $search['hasModuleParams']   = isset($search['params']['module']['values']) ? 1 : 0;
+        $search['hasProjectParams']  = isset($search['params']['project']['values']) ? 1 : 0;
+        $search['storyOperator']     = zget($search['params']['story'], 'operator', '');
+        $search['storyControl']      = zget($search['params']['story'], 'control', '');
+        $search['hasStoryParams']    = isset($search['params']['story']['values']) && is_array($search['params']['story']['values']) ? 1 : 0;
 
         return $search;
     }

@@ -3090,4 +3090,23 @@ class repo extends control
 
         $this->send(array('result' => 'success', 'data' => $items));
     }
+
+    /**
+     * 获取代码库diff信息。
+     * Ajax get repo diffs.
+     *
+     * @param  int    $repoID
+     * @param  string $fromRevision
+     * @param  string $toRevision
+     * @access public
+     * @return void
+     */
+    public function ajaxGetDiffs(int $repoID, string $fromRevision, string $toRevision)
+    {
+        if(empty($fromRevision) || empty($toRevision)) return '';
+
+        $fromRevision = helper::safe64Decode($fromRevision);
+        $toRevision   = helper::safe64Decode($toRevision);
+        echo $this->loadModel('gitfox')->apiGetRepoDiffs($repoID, $fromRevision, $toRevision);
+    }
 }
