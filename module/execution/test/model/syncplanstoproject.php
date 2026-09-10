@@ -40,6 +40,8 @@ cid=1
 - 执行关联项目未关联的计划时，同步到项目 @,1,2,
 - 项目已有计划时合并而不是覆盖 @,1,2,
 - 执行取消计划时不从项目移除 @,1,2,
+- 执行未关联产品时不修改项目计划 @,1,
+- 计划关联的产品与项目关联的产品不一致时，不同步到项目 @,1,2,
 - 无迭代项目的执行计划合并到项目 @,1,2,
 
 */
@@ -54,6 +56,12 @@ r($execution->updateProductsAndGetProjectPlanTest(11, $mergePlan)) && p() && e('
 
 $unlinkPlan = array('products' => array(1), 'branch' => array(array(0)), 'plans' => array(1 => array()));
 r($execution->updateProductsAndGetProjectPlanTest(11, $unlinkPlan)) && p() && e(',1,2,'); // 执行取消计划时不从项目移除
+
+$noProductPlan = array('products' => array(), 'branch' => array(), 'plans' => array(1 => array(9)));
+r($execution->updateProductsAndGetProjectPlanTest(12, $noProductPlan)) && p() && e(',1,'); // 执行未关联产品时不修改项目计划
+
+$unlinkedProductPlan = array('products' => array(1), 'branch' => array(array(0)), 'plans' => array(2 => array(9)));
+r($execution->updateProductsAndGetProjectPlanTest(11, $unlinkedProductPlan)) && p() && e(',1,2,'); // 计划关联的产品与项目关联的产品不一致时，不同步到项目
 
 $noMultiple = array('products' => array(1), 'branch' => array(array(0)), 'plans' => array(1 => array(1, 2)));
 r($execution->updateProductsAndGetProjectPlanTest(12, $noMultiple)) && p() && e(',1,2,'); // 无迭代项目的执行计划合并到项目
