@@ -716,7 +716,8 @@ class codescanZen extends codescan
             {
                 $dirPath = explode('/', $file->path);
                 $ref     = !empty($file->ref) ? $file->ref : $file->path;
-                $file->ref = $ref;
+                $file->fileRef = $ref;
+                unset($file->ref);
                 $file->link = sprintf($urlParam, "{$extra},branch={$dirPath[0]},path=" . rawurlencode($ref));
             }
             $treeList[] = $file;
@@ -762,6 +763,8 @@ class codescanZen extends codescan
                 if($ruleID == $rule->ref) $this->view->ruleName = $rule->name;
                 $rule->url = sprintf($urlParam, "{$extra},ruleID=$rule->ref");
             }
+            /* 同上：ref 已并入 id，不再把字符串 ref 暴露给 preact 树。 */
+            unset($rule->ref);
             $treeList[] = $rule;
         }
         return $treeList;
