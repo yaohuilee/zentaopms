@@ -40,7 +40,7 @@ cid=1
 - 执行关联项目未关联的计划时，同步到项目 @,1,2,
 - 项目已有计划时合并而不是覆盖 @,1,2,
 - 执行取消计划时不从项目移除 @,1,2,
-- 无迭代项目不同步计划到项目 @,1,
+- 无迭代项目的执行计划合并到项目 @,1,2,
 
 */
 
@@ -56,4 +56,4 @@ $unlinkPlan = array('products' => array(1), 'branch' => array(array(0)), 'plans'
 r($execution->updateProductsAndGetProjectPlanTest(11, $unlinkPlan)) && p() && e(',1,2,'); // 执行取消计划时不从项目移除
 
 $noMultiple = array('products' => array(1), 'branch' => array(array(0)), 'plans' => array(1 => array(1, 2)));
-r($execution->updateProductsAndGetProjectPlanTest(12, $noMultiple)) && p() && e(',1,'); // 无迭代项目不同步计划到项目
+r($execution->updateProductsAndGetProjectPlanTest(12, $noMultiple)) && p() && e(',1,2,'); // 无迭代项目的执行计划合并到项目
