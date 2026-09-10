@@ -44,6 +44,8 @@ class storyZen extends story
         $extra = str_replace(array(',', ' '), array('&', ''), $extra);
         parse_str($extra, $output);
 
+        $output['fromType'] = $output['fromType'] ?? '';
+
         /* Get objectID by tab. */
         if(empty($objectID) && $output['fromType'] != 'feedback')
         {
