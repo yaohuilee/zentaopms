@@ -561,3 +561,4 @@ $config->ajaxDependencies['ppm.ajaxgetcreatechecklist']                       = 
 $config->ajaxDependencies['pipeline.ajaxexeclog']                             = 'pipeline.execview';
 $config->ajaxDependencies['pipeline.ajaxgetrunners']                          = 'pipeline.arrange';
 $config->ajaxDependencies['pipeline.ajaxgetrepos']                            = 'pipeline.arrange';
+$config->ajaxDependencies['repo.ajaxgetdiffs']                                = ['ppm.view', 'repo.diff'];
