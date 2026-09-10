@@ -11,10 +11,6 @@ $routes['/workflows/:module/tables'] = array(
     'get'  => array('redirect' => '/workflows/browseDB?parent=:module', 'response' => 'tables(array)'),
     'post' => array('redirect' => '/workflows/create?type=table&parent=:module', 'data' => 'type=table&parent=:module')
 );
-$routes['/workflows/tables/:tableID'] = array(
-    'put'    => array('redirect' => '/workflows/edit?flowID=:tableID', 'response' => '*'),
-    'delete' => array('redirect' => '/workflows/delete?flowID=:tableID', 'response' => '*')
-);
 $routes['/workflows/:flowID'] = array(
     'get' => array('response' => 'flow'),
     'put' => array('response' => '*'),
@@ -42,6 +38,12 @@ $routes['/workflows/:module/actions'] = array(
 $routes['/workflows/:module/labels'] = array(
     'get'  => array('redirect' => '/workflowlabels/browse?module=:module', 'response' => 'labels(array)'),
     'post' => array('redirect' => '/workflowlabels/create?module=:module')
+);
+
+$routes['/workflowtables/:tableID'] = array(
+    'get'    => array('redirect' => '/workflows/:tableID', 'response' => 'flow'),
+    'put'    => array('redirect' => '/workflows/:tableID', 'response' => '*'),
+    'delete' => array('redirect' => '/workflows/:tableID', 'response' => '*')
 );
 
 $routes['/workflowfields/:fieldID'] = array(
