@@ -2618,7 +2618,7 @@ class executionModel extends model
             ->fetchPairs('id');
 
         $branches = str_replace(',', "','", $branches);
-        return $this->dao->select('t1.*, t2.id AS storyID, t2.title AS storyTitle, t2.version AS latestStoryVersion, t2.status AS storyStatus, t3.realname AS assignedToRealName, t4.name AS executionName, t5.name AS projectName')->from(TABLE_TASK)->alias('t1')
+        return $this->dao->select('t1.*, t2.id AS `storyID`, t2.title AS `storyTitle`, t2.version AS `latestStoryVersion`, t2.status AS `storyStatus`, t3.realname AS `assignedToRealName`, t4.name AS `executionName`, t5.name AS `projectName`')->from(TABLE_TASK)->alias('t1')
             ->leftJoin(TABLE_STORY)->alias('t2')->on('t1.story = t2.id')
             ->leftJoin(TABLE_USER)->alias('t3')->on('t1.`assignedTo` = t3.account')
             ->leftJoin(TABLE_EXECUTION)->alias('t4')->on('t1.execution = t4.id')
@@ -4012,17 +4012,17 @@ class executionModel extends model
         $condition = str_replace("AND deleted = '0'", '', $condition);
 
         $tasks = $this->dao->select('DISTINCT t1.*,
-            t2.id AS storyID,
-            t2.title AS storyTitle,
+            t2.id AS `storyID`,
+            t2.title AS `storyTitle`,
             t2.product,
             t2.branch,
-            t2.version AS latestStoryVersion,
-            t2.status AS storyStatus,
-            t3.realname AS assignedToRealName,
-            t4.name AS executionName,
-            t5.name AS projectName,
-            IF(t1.`pri` = 0, 999, t1.`pri`) as priOrder,
-            IF(t1.`estStarted` IS NULL, t4.`begin`, t1.`estStarted`) as beginDate')
+            t2.version AS `latestStoryVersion`,
+            t2.status AS `storyStatus`,
+            t3.realname AS `assignedToRealName`,
+            t4.name AS `executionName`,
+            t5.name AS `projectName`,
+            IF(t1.`pri` = 0, 999, t1.`pri`) as `priOrder`,
+            IF(t1.`estStarted` IS NULL, t4.`begin`, t1.`estStarted`) as `beginDate`')
             ->from(TABLE_TASK)->alias('t1')
             ->leftJoin(TABLE_STORY)->alias('t2')->on('t1.story = t2.id')
             ->leftJoin(TABLE_USER)->alias('t3')->on('t1.`assignedTo` = t3.account')
