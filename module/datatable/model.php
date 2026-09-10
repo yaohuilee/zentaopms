@@ -158,6 +158,16 @@ class datatableModel extends model
         }
 
         uasort($fieldSetting, array('datatableModel', 'sortCols'));
+
+        /* 产品-项目列表增加项目集字段，显示在ID字段之后。 */
+        if($datatableId == 'productProject' && in_array($this->config->systemMode, array('ALM', 'PLM')))
+        {
+            $this->app->loadLang('project');
+            $programField = array('name' => 'programName', 'title' => $this->lang->project->program, 'type' => 'shortTitle', 'required' => false, 'show' => true, 'group' => 0);
+            $programField = array_merge($programField, zget($fieldSetting, 'programName', array()));
+            $fieldSetting = array('id' => $fieldSetting['id'], 'programName' => $programField) + $fieldSetting;
+        }
+
         return $fieldSetting;
     }
 
