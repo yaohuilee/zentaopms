@@ -2492,7 +2492,7 @@ REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `typ
 ('50',  '23', '*', '*', '*', 'moduleName=execution&methodName=computecfd',               '更新累积流图',         'zentao', 1, 'normal', NULL),
 ('2',   '2',  '*', '*', '*', 'moduleName=auditplan&methodName=ajaxCreateCycleAuditplan', '生成周期性活动检查',   'zentao', 1, 'normal', NULL),
 ('*/5', '*',  '*', '*', '*', 'moduleName=zai&methodName=syncVectorization',              '自动同步向量化数据',   'zentao', 1, 'normal', NULL),
-('30',  '8',  '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents',                  '执行定时智能体',       'zentao', 1, 'normal', NULL);
+('*/5', '*',  '*', '*', '*', 'moduleName=ai&methodName=runTimerAgents',                  '执行定时智能体',       'zentao', 1, 'normal', NULL);
 
 REPLACE INTO `zt_group` (`vision`, `name`, `role`, `desc`) VALUES
 ('rnd',  'ADMIN',          'admin',          'for administrator'),

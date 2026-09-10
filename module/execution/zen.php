@@ -834,6 +834,7 @@ class executionZen extends execution
         }
         $this->config->bug->search['params']['module']['values']      = $bugModules;
         $this->config->bug->search['params']['project']['values']     = $projects;
+        $this->config->bug->search['params']['story']['values']       = $this->loadModel('story')->getProductStoryPairs(array_keys($products), 'all', array(), 'all', 'id_desc', 0, '', 'story', false);
         $this->config->bug->search['params']['openedBuild']['values'] = $this->loadModel('build')->getBuildPairs(array_keys($products), 'all', 'withbranch|releasetag');
 
         unset($this->config->bug->search['fields']['resolvedBy']);
