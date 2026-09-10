@@ -13379,6 +13379,7 @@ CREATE TABLE IF NOT EXISTS `zt_workflowrule` (
   `type` varchar(10) NOT NULL DEFAULT 'regex',
   `name` varchar(30) NOT NULL DEFAULT '',
   `rule` text DEFAULT NULL,
+  `builtin` tinyint unsigned NOT NULL DEFAULT 0,
   `createdBy` varchar(30) NOT NULL DEFAULT '',
   `createdDate` datetime DEFAULT NULL,
   `editedBy` varchar(30) NOT NULL DEFAULT '',
@@ -13452,15 +13453,15 @@ CREATE TABLE IF NOT EXISTS `zt_workflowreport` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
-REPLACE INTO `zt_workflowrule`(`type`, `name`, `rule`, `createdBy`, `createdDate`) VALUES
-('system','必填','notempty','admin','2020-10-14 14:06:14'),
-('system','唯一','unique','admin','2020-10-14 14:06:14'),
-('system','日期','date','admin','2020-10-14 14:06:14'),
-('system','日期时间','datetime','admin','2020-10-14 14:06:14'),
-('system','email','email','admin','2020-10-14 14:06:14'),
-('system','数字','float','admin','2020-10-14 14:06:14'),
-('system','电话','phone','admin','2020-10-14 14:06:14'),
-('system','IP','ip','admin','2020-10-14 14:06:14');
+REPLACE INTO `zt_workflowrule`(`type`, `name`, `rule`, `builtin`, `createdBy`, `createdDate`) VALUES
+('system','必填','notempty',1,'admin','2020-10-14 14:06:14'),
+('system','唯一','unique',1,'admin','2020-10-14 14:06:14'),
+('system','日期','date',1,'admin','2020-10-14 14:06:14'),
+('system','日期时间','datetime',1,'admin','2020-10-14 14:06:14'),
+('system','email','email',1,'admin','2020-10-14 14:06:14'),
+('system','数字','float',1,'admin','2020-10-14 14:06:14'),
+('system','电话','phone',1,'admin','2020-10-14 14:06:14'),
+('system','IP','ip',1,'admin','2020-10-14 14:06:14');
 
 INSERT INTO `zt_workflowgroup` (`id`, `objectID`, `type`, `projectModel`, `projectType`, `name`, `code`, `desc`, `disabledModules`, `status`, `vision`, `main`, `exclusive`, `createdBy`, `createdDate`, `editedBy`, `editedDate`, `deliverable`, `deleted`) VALUES
 (1,	  0,	'product',	'',	'project',	'默认流程',	'productproject',	NULL,	'',	'normal',	'rnd',	'1',	'0',	'',	NULL,	'',	NULL,	NULL,	'0'),

@@ -229,3 +229,6 @@ REPLACE INTO `zt_cron` (`m`, `h`, `dom`, `mon`, `dow`, `command`, `remark`, `typ
 
 DELETE FROM `zt_workflowfield`  WHERE `module` = 'ticket' AND `field` = 'consumed';
 DELETE FROM `zt_workflowlayout` WHERE `module` = 'ticket' AND `field` = 'consumed';
+
+ALTER TABLE `zt_workflowrule` ADD COLUMN `builtin` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '是否为内置规则(0:不是, 1:是)' AFTER `rule`;
+UPDATE `zt_workflowrule` SET `builtin` = 1 WHERE `type` = 'system';
