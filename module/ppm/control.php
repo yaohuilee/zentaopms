@@ -360,6 +360,7 @@ class ppm extends control
     public function view(int $id, string $type = 'basic', string $param = 'all', int $recTotal = 0, int $recPerPage = 20, int $pageID = 0)
     {
         $ppm  = $this->ppm->fetchByID($id);
+        if(!empty($ppm->repoID)) $this->loadModel('repo')->saveState((int)$ppm->repoID);
         $repo = $this->loadModel('repo')->getByID($ppm->repoID);
         $flow = $this->loadModel('reporeviewflow')->getByID(zget($ppm, 'reviewFlowID', 0));
         $scm  = $this->app->loadClass('scm');

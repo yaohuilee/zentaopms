@@ -41,8 +41,11 @@ class storyZen extends story
             }
         }
 
+        $extra = str_replace(array(',', ' '), array('&', ''), $extra);
+        parse_str($extra, $output);
+
         /* Get objectID by tab. */
-        if(empty($objectID))
+        if(empty($objectID) && $output['fromType'] != 'feedback')
         {
             if($this->app->tab == 'project')   $objectID = (int)$this->session->project;
             if($this->app->tab == 'execution') $objectID = (int)$this->session->execution;
@@ -51,9 +54,6 @@ class storyZen extends story
         /* Set menu by tab. */
         if($this->app->tab == 'product')
         {
-            $extra = str_replace(array(',', ' '), array('&', ''), $extra);
-            parse_str($extra, $output);
-
             if(!empty($output['from']) && $output['from'] == 'global')
             {
                 $product = $this->product->getById($productID);
