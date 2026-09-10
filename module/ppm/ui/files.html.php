@@ -9,10 +9,11 @@ declare(strict_types=1);
  * @link        https://www.zentao.net
  */
 namespace zin;
-$domBox = empty($diffText) ? p(setClass('detail-content'), $lang->ppm->noChanges) : div(
+$domBox = div
+(
     zui::diffHub
     (
-        set::diffText($diffText),
+        set::diffUrl($this->createLink('repo', 'ajaxGetDiffs', "repoID={$repoID}&fromVersion={$fromRevision}&toVersion={$toRevision}")),
         set::enableAnnotations(true),
         set::product(0),
         set::module(''),
