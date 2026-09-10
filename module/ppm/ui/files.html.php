@@ -18,6 +18,7 @@ $domBox = div
         set::product(0),
         set::module(''),
         set::repoID($repoID),
-        set::ppmID($ppm->id)
+        set::ppmID($ppm->id),
+        set::labels($lang->ppm->diffHub->labels)
     )
 );

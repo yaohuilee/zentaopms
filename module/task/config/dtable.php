@@ -225,6 +225,22 @@ if($config->edition == 'max')
     $config->task->dtable->fieldList['design']['type']  = 'text';
 }
 
+$config->task->dtable->fieldList['projectName']['name']     = 'projectName';
+$config->task->dtable->fieldList['projectName']['title']    = $lang->task->project;
+$config->task->dtable->fieldList['projectName']['type']     = 'text';
+$config->task->dtable->fieldList['projectName']['link']     = array('module' => 'project', 'method' => 'view', 'params' => 'projectID={project}');
+$config->task->dtable->fieldList['projectName']['data-app'] = 'project';
+$config->task->dtable->fieldList['projectName']['sortType'] = true;
+$config->task->dtable->fieldList['projectName']['group']    = 10;
+
+$config->task->dtable->fieldList['executionName']['name']     = 'executionName';
+$config->task->dtable->fieldList['executionName']['title']    = $lang->task->execution;
+$config->task->dtable->fieldList['executionName']['type']     = 'text';
+$config->task->dtable->fieldList['executionName']['link']     = array('module' => 'execution', 'method' => 'task', 'params' => 'executionID={execution}');
+$config->task->dtable->fieldList['executionName']['data-app'] = 'execution';
+$config->task->dtable->fieldList['executionName']['sortType'] = true;
+$config->task->dtable->fieldList['executionName']['group']    = 10;
+
 $config->task->dtable->fieldList['actions']['type']     = 'actions';
 $config->task->dtable->fieldList['actions']['width']    = '160px';
 $config->task->dtable->fieldList['actions']['list']     = $config->task->actionList;
