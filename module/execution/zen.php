@@ -2108,7 +2108,7 @@ class executionZen extends execution
                 $storyType = $execution->type == 'stage' ? '' : $this->lang->SRCommon;
                 if($execution->type == 'stage')
                 {
-                    $project   = $this->loadModel('project')->fetchByID($projectID);
+                    $project = $this->loadModel('project')->fetchByID($projectID);
                     if($project)
                     {
                         $this->app->loadLang('story');
@@ -2171,7 +2171,7 @@ class executionZen extends execution
             $storyType = $execution->type == 'stage' ? '' : $this->lang->SRCommon;
             if($execution->type == 'stage')
             {
-                $project   = $this->loadModel('project')->fetchByID($projectID);
+                $project = $this->loadModel('project')->fetchByID($projectID);
                 if($project)
                 {
                     $this->app->loadLang('story');
