@@ -158,7 +158,7 @@ ALTER TABLE `zt_ai_agent` ADD `cycleConfig` text NULL DEFAULT NULL COMMENT '周�
 ALTER TABLE `zt_ai_agent` ADD `notifyRule` text NULL DEFAULT NULL COMMENT '通知规则JSON：roles/users/methods' AFTER `cycleConfig`;
 ALTER TABLE `zt_ai_agent` ADD `lastRunDate` datetime NULL DEFAULT NULL COMMENT '最近一次定时执行时间' AFTER `editedDate`;
 
-UPDATE `zt_ai_agent` SET `targetForm` = 'task.batchcreate', `actionPurpose` = 'task.batchcreate' WHERE `targetForm` = 'execution.batchcreatetask' OR `actionPurpose` = 'execution.batchcreatetask';
+UPDATE `zt_ai_agent` SET `module` = 'task', `targetForm` = 'task.batchcreate', `actionPurpose` = 'task.batchcreate' WHERE `targetForm` = 'execution.batchcreatetask' OR `actionPurpose` = 'execution.batchcreatetask';
 
 CREATE TABLE IF NOT EXISTS `zt_ai_timerlog` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
