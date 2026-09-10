@@ -2618,9 +2618,11 @@ class executionModel extends model
             ->fetchPairs('id');
 
         $branches = str_replace(',', "','", $branches);
-        return $this->dao->select('t1.*, t2.id AS storyID, t2.title AS storyTitle, t2.version AS latestStoryVersion, t2.status AS storyStatus, t3.realname AS assignedToRealName')->from(TABLE_TASK)->alias('t1')
+        return $this->dao->select('t1.*, t2.id AS `storyID`, t2.title AS `storyTitle`, t2.version AS `latestStoryVersion`, t2.status AS `storyStatus`, t3.realname AS `assignedToRealName`, t4.name AS `executionName`, t5.name AS `projectName`')->from(TABLE_TASK)->alias('t1')
             ->leftJoin(TABLE_STORY)->alias('t2')->on('t1.story = t2.id')
             ->leftJoin(TABLE_USER)->alias('t3')->on('t1.`assignedTo` = t3.account')
+            ->leftJoin(TABLE_EXECUTION)->alias('t4')->on('t1.execution = t4.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t5')->on('t1.project = t5.id')
             ->where('t1.status')->in('wait,doing,pause,cancel')
             ->andWhere('t1.deleted')->eq(0)
             ->andWhere('t1.execution')->in(array_keys($executions))
@@ -4000,6 +4002,8 @@ class executionModel extends model
         $orderBy = str_replace('t1.`storyTitle`', 't2.title', implode(',', $orderBy));
         $orderBy = str_replace(array('t1.pri_', 't1.`pri'), array('priOrder_', '`priOrder_'), $orderBy);
         $orderBy = preg_replace('/t1\.`?beginDate`?/', 'beginDate', $orderBy);
+        $orderBy = str_replace(array('t1.`executionName`', 't1.executionName'), 't4.name', $orderBy);
+        $orderBy = str_replace(array('t1.`projectName`', 't1.projectName'), 't5.name', $orderBy);
 
         if(strpos($condition, 't1.') === false)
         {
@@ -4008,19 +4012,22 @@ class executionModel extends model
         $condition = str_replace("AND deleted = '0'", '', $condition);
 
         $tasks = $this->dao->select('DISTINCT t1.*,
-            t2.id AS storyID,
-            t2.title AS storyTitle,
+            t2.id AS `storyID`,
+            t2.title AS `storyTitle`,
             t2.product,
             t2.branch,
-            t2.version AS latestStoryVersion,
-            t2.status AS storyStatus,
-            t3.realname AS assignedToRealName,
-            IF(t1.`pri` = 0, 999, t1.`pri`) as priOrder,
-            IF(t1.`estStarted` IS NULL, t4.`begin`, t1.`estStarted`) as beginDate')
+            t2.version AS `latestStoryVersion`,
+            t2.status AS `storyStatus`,
+            t3.realname AS `assignedToRealName`,
+            t4.name AS `executionName`,
+            t5.name AS `projectName`,
+            IF(t1.`pri` = 0, 999, t1.`pri`) as `priOrder`,
+            IF(t1.`estStarted` IS NULL, t4.`begin`, t1.`estStarted`) as `beginDate`')
             ->from(TABLE_TASK)->alias('t1')
             ->leftJoin(TABLE_STORY)->alias('t2')->on('t1.story = t2.id')
             ->leftJoin(TABLE_USER)->alias('t3')->on('t1.`assignedTo` = t3.account')
             ->leftJoin(TABLE_EXECUTION)->alias('t4')->on('t1.execution = t4.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t5')->on('t1.project = t5.id')
             ->where('t1.deleted')->eq(0)
             ->andWhere($condition)
             ->filterTpl(false)
