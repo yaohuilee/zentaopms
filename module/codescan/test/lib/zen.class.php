@@ -339,15 +339,17 @@ class codescanZenTest extends baseTest
      * @param  array  $fileTree
      * @param  string $urlParam
      * @param  array  $params
+     * @param  string $branch
+     * @param  bool   $topLevel
      * @access public
      * @return array
      */
-    public function processIssueFileTreeTest(array $fileTree = array(), string $urlParam = '', array $params = array())
+    public function processIssueFileTreeTest(array $fileTree = array(), string $urlParam = '', array $params = array(), string $branch = '', bool $topLevel = false)
     {
         $instance = $this->getZenInstance();
         $method = new ReflectionMethod($instance, 'processIssueFileTree');
         $method->setAccessible(true);
-        return $method->invoke($instance, $fileTree, $urlParam, $params);
+        return $method->invoke($instance, $fileTree, $urlParam, $params, $branch, $topLevel);
     }
 
     /**
