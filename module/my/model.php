@@ -332,8 +332,8 @@ class myModel extends model
 
         // 转换字段名称
         $tableFields = array(
-            'projectName' => 't3.name',
-            'executionName' => 't2.name',
+            'projectName' => 't1.project',
+            'executionName' => 't1.execution',
             'executionType' => 't2.type',
             'executionMultiple' => 't2.multiple'
         );

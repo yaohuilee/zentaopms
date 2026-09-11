@@ -113,7 +113,7 @@ class stakeholderModel extends model
         $this->dao->insert(TABLE_USER)->data($user)->exec();
 
         if(dao::isError()) return false;
-        return $account;
+        return $user->account;
     }
 
     /**
