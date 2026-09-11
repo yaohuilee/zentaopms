@@ -164,8 +164,8 @@ class datatableModel extends model
         {
             $this->app->loadLang('project');
             $programField = array('name' => 'programName', 'title' => $this->lang->project->program, 'type' => 'shortTitle', 'required' => false, 'show' => true, 'group' => 0);
-            $programField = array_merge($programField, zget($fieldSetting, 'programName', array()));
-            $fieldSetting = array('id' => $fieldSetting['id'], 'programName' => $programField) + $fieldSetting;
+            if(isset($setting['programName'])) $programField = array_merge($programField, $setting['programName']);
+            if($showAll || !empty($programField['show'])) $fieldSetting = array('id' => $fieldSetting['id'], 'programName' => $programField) + $fieldSetting;
         }
 
         return $fieldSetting;
