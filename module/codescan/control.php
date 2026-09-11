@@ -1223,6 +1223,8 @@ class codescan extends control
     {
         $decodeExtras = str_replace(array(',', ' ', '*'), array('&', '', '-'), trim($extras, ','));
         parse_str($decodeExtras, $params);
+        if(!empty($params['branch64'])) $params['branch'] = helper::safe64Decode($params['branch64']);
+        if(!empty($params['path64']))   $params['path']   = helper::safe64Decode($params['path64']);
 
         if($repoID)
         {
