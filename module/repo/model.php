@@ -3239,7 +3239,6 @@ class repoModel extends model
         $this->loadModel('file')->updateObjectID($this->post->uid, $bugID, 'bug');
         helper::setCookie("repoPairs[$repoID]", $bug->product);
 
-        $bug = $this->bug->getByID($bugID);
         return array(
             'result'     => 'success',
             'id'         => $bugID,
