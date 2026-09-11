@@ -1372,6 +1372,7 @@ class storyZen extends story
         if(isset($_POST['reviewer'])) $_POST['reviewer'] = array_filter($_POST['reviewer']);
         if(!$this->post->needNotReview and empty($_POST['reviewer'])) dao::$errors['reviewer'] = $this->lang->story->errorEmptyReviewedBy;
         if(dao::isError()) return false;
+        if(isset($_POST['status']) && $_POST['status'] == 'active') $_POST['reviewer'] = []; // 如果需求是激活的，则清空评审人
 
         $now    = helper::now();
         $fields = $this->config->story->form->change;
