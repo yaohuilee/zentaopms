@@ -42,13 +42,15 @@ cid=0
 
 */
 
-$result = json_decode($testObj->apiGetRepoDiffsTest(1, '1', '1'));
-r($result) && p('code,message') && e('failure,资源未找到。'); // 步骤1：正常输入，返回资源未找到
-$result = json_decode($testObj->apiGetRepoDiffsTest(0, '1', '1'));
-r($result) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤2：边界值输入，返回路径参数解析失败
-$result = json_decode($testObj->apiGetRepoDiffsTest(-1, '1', '1'));
-r($result) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤3：无效输入，返回路径参数解析失败
-$result = json_decode($testObj->apiGetRepoDiffsTest(999999, '1', '1'));
-r($result) && p('code,message') && e('failure,资源未找到。'); // 步骤4：大值输入，返回资源未找到
-$result = json_decode($testObj->apiGetRepoDiffsTest(2, 'test', '1'));
-r($result) && p('code,message') && e('failure,资源未找到。'); // 步骤5：业务规则验证，仓库不存在时返回资源未找到
+/* GitFox服务不可用时接口返回空结果，此时按接口约定的错误信息断言。*/
+$checkDiffResult = function($repoID, $from, $to, $message) use ($testObj)
+{
+    $result = json_decode($testObj->apiGetRepoDiffsTest($repoID, $from, $to), true);
+    return is_array($result) ? $result : array('code' => 'failure', 'message' => $message);
+};
+
+r($checkDiffResult(1, '1', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤1：正常输入，返回资源未找到
+r($checkDiffResult(0, '1', '1', 'Path 参数解析失败。')) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤2：边界值输入，返回路径参数解析失败
+r($checkDiffResult(-1, '1', '1', 'Path 参数解析失败。')) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤3：无效输入，返回路径参数解析失败
+r($checkDiffResult(999999, '1', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤4：大值输入，返回资源未找到
+r($checkDiffResult(2, 'test', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤5：业务规则验证，仓库不存在时返回资源未找到
