@@ -1342,7 +1342,7 @@ class storyZen extends story
             ->setIF(!isset($_POST['spec']), 'spec', $oldStory->spec)
             ->setIF(!isset($_POST['verify']), 'verify', $oldStory->verify)
             ->setIF(!isset($_POST['estimate']), 'estimate', $oldStory->estimate)
-            ->setIF($this->post->reviewer, 'prevReviewers', implode(',', array_filter($_POST['reviewer'])))
+            ->setIF(is_array($_POST['reviewer']), 'prevReviewers', implode(',', array_filter($_POST['reviewer'])))
             ->get();
 
         if($this->post->linkStories)      $storyData->linkStories      = implode(',', array_unique($this->post->linkStories));
