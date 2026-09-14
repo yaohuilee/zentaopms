@@ -3,6 +3,7 @@
 
 include dirname(__FILE__, 5) . '/test/lib/init.php';
 include dirname(__FILE__, 2) . '/lib/model.class.php';
+include dirname(__FILE__, 2) . '/lib/repodata.class.php';
 
 error_reporting(E_ERROR);
 
@@ -28,17 +29,21 @@ $tester->loadModel('gitfox');
 
 
 $testObj = new gitfoxModelTest();
+$repoData = new gitfoxRepoData();
+$repo     = $repoData->createRepo();
+$repoID   = (int)$repo->id;
+$repoData->createBranch($repoID, 'feat');
 /**
 
 title=测试 gitfoxModel::apiGetRepoDiffs()
 timeout=0
 cid=0
 
-- 步骤1：正常输入，返回资源未找到 @failure,资源未找到。
-- 步骤2：边界值输入，返回路径参数解析失败 @failure,Path 参数解析失败。
-- 步骤3：无效输入，返回路径参数解析失败 @failure,Path 参数解析失败。
-- 步骤4：大值输入，返回资源未找到 @failure,资源未找到。
-- 步骤5：业务规则验证，仓库不存在时返回资源未找到 @failure,资源未找到。
+- 步骤1：真实代码库上对比相同分支，无差异返回空 @0
+- 步骤2：真实代码库上对比 feat 与 main，无差异返回空 @0
+- 步骤3：边界值输入，代码库 ID 为 0 返回路径参数解析失败 @failure,Path 参数解析失败。
+- 步骤4：无效输入，代码库 ID 为负数返回路径参数解析失败 @failure,Path 参数解析失败。
+- 步骤5：业务规则验证，代码库不存在时返回资源未找到 @failure,资源未找到。
 
 */
 
@@ -49,8 +54,10 @@ $checkDiffResult = function($repoID, $from, $to, $message) use ($testObj)
     return is_array($result) ? $result : array('code' => 'failure', 'message' => $message);
 };
 
-r($checkDiffResult(1, '1', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤1：正常输入，返回资源未找到
-r($checkDiffResult(0, '1', '1', 'Path 参数解析失败。')) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤2：边界值输入，返回路径参数解析失败
-r($checkDiffResult(-1, '1', '1', 'Path 参数解析失败。')) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤3：无效输入，返回路径参数解析失败
-r($checkDiffResult(999999, '1', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤4：大值输入，返回资源未找到
-r($checkDiffResult(2, 'test', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤5：业务规则验证，仓库不存在时返回资源未找到
+r($testObj->apiGetRepoDiffsLengthTest($repoID, 'feat', 'feat')) && p() && e('0'); // 步骤1：真实代码库上对比相同分支，无差异返回空
+r($testObj->apiGetRepoDiffsLengthTest($repoID, 'feat', 'main')) && p() && e('0'); // 步骤2：真实代码库上对比 feat 与 main，无差异返回空
+r($checkDiffResult(0, '1', '1', 'Path 参数解析失败。')) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤3：边界值输入，代码库 ID 为 0 返回路径参数解析失败
+r($checkDiffResult(-1, '1', '1', 'Path 参数解析失败。')) && p('code,message') && e('failure,Path 参数解析失败。'); // 步骤4：无效输入，代码库 ID 为负数返回路径参数解析失败
+r($checkDiffResult(999999, '1', '1', '资源未找到。')) && p('code,message') && e('failure,资源未找到。'); // 步骤5：业务规则验证，代码库不存在时返回资源未找到
+
+$repoData->cleanup();
