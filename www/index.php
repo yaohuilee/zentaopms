@@ -59,7 +59,7 @@ $handler = static function ()
         $common->checkPriv();
         $common->checkIframe();
 
-        $isClient = strpos($_SERVER['HTTP_USER_AGENT'], 'xuanxuan') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'uni-app') !== false;
+        $isClient = !empty($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'xuanxuan') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'uni-app') !== false);
         if($app->getViewType() != 'json' && session_id() != $app->sessionID && !$isClient) helper::restartSession($app->sessionID);
 
         /* Remove install.php and upgrade.php. */
