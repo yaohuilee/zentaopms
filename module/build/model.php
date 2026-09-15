@@ -521,7 +521,7 @@ class buildModel extends model
                 dao::$errors['branch'] = sprintf($this->lang->error->notempty, $this->lang->product->branch);
             }
         }
-        $hasSameName = $this->dao->select('*')->from(TABLE_BUILD)->where('deleted')->eq(0)->andWhere('name')->eq($build->name)->andWhere('product')->eq($build->product)->andWhere('branch')->eq($build->branch)->fetchAll();
+        $hasSameName = $this->dao->select('id')->from(TABLE_BUILD)->where('deleted')->eq(0)->andWhere('name')->eq($build->name)->andWhere('product')->eq($build->product)->andWhere('branch')->eq($build->branch)->fetch('id');
         if($hasSameName) dao::$errors['name'] = sprintf($this->lang->error->unique, $this->lang->build->name, $build->name);
         if(dao::isError()) return false;
 
