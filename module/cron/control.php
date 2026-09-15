@@ -480,7 +480,7 @@ class cron extends control
             }
         }
 
-        $this->dao->update(TABLE_QUEUE)->set('status')->eq('done')->set('pending')->eq(NULL)->where('id')->eq($task->id)->exec();
+        $this->dao->update(TABLE_QUEUE)->set('status')->eq('done')->set('pending')->eq(null)->where('id')->eq($task->id)->exec();
         $this->dao->update(TABLE_CRON)->set('lastTime')->eq(date(DT_DATETIME1))->where('id')->eq($task->cron)->exec();
 
         $log = date('G:i:s') . " execute\ncronId: {$task->cron}\nexecId: $execId\ntaskId: {$task->id}\ncommand: {$task->command}\nreturn : $return\noutput : $output\n\n";
