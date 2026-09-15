@@ -373,7 +373,10 @@ class cron extends control
                 $pending = $this->dao->select('id')->from(TABLE_QUEUE)->where('cron')->eq($id)->andWhere('status')->in(array('wait', 'doing'))->fetch();
                 if(!$pending) $this->cron->logCron(date('G:i:s') . " schedule cron #{$id} insert failed: " . $e->getMessage() . "\n");
             }
-            $this->app->throwError = $oldThrowError;
+            finally
+            {
+                $this->app->throwError = $oldThrowError;
+            }
 
             $log = date('G:i:s') . " schedule\ncronId: $id\nexecId: $execId\noutput: push task to queue\n\n";
             $this->cron->logCron($log);
@@ -477,7 +480,7 @@ class cron extends control
             }
         }
 
-        $doneUpdate = $this->dao->update(TABLE_QUEUE)->set('status')->eq('done')->set('pending')->eq(NULL)->where('id')->eq($task->id)->exec();
+        $this->dao->update(TABLE_QUEUE)->set('status')->eq('done')->set('pending')->eq(null)->where('id')->eq($task->id)->exec();
         $this->dao->update(TABLE_CRON)->set('lastTime')->eq(date(DT_DATETIME1))->where('id')->eq($task->cron)->exec();
 
         $log = date('G:i:s') . " execute\ncronId: {$task->cron}\nexecId: $execId\ntaskId: {$task->id}\ncommand: {$task->command}\nreturn : $return\noutput : $output\n\n";
