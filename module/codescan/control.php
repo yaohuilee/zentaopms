@@ -1016,7 +1016,7 @@ class codescan extends control
 
         $pager->recTotal = empty($taskList->pager) ? 0 : zget($taskList->pager, 'total', 0);
 
-        $taskList = zget($taskList, 'data', array());
+        $taskList = empty($taskList) ? array() : zget($taskList, 'data', array());
         foreach($taskList as $task) $task = $this->codescanZen->processTaskData($task, $this->view->repoList);
 
         $this->view->title    = $this->lang->codescan->task;
