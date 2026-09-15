@@ -221,7 +221,8 @@ class repo extends control
         if(!empty($_POST)) $repoID = (int)$this->post->codeRepo;
         if(!$repoID || !isset($repoPairs[$repoID])) $repoID = key($repoPairs);
 
-        $this->scm->setEngine($repoList[$repoID]);
+        $repo = $this->repo->getByID($repoID);
+        $this->scm->setEngine($repo);
         if(!empty($_POST))
         {
             $branch = form::data($this->config->repo->form->createBranch)->get();
