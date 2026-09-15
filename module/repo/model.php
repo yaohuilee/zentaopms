@@ -1798,7 +1798,7 @@ class repoModel extends model
         $server = $this->loadModel('gitfox')->getServer();
 
         $singleRepo = $this->gitfox->apiGetSingleRepo((int)$repo->id);
-        $repo->path = $singleRepo->gitURL;
+        $repo->path = empty($singleRepo) ? '' : zget($singleRepo, 'gitURL', '');
 
         $repo->apiPath   = $server ? sprintf($this->config->repo->gitfox->apiPath, $server->url, $repo->id) : $repo->path;
         $repo->client    = $server ? $server->url : '';
