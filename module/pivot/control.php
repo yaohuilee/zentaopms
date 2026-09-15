@@ -183,10 +183,10 @@ class pivot extends control
         if(is_file($cacheFile))
         {
             $cacheData = json_decode(file_get_contents($cacheFile), true);
-            if(!empty($cacheData->sql))
+            if(!empty($cacheData['sql']))
             {
-                $cacheFilters = !empty($cacheData->filters) ? (array)$cacheData->filters : (array)$pivot->filters;
-                $sql = $this->loadModel('bi')->processVars($cacheData->sql, $cacheFilters);
+                $cacheFilters = !empty($cacheData['filters']) ? $cacheData['filters'] : (array)$pivot->filters;
+                $sql = $this->loadModel('bi')->processVars($cacheData['sql'], $cacheFilters);
             }
         }
 
