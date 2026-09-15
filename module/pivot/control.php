@@ -182,7 +182,7 @@ class pivot extends control
         $cacheFile = $this->app->getTmpRoot() . 'bi' . DS . $pivotID . '_' . $this->app->user->account . '.json';
         if(is_file($cacheFile))
         {
-            $cacheData = json_decode(file_get_contents($cacheFile));
+            $cacheData = json_decode(file_get_contents($cacheFile), true);
             if(!empty($cacheData->sql))
             {
                 $cacheFilters = !empty($cacheData->filters) ? (array)$cacheData->filters : (array)$pivot->filters;
