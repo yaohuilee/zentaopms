@@ -630,7 +630,13 @@ class projectModel extends model
         if($this->config->edition != 'open')
         {
             $flow = $this->loadModel('workflow')->getByModule($module);
-            if(!empty($flow) && $flow->buildin == '0') return helper::createLink('flow', 'ajaxSwitchBelong', "objectID=%s&moduleName=$module") . '#app=' . $flow->app;
+            if(!empty($flow) && $flow->buildin == '0')
+            {
+                /* 工作流的所属视图可能是项目类型，需要转换为项目应用的代号。 */
+                $flowApp = $flow->app;
+                if(in_array($flowApp, array('scrum', 'waterfall', 'kanbanProject'))) $flowApp = 'project';
+                return helper::createLink('flow', 'ajaxSwitchBelong', "objectID=%s&moduleName=$module") . '#app=' . $flowApp;
+            }
         }
 
         $link    = helper::createLink('project', 'index', "projectID=%s");
