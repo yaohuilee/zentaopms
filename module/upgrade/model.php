@@ -13962,4 +13962,51 @@ class upgradeModel extends model
         }
         return true;
     }
+
+    /**
+     * 检查并修复 cron 和 queue 表结构。
+     * Check and fix cron and queue table structure.
+     *
+     * @access public
+     * @return bool
+     */
+    public function fixCronAndQueueTables()
+    {
+        $fields = $this->dao->descTable(TABLE_CRON);
+        if(isset($fields['timeout'])) return true;
+
+        $sqls[] = "ALTER TABLE `zt_queue` ADD COLUMN `pending` tinyint unsigned NULL DEFAULT NULL COMMENT '待处理标记：1 表示该 cron 已有 wait/doing 任务，NULL 表示已完成' AFTER `status`;";
+        $sqls[] = "ALTER TABLE `zt_queue` ADD COLUMN `startedDate` datetime DEFAULT NULL COMMENT '任务开始执行时间，用于超时自愈' AFTER `createdDate`;";
+        $sqls[] = "CREATE UNIQUE INDEX `uk_cron_pending` ON `zt_queue` (`cron`, `pending`);";
+        $sqls[] = "ALTER TABLE `zt_cron` ADD COLUMN `timeout` smallint unsigned NOT NULL DEFAULT 0 COMMENT '单次执行超时时间（秒），0 表示使用系统默认配置' AFTER `lastTime`;";
+        $sqls[] = "UPDATE `zt_queue` SET `status` = 'done', `pending` = NULL, `startedDate` = NULL WHERE `status` IN ('wait', 'doing');";
+        $sqls[] = "UPDATE `zt_queue` SET `pending` = 1 WHERE `status` IN ('wait', 'doing') AND `pending` IS NULL;";
+        $sqls[] = "UPDATE `zt_cron` SET `timeout` = 7200 WHERE `timeout` = 0 AND `command` LIKE 'moduleName=metric&methodName=updateMetricLib';";
+        $sqls[] = "UPDATE `zt_cron` SET `timeout` = 3600 WHERE `timeout` = 0 AND `command` LIKE 'moduleName=metric&methodName=updateDashboardMetricLib';";
+        $sqls[] = "UPDATE `zt_cron` SET `timeout` = 3600 WHERE `timeout` = 0 AND `command` LIKE 'moduleName=backup&methodName=backup';";
+        $sqls[] = "UPDATE `zt_cron` SET `timeout` = 300  WHERE `timeout` = 0;";
+
+        $this->loadModel('install');
+
+        foreach($sqls as $sql)
+        {
+            try
+            {
+                $sql = $this->install->replaceContantsInSQL($sql);
+                $sql = $this->install->appendMySQLTableOptions($sql);
+                $this->dbh->exec($sql);
+            }
+            catch(Exception $e)
+            {
+                $errorInfo = $e->errorInfo;
+                $errorCode = !empty($errorInfo) ? $errorInfo[1] : '';
+                if(strpos($ignoreCode, "|$errorCode|") !== false) continue;
+
+                static::$errors[] = $e->getMessage();
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
