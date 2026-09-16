@@ -1439,9 +1439,6 @@ class my extends control
     {
         $this->lang->navGroup->my = 'system';
 
-        /* Save session. */
-        $this->session->set('userList', $this->app->getURI(true), 'my');
-
         /* Set the pager. */
         $this->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
