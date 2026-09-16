@@ -66,6 +66,9 @@ class file extends control
      */
     public function ajaxUpload(string $uid = '', string $objectType = '', int $objectID = 0, string $extra = '', string $field = 'imgFile', bool $api = false, string $gid = '')
     {
+        /* extra 只允许空值或 editor，editor 由文档应用(docApp)编辑器图片上传使用，禁止客户端写入其他值。Only allow empty or editor extra. */
+        if(!in_array($extra, array('', 'editor'))) $extra = '';
+
         $file = $this->file->getUpload($field);
 
         if(!isset($file[0]) or strpos(",{$this->config->file->allowed},", ",{$file[0]['extension']},") === false) return $this->send(array('result' => 'fail', 'message' => $this->lang->file->errorFileFormat));
@@ -495,15 +498,14 @@ class file extends control
      */
     public function ajaxSaveTemplate(string $module)
     {
-        $templateID = (int)$this->file->saveExportTemplate($module);
-        if(dao::isError())
-        {
-            $alert = '';
-            $errors = dao::getError();
-            foreach($errors as $errorContent) $alert .= is_array($errorContent) ? implode("\n", $errorContent) : $errorContent;
-            return $this->send(array('alert' => $alert));
-        }
-        return print($this->fetch('file', 'buildExportTPL', "module=$module&templateID=$templateID"));
+        $module = strtolower(trim($module));
+        if(!preg_match('/^[a-z0-9_]+$/', $module)) return $this->send(array('alert' => $this->lang->error->accessDenied));
+        if(!common::hasPriv($module, 'export'))    return $this->send(array('alert' => $this->lang->error->accessDenied));
+
+        $result = $this->file->saveExportTemplate($module);
+        if($result['result'] == 'fail') return $this->send(array('alert' => $result['message']));
+
+        return print($this->fetch('file', 'buildExportTPL', "module=$module&templateID={$result['templateID']}"));
     }
 
     /**
@@ -590,7 +592,7 @@ class file extends control
             {
                 if($this->viewType === 'json')
                 {
-                    $this->send(array('result' => 'success', 'file' => array('id' => $file->id, 'title' => $file->title, 'extension' => $file->extension, 'size' => $file->realPath, 'gid' => $file->gid, 'addedBy' => $file->addedBy, 'addedDate' => $file->addedDate, 'objectType' => $file->objectType, 'objectID' => $file->objectID)));
+                    $this->send(array('result' => 'success', 'file' => array('id' => $file->id, 'title' => $file->title, 'extension' => $file->extension, 'size' => $file->size, 'realPath' => $file->realPath, 'gid' => $file->gid, 'addedBy' => $file->addedBy, 'addedDate' => $file->addedDate, 'objectType' => $file->objectType, 'objectID' => $file->objectID)));
                     return;
                 }
 
@@ -608,7 +610,7 @@ class file extends control
 
         if($this->viewType === 'json')
         {
-            echo json_encode(array('result' => 'success', 'data' => array('id' => $file->id, 'title' => $file->title, 'extension' => $file->extension, 'size' => $file->realPath, 'gid' => $file->gid, 'addedBy' => $file->addedBy, 'addedDate' => $file->addedDate, 'objectType' => $file->objectType, 'objectID' => $file->objectID)));
+            echo json_encode(array('result' => 'success', 'data' => array('id' => $file->id, 'title' => $file->title, 'extension' => $file->extension, 'size' => $file->size, 'realPath' => $file->realPath, 'gid' => $file->gid, 'addedBy' => $file->addedBy, 'addedDate' => $file->addedDate, 'objectType' => $file->objectType, 'objectID' => $file->objectID)));
             return;
         }
 
@@ -723,7 +725,12 @@ class file extends control
         $handle = fopen($file->realPath, "r");
         if($handle)
         {
-            while(!feof($handle)) echo fgets($handle);
+            while(!feof($handle))
+            {
+                $line = fgets($handle);
+                if($line && $mime == 'text/plain') $line = helper::convertEncoding($line, '');
+                echo $line;
+            }
             fclose($handle);
         }
     }

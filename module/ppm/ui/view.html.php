@@ -18,44 +18,28 @@ dropmenu
 );
 
 $app->loadLang('reporeviewflow');
-$entry        = count($diffs) ? $diffs[0]->fileName : '';
-$currentEntry = $this->repo->encodePath($entry);
-$fileInfo     = $entry ? pathinfo($entry) : array();
-$showBug      = isset($showBug) ? $showBug : 0;
 $objectID     = isset($objectID) ? $objectID : 0;
-$tree         = $this->repo->getFileTree($repo, '', $diffs);
 $oldRevision  = helper::safe64Encode($oldRevision);
 $newRevision  = helper::safe64Encode($newRevision);
-$diffLink     = $this->repo->createLink('diff', "repoID={$ppm->repoID}&objectID={$objectID}&entry=&oldrevision={oldRevision}&newRevision={newRevision}");
 
-jsVar('diffs', $diffs);
 jsVar('mrID', $ppm->id);
-jsVar('tree', $tree);
-jsVar('file', $currentEntry);
-jsVar('entry', $entry);
-jsVar('diffLink', $diffLink);
-jsVar('urlParams', "repoID={$ppm->repoID}&objectID=$objectID&entry=%s&oldRevision=$oldRevision&newRevision=$newRevision&showBug=$showBug&encoding=$encoding");
 jsVar('sseURL', "{$config->devops->gitfoxURL}:{$config->devops->gitfoxPort}/api/v2/spaces/{$repo->spaceID}/events");
-
-h:css("#monacoTree .text-clip {overflow: visible;}");
-
-$dropMenus = array();
-if(common::hasPriv('repo', 'download')) $dropMenus[] = array('text' => $this->lang->repo->downloadDiff, 'icon' => 'download', 'url' => $this->repo->createLink('download', "repoID={$ppm->repoID}&path=$currentEntry&fromRevision=$oldRevision&toRevision=$newRevision&type=path"), 'target' => '_self');
-
-$dropMenus[] = array('text' => $this->lang->repo->viewDiffList['inline'], 'icon' => 'snap-house', 'id' => 'inline', 'class' => 'inline-appose');
-$dropMenus[] = array('text' => $this->lang->repo->viewDiffList['appose'], 'icon' => 'col-archive', 'id' => 'appose', 'class' => 'inline-appose');
 
 $encoding      = empty($encoding) ? '' : $encoding;
 $checkMessage  = zget($checkResult, 'message', '');
 $conflictFiles = zget($checkResult, 'conflictFiles', array());
 $minReviewers  = empty($flow) ? 0 : $flow->definition->reviewFlow->approvals->minReviewers;
+$issueListTotal = $bugPager->recTotal + (int)data('aiIssueCount');
 
 $basicItems = array();
-$basicItems[] = item(set::name($lang->ppm->author),       zget($users, $ppm->createdBy));
-$basicItems[] = item(set::name($lang->ppm->createdDate),  $ppm->createdDate);
-$basicItems[] = item(set::name($lang->ppm->targetBranch), $ppm->targetBranch);
-$basicItems[] = item(set::name($lang->ppm->sourceBranch), $ppm->sourceBranch);
-$basicItems[] = item(set::name($lang->ppm->description),  !empty($ppm->desc) ? strip_tags($ppm->desc) : $lang->noData);
+if($type != 'files')
+{
+    $basicItems[] = item(set::name($lang->ppm->author),       zget($users, $ppm->createdBy));
+    $basicItems[] = item(set::name($lang->ppm->createdDate),  $ppm->createdDate);
+    $basicItems[] = item(set::name($lang->ppm->targetBranch), $ppm->targetBranch);
+    $basicItems[] = item(set::name($lang->ppm->sourceBranch), $ppm->sourceBranch);
+    $basicItems[] = item(set::name($lang->ppm->description),  !empty($ppm->desc) ? strip_tags($ppm->desc) : $lang->noData);
+}
 
 $canMerge = zget($checkResult, 'canMerge', false);
 
@@ -105,7 +89,7 @@ div
                     setClass('my-2 detail-header flex'),
                     set::style(array('justify-content' => 'space-between')),
                     div(setClass('mr-2'), span(html(sprintf($lang->ppm->MRHistory, zget($users, $ppm->createdBy), $ppm->createdDate, $ppm->sourceBranch, $commitPager->recTotal, $ppm->targetBranch)))),
-                    $ppm->status == 'opened' && $canMerge && !$checkMessage && $defaultMergeType ? div(img(set::src($config->ppm->mergeImages[$defaultMergeType]))) : null
+                    $ppm->status == 'opened' && $canMerge && !$checkMessage && $defaultMergeType && $type == 'basic' ? div(img(set::src($config->ppm->mergeImages[$defaultMergeType]))) : null
                 ),
                 div
                 (
@@ -129,11 +113,11 @@ div
                             setClass('nav-item'),
                             a
                             (
-                                $lang->ppm->issueList . " ({$bugPager->recTotal})",
+                                $lang->ppm->changeFiles,
                                 setClass('font-medium font-bold text-md'),
-                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=bug")),
+                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=files")),
                                 set('data-app', $app->tab),
-                                $type == 'bug' ? setClass('active') : null
+                                $type == 'files' ? setClass('active') : null
                             )
                         ),
                         li
@@ -153,25 +137,25 @@ div
                             setClass('nav-item'),
                             a
                             (
-                                $lang->ppm->changeFiles . ' (' . count($diffs) . ')',
+                                $lang->ppm->issueList . " ({$issueListTotal})",
                                 setClass('font-medium font-bold text-md'),
-                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=files")),
+                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=bug")),
                                 set('data-app', $app->tab),
-                                $type == 'files' ? setClass('active') : null
+                                $type == 'bug' ? setClass('active') : null
                             )
                         ),
-                        li
-                        (
-                            setClass('nav-item'),
-                            a
-                            (
-                                $lang->pipeline->common,
-                                setClass('font-medium font-bold text-md'),
-                                set('data-app', $app->tab),
-                                set::href(createLink('ppm', 'view', "id={$ppm->id}&type=pipeline")),
-                                $type == 'pipeline' ? setClass('active') : null
-                            )
-                        ),
+                        //li
+                        //(
+                        //    setClass('nav-item'),
+                        //    a
+                        //    (
+                        //        $lang->pipeline->common,
+                        //        setClass('font-medium font-bold text-md'),
+                        //        set('data-app', $app->tab),
+                        //        set::href(createLink('ppm', 'view', "id={$ppm->id}&type=pipeline")),
+                        //        $type == 'pipeline' ? setClass('active') : null
+                        //    )
+                        //),
                         li
                         (
                             setClass('nav-item'),
@@ -186,12 +170,12 @@ div
                         )
                     )
                 ),
-                div(setClass('tab-content'), $domBox),
+                div(setID("$type-tab"), setClass('tab-content'), $domBox),
             )
         ),
         center
         (
-            setClass('pt-6 sticky bottom-0 mr-toolbar'),
+            setClass('pt-6 sticky bottom-0 mr-toolbar z-20'),
             floatToolbar
             (
                 set::prefix(array(array('icon' => 'back', 'text' => $lang->goback, 'hint' => $lang->goback, 'data-back' => 'ppm-browse', 'class' => 'open-url'))),
@@ -200,12 +184,12 @@ div
             )
         ),
     ),
-    div
+    $type == 'files' ? null : div
     (
         setClass('w-2'),
         setStyle('background', 'var(--zt-page-bg)')
     ),
-    div
+    $type == 'files' ? null : div
     (
         setStyle(array('width' => '370px')),
         setClass('detail-side flex-none relative'),

@@ -1239,6 +1239,58 @@ class spaceModelTest extends baseTest
     }
 
     /**
+     * Test getListByAccount method count by type.
+     *
+     * @param  string $account
+     * @param  string $type
+     * @param  int    $queryID
+     * @access public
+     * @return int|array
+     */
+    public function getListByAccountCountByTypeTest(string $account, string $type = '', int $queryID = 0): int|array
+    {
+        $spaces = $this->instance->getListByAccount($account, null, $type, $queryID);
+
+        if(dao::isError()) return dao::getError();
+        return count((array)$spaces);
+    }
+
+    /**
+     * Test getListByAccount method first space name by type.
+     *
+     * @param  string $account
+     * @param  string $type
+     * @param  int    $queryID
+     * @access public
+     * @return string|array
+     */
+    public function getListByAccountFirstNameByTypeTest(string $account, string $type = '', int $queryID = 0): string|array
+    {
+        $spaces = $this->instance->getListByAccount($account, null, $type, $queryID);
+
+        if(dao::isError()) return dao::getError();
+
+        $spaces = array_values((array)$spaces);
+        return empty($spaces) ? '' : zget($spaces[0], 'name', '');
+    }
+
+    /**
+     * Test getSearchQuery method.
+     *
+     * @param  int   $queryID
+     * @param  array $members
+     * @access public
+     * @return string|int|array
+     */
+    public function getSearchQueryTest(int $queryID = 0, array $members = array()): string|int|array
+    {
+        $result = $this->invokeArgs('getSearchQuery', array($queryID, $members));
+
+        if(dao::isError()) return dao::getError();
+        return $result === false ? 0 : $result;
+    }
+
+    /**
      * Test getSpacesByAccount method count.
      *
      * @param  string $account
@@ -1320,6 +1372,21 @@ class spaceModelTest extends baseTest
         if(is_array($value)) return $value;
 
         return $value === $expected ? 1 : 0;
+    }
+
+    /**
+     * 清理空间中关联的代码库记录和制品库记录，保证真实删除空间时不被历史数据阻塞。
+     * Clean the repo and artifact records of the space, so the real space can be deleted.
+     *
+     * @param  int $spaceID
+     * @access public
+     * @return void
+     */
+    public function cleanSpaceRecordsTest(int $spaceID): void
+    {
+        $this->instance->dao->delete()->from(TABLE_REPO)->where('spaceID')->eq($spaceID)->exec();
+        $this->instance->dao->delete()->from(TABLE_ARTIFACT)->where('spaceID')->eq($spaceID)->exec();
+        dao::$errors = array();
     }
 
     /**
@@ -1482,4 +1549,56 @@ class spaceModelTest extends baseTest
 
         return (int)$this->instance->dao->select('COUNT(*) AS count')->from(TABLE_DEVOPSSPACEUSER)->where('space')->eq($space->id)->andWhere('role')->eq('manager')->fetch('count');
     }
+
+    /**
+     * Test buildSearchForm method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function buildSearchFormTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('buildSearchForm', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
+
+    /**
+     * Test processMemberSearchQuery method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function processMemberSearchQueryTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('processMemberSearchQuery', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }

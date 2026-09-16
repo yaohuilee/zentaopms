@@ -57,7 +57,7 @@ $config->task->dtable->fieldList['openedDate']['group']    = 2;
 
 $config->task->dtable->fieldList['assignedTo']['title']       = $lang->task->assignedTo;
 $config->task->dtable->fieldList['assignedTo']['type']        = 'assign';
-$config->task->dtable->fieldList['assignedTo']['currentUser'] = $app->user->account;
+$config->task->dtable->fieldList['assignedTo']['currentUser'] = $app->user->account ?? '';
 $config->task->dtable->fieldList['assignedTo']['assignLink']  = array('module' => 'task', 'method' => 'assignTo', 'params' => 'executionID={execution}&taskID={id}');
 $config->task->dtable->fieldList['assignedTo']['sortType']    = true;
 $config->task->dtable->fieldList['assignedTo']['show']        = true;
@@ -191,16 +191,22 @@ $config->task->dtable->fieldList['module']['display']    = false;
 $config->task->dtable->fieldList['execution']['name']       = 'execution';
 $config->task->dtable->fieldList['execution']['title']      = $lang->task->execution;
 $config->task->dtable->fieldList['execution']['control']    = 'hidden';
-$config->task->dtable->fieldList['execution']['type']       = 'html';
+$config->task->dtable->fieldList['execution']['type']       = 'text';
+$config->task->dtable->fieldList['execution']['link']       = array('module' => 'execution', 'method' => 'view', 'params' => 'executionID={execution}');
+$config->task->dtable->fieldList['execution']['data-app']   = 'execution';
+$config->task->dtable->fieldList['execution']['sortType']   = true;
+$config->task->dtable->fieldList['execution']['group']      = 10;
 $config->task->dtable->fieldList['execution']['dataSource'] = array('module' => 'execution', 'method' => 'getPairs', 'params' => ['projectID' => 0]);
-$config->task->dtable->fieldList['execution']['display']    = false;
 
 $config->task->dtable->fieldList['project']['name']       = 'project';
 $config->task->dtable->fieldList['project']['title']      = $lang->task->project;
 $config->task->dtable->fieldList['project']['control']    = 'hidden';
-$config->task->dtable->fieldList['project']['type']       = 'html';
+$config->task->dtable->fieldList['project']['type']       = 'text';
+$config->task->dtable->fieldList['project']['link']       = array('module' => 'project', 'method' => 'view', 'params' => 'projectID={project}');
+$config->task->dtable->fieldList['project']['data-app']   = 'project';
+$config->task->dtable->fieldList['project']['sortType']   = true;
+$config->task->dtable->fieldList['project']['group']      = 10;
 $config->task->dtable->fieldList['project']['dataSource'] = array('module' => 'project', 'method' => 'getPairs', 'params' => ['ignoreVision' => false]);
-$config->task->dtable->fieldList['project']['display']    = false;
 
 $config->task->dtable->fieldList['mode']['title']   = 'mode';
 $config->task->dtable->fieldList['mode']['control'] = 'hidden';

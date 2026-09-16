@@ -22,11 +22,11 @@ su('admin');
 $editor = new editorModelTest();
 $extensionRoot = $editor->instance->app->getExtensionRoot();
 $testPath = $extensionRoot . 'custom' . DS . 'test' . DS . 'ext' . DS . 'model' . DS . 'test.php';
+if(!is_dir(dirname($testPath))) mkdir(dirname($testPath), 0777, true);
 $_POST['fileContent'] = "<?php\n// test content";
 $result = $editor->instance->save($testPath);
 r((int)($result === true && file_exists($testPath))) && p() && e('1');
 
-if(!is_dir(dirname($testPath))) mkdir(dirname($testPath), 0777, true);
 $_POST['fileContent'] = "<?php\nclass testModel extends model\n{\n    public function test() { return true; }\n}";
 $result = $editor->instance->save($testPath);
 r($result === true ? 1 : 0) && p() && e('1');
@@ -47,3 +47,9 @@ $_POST['fileContent'] = "<?php\n// Test e v a l filtering\nfunction test() { e v
 $editor->instance->save($filterPath);
 $savedContent = file_exists($filterPath) ? file_get_contents($filterPath) : '';
 r((int)str_contains($savedContent, 'eval')) && p() && e('1');
+
+/* 清理测试过程写入的自定义扩展文件，避免影响后续加载 test 模块的用例。*/
+foreach(array($testPath, $filterPath) as $cleanFile)
+{
+    if(file_exists($cleanFile)) unlink($cleanFile);
+}

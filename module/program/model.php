@@ -322,7 +322,7 @@ class programModel extends model
         $releaseGroup = $this->loadModel('release')->getGroupByProduct($productIdList);
 
         /* Get doing executions. */
-        $doingExecutions = $this->dao->select('id, project, name, end')->from(TABLE_EXECUTION)
+        $doingExecutions = $this->dao->select('id, project, name, begin, end')->from(TABLE_EXECUTION)
             ->where('type')->in('sprint,stage,kanban')
             ->andWhere('status')->eq('doing')
             ->andWhere('deleted')->eq(0)
@@ -457,6 +457,15 @@ class programModel extends model
                 ->fetchAll('project');
         }
 
+        /* Get workingDays. */
+        $today       = helper::today();
+        $earliestEnd = $today;
+        foreach($projects as $project)
+        {
+            if(!empty($project->end) && !helper::isZeroDate($project->end) && $project->end < $earliestEnd) $earliestEnd = $project->end;
+        }
+        $workingDays = $this->loadModel('holiday')->getActualWorkingDays($earliestEnd, $today);
+
         /* Process projects. */
         $stats = array();
         foreach($projects as $projectID => $project)
@@ -466,8 +475,13 @@ class programModel extends model
             /* Judge whether the project is delayed. */
             if($project->status != 'done' && $project->status != 'closed' && $project->status != 'suspended')
             {
-                $delay = empty($project->end) ? 0 : helper::diffDate(helper::today(), $project->end);
-                if($delay > 0) $project->delay = $delay;
+                $betweenDays = $this->holiday->getDaysBetween($project->end, $today);
+                if($betweenDays)
+                {
+                    $delayDays = array_intersect($betweenDays, $workingDays);
+                    $delay     = count($delayDays) - 1;
+                    if($delay > 0) $project->delay = $delay;
+                }
             }
 
             /* Merge project team. */
@@ -581,7 +595,7 @@ class programModel extends model
      */
     public function getStakeholders(int $programID = 0, string $orderBy = 'id_desc', ?object $pager = null): array
     {
-        return $this->dao->select('t2.account,t2.realname,t2.role,t2.qq,t2.mobile,t2.phone,t2.weixin,t2.email,t1.id,t1.type,t1.from,t1.key')->from(TABLE_STAKEHOLDER)->alias('t1')
+        return $this->dao->select('t2.account,t2.realname,t2.role,t2.qq,t2.mobile AS phone,t2.weixin,t2.email,t1.id,t1.type,t1.from,t1.key')->from(TABLE_STAKEHOLDER)->alias('t1')
             ->leftJoin(TABLE_USER)->alias('t2')->on('t1.user=t2.account')
             ->where('t1.`objectID`')->eq($programID)
             ->andWhere('t1.`objectType`')->eq('program')

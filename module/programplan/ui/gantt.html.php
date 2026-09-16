@@ -182,7 +182,8 @@ if($app->rawModule == 'programplan' && !$isFromDoc)
                 set::settingsItems($settingsItems),
                 set::diffLang($langData),
                 set::browseTemplate($browseTemplate),
-                set::baseline($isDiffMode ? $ganttBaseline : null)
+                set::baseline($isDiffMode ? $ganttBaseline : null),
+                set::objectType('project')
             ) : null,
             icon
             (

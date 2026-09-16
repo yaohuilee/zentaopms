@@ -97,10 +97,11 @@ class stakeholderModel extends model
         }
 
         /* Create new user. */
+        $userID = (int)$this->dao->select('MAX(id) AS id')->from(TABLE_USER)->fetch('id') + 1;
         $user = new stdclass();
         $user->type     = 'outside';
         $user->realname = $data->name;
-        $user->account  = mt_rand(1111, 99999);
+        $user->account  = 'u' . $userID;
         $user->company  = $companyID;
         $user->phone    = $data->phone;
         $user->qq       = $data->qq;
@@ -111,12 +112,8 @@ class stakeholderModel extends model
         $user->strategy = $data->strategy;
         $this->dao->insert(TABLE_USER)->data($user)->exec();
 
-        $userID  = $this->dao->lastInsertID();
-        $account = 'u' . $userID;
-        $this->dao->update(TABLE_USER)->set('account')->eq($account)->where('id')->eq($userID)->exec();
-
         if(dao::isError()) return false;
-        return $account;
+        return $user->account;
     }
 
     /**
@@ -244,7 +241,7 @@ class stakeholderModel extends model
      */
     public function getStakeholders(int $projectID, string $browseType = 'all', string $orderBy = 'id_desc', ?object $pager = null): array
     {
-        return $this->dao->select('t1.*, t2.role, t2.phone, t2.realname as name, t2.email, t2.qq, t2.weixin, t2.nature, t2.analysis, t2.strategy, t3.name as companyName, t4.model as `projectModel`')->from(TABLE_STAKEHOLDER)->alias('t1')
+        return $this->dao->select('t1.*, t2.role, t2.mobile AS phone, t2.realname AS name, t2.email, t2.qq, t2.weixin, t2.nature, t2.analysis, t2.strategy, t3.name AS `companyName`, t4.`model` AS `projectModel`')->from(TABLE_STAKEHOLDER)->alias('t1')
             ->leftJoin(TABLE_USER)->alias('t2')->on('t1.user=t2.account')
             ->leftJoin(TABLE_COMPANY)->alias('t3')->on('t2.company=t3.id')
             ->leftJoin(TABLE_PROJECT)->alias('t4')->on('t1.`objectID`=t4.id')

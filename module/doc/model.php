@@ -1986,7 +1986,21 @@ class docModel extends model
         $deletedFiles = !empty($doc->deleteFiles) ? explode(',', $doc->deleteFiles) : array();
         unset($doc->deleteFiles);
 
-        $oldDoc           = $this->getByID($docID);
+        $oldDoc = $this->getByID($docID);
+
+        /* 处理重命名的附件。 Handle renamed files. */
+        if(!empty($doc->renameFiles))
+        {
+            $renamedFileList = array();
+            foreach($doc->renameFiles as $renamedFileID => $newName)
+            {
+                if(empty($newName)) continue;
+                $this->dao->update(TABLE_FILE)->set('title')->eq($newName)->where('id')->eq($renamedFileID)->exec();
+                $renamedFileList[$renamedFileID] = array('old' => isset($oldDoc->files[$renamedFileID]) ? $oldDoc->files[$renamedFileID]->title : '', 'new' => $newName);
+            }
+            $doc->renameFiles = $renamedFileList;
+        }
+
         $changes          = common::createChanges($oldDoc, $doc);
         $oldRawContent    = isset($oldDoc->rawContent) ? $oldDoc->rawContent : '';
         $newRawContent    = isset($doc->rawContent) ? $doc->rawContent : '';
@@ -2030,7 +2044,7 @@ class docModel extends model
         }
 
         unset($doc->files);
-        $this->dao->update(TABLE_DOC)->data($doc, 'content,contentType,rawContent,fromVersion,deleteFiles')
+        $this->dao->update(TABLE_DOC)->data($doc, 'content,contentType,rawContent,fromVersion,deleteFiles,renameFiles')
             ->autoCheck()
             ->batchCheck($requiredFields, 'notempty')
             ->where('id')->eq($docID)
@@ -2473,6 +2487,7 @@ class docModel extends model
 
             foreach($executionLibs as $executionID => &$libList)
             {
+                if(!isset($executionPairs[$executionID])) continue;
                 foreach($libList as &$lib)
                 {
                     $lib->originName    = $lib->name;
@@ -2629,7 +2644,10 @@ class docModel extends model
             ->fetchAll('id', false);
         foreach($objects as $objectID => $object)
         {
-            $object->parent             = $this->program->getTopByID($object->parent);
+            /* 移除自身ID得到父级path，取顶级项目集作为父级。Remove self from path to get the top program. */
+            $objectParentPath = str_replace(",{$objectID},", ',', ',' . trim($object->path, ',') . ',');
+            $object->parent   = $this->program->getTopByPath($objectParentPath);
+
             $orderedProjects[$objectID] = $object;
             unset($objects[$object->id]);
         }
@@ -2724,11 +2742,31 @@ class docModel extends model
 
         list($bugIdList, $testReportIdList, $caseIdList, $docIdList, $storyIdList, $epicIdList, $requirementIdList, $planIdList, $releaseIdList, $issueIdList, $meetingIdList, $reviewIdList, $designIdList, $executionIdList, $taskIdList, $buildIdList, $testtaskIdList, $resultIdList) = $this->getLinkedObjectData($type, $objectID);
 
+        /* 获取文档当前版本中的附件，只展示未删除文档的当前附件。Get files of the current version of docs. */
+        $docFileIdList = 0;
+        if($docIdList)
+        {
+            $docContentList = $this->dao->select('t1.doc, t1.files')->from(TABLE_DOCCONTENT)->alias('t1')
+                ->leftJoin(TABLE_DOC)->alias('t2')->on('t1.doc = t2.id and t1.version = t2.version')
+                ->where("t2.id in($docIdList)")
+                ->fetchPairs('doc', 'files');
+
+            $docFileIdList = array();
+            foreach($docContentList as $docFiles)
+            {
+                foreach(explode(',', trim((string)$docFiles, ',')) as $fileID)
+                {
+                    if($fileID !== '') $docFileIdList[$fileID] = $fileID;
+                }
+            }
+            $docFileIdList = empty($docFileIdList) ? 0 : implode(',', $docFileIdList);
+        }
+
         $files = $this->dao->select('*')->from(TABLE_FILE)
             ->where('size')->gt('0')
             ->andWhere('deleted')->eq('0')
             ->andWhere("(`objectType` = '$type' and `objectID` = $objectID)", true)
-            ->beginIF($docIdList)->orWhere("(`objectType` = 'doc' and `objectID` in ($docIdList))")->fi()
+            ->beginIF($docFileIdList)->orWhere("(`objectType` = 'doc' and `id` in ($docFileIdList))")->fi()
             ->orWhere("(`objectType` = 'bug' and `objectID` in ($bugIdList))")
             ->orWhere("(`objectType` = 'testreport' and `objectID` in ($testReportIdList))")
             ->orWhere("(`objectType` = 'testcase' and `objectID` in ($caseIdList))")
@@ -2806,10 +2844,11 @@ class docModel extends model
         $casePairs = $this->dao->select('`case`')->from(TABLE_PROJECTCASE)->where($field)->eq($objectID)->beginIF(!$this->app->user->admin)->andWhere($field)->in($userView)->fi()->fetchPairs('case');
         if(!empty($casePairs)) $caseIdList = implode(',', $casePairs);
 
-        $docs = $this->dao->select('*')->from(TABLE_DOC)->where($type)->eq($objectID)->fetchAll('id', false);
+        /* 已删除文档的附件不同步显示，文档恢复后自动显示。 Files of deleted docs are hidden, and shown again after the doc is restored. */
+        $docs = $this->dao->select('*')->from(TABLE_DOC)->where($type)->eq($objectID)->andWhere('deleted')->eq('0')->fetchAll('id', false);
         $docs = $this->batchCheckPrivDoc($docs);
 
-        $docIdList = empty($docs) ? 0 : $this->dao->select('id')->from(TABLE_DOC)->where($type)->eq($objectID)->andWhere('vision')->eq($this->config->vision)->andWhere('id')->in(array_keys($docs))->get();
+        $docIdList = empty($docs) ? 0 : $this->dao->select('id')->from(TABLE_DOC)->where($type)->eq($objectID)->andWhere('vision')->eq($this->config->vision)->andWhere('deleted')->eq('0')->andWhere('id')->in(array_keys($docs))->get();
 
         if($type == 'product')
         {
@@ -4141,7 +4180,7 @@ class docModel extends model
             ->where('t2.id')->eq($docID)
             ->fetch();
 
-        unset($docContent->id);
+        unset($docContent->id, $docContent->editedDate, $docContent->editedBy);
         $docContent->files    = trim(str_replace(",{$fileID},", ',', ",{$docContent->files},"), ',');
         $docContent->version += 1;
         $this->dao->insert(TABLE_DOCCONTENT)->data($docContent)->exec();

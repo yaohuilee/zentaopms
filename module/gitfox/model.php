@@ -14,13 +14,13 @@ class gitfoxModel extends model
     protected $repos = array();
 
     /**
-     * 检查服务是否健康。
-     * Check service health.
+     * 获取 GitFox 健康状态及版本信息。
+     * Get GitFox health status and version info.
      *
      * @access public
-     * @return bool|string
+     * @return object|false
      */
-    public function checkHealth(): bool|string
+    public function getHealth(): object|false
     {
         $url = $this->config->devops->gitfoxURL;
         if($this->config->devops->gitfoxPort) $url .= ':' . $this->config->devops->gitfoxPort;
@@ -30,12 +30,28 @@ class gitfoxModel extends model
         $result  = json_decode(common::http($url));
         if(empty($result) || empty($result->status) || $result->status != 'healthy') return false;
 
-        $checkResult = 'healthy';
-        $version     = zget($result, 'version', '');
-        if($version != $this->config->devops->gitfoxVersion) $checkResult = 'upgrade';
-        if(!$version) $checkResult = 'beta';
+        return $result;
+    }
 
-        return $checkResult;
+    /**
+     * 检查服务是否健康。
+     * Check service health.
+     *
+     * @param  object|false $health
+     * @access public
+     * @return bool|string
+     */
+    public function checkHealth(object|false|null $health = null): bool|string
+    {
+        if($health === null) $health = $this->getHealth();
+        if(!$health) return false;
+
+        $version = trim((string)zget($health, 'version', ''));
+        if($version === '') return 'beta';
+
+        $currentVersion  = ltrim($version, 'vV');
+        $requiredVersion = ltrim((string)$this->config->devops->gitfoxVersion, 'vV');
+        return version_compare($currentVersion, $requiredVersion, '<') ? 'upgrade' : 'healthy';
     }
 
     /**
@@ -86,12 +102,24 @@ class gitfoxModel extends model
      * @access public
      * @return object|array|bool
      */
-    public function request($url, $method = 'GET', $data = array()): object|array|bool
+    public function request($url, $method = 'GET', $data = array(), $parseResponse = true): object|array|bool
     {
         $originURL = $url;
         if($method == 'GET')
         {
-            $url .= '?' . http_build_query($data);
+            $queryParts = array();
+            foreach((array)$data as $key => $value)
+            {
+                if(is_array($value))
+                {
+                    foreach($value as $item) $queryParts[] = $key . '=' . (string)$item;
+                }
+                else
+                {
+                    $queryParts[] = $key . '=' . (string)$value;
+                }
+            }
+            $url .= '?' . implode('&', $queryParts);
             $data = array();
         }
         $options = array();
@@ -102,6 +130,8 @@ class gitfoxModel extends model
 
         $url    = sprintf($apiRoot->url, $url);
         $result = json_decode(common::http($url, $data, $options, $apiRoot->header, 'json', $method));
+        if(!$parseResponse) return $result;
+
         $result = $this->getResponse($result);
         if(isset($result->pager) && $result->pager->total > 0 && empty($result->data))
         {
@@ -427,6 +457,28 @@ class gitfoxModel extends model
     }
 
     /**
+     * 根据回调地址获取 webhook。
+     * Get webhook by callback URL.
+     *
+     * @param  int    $repoID
+     * @param  string $url
+     * @access public
+     * @return object|false
+     */
+    public function getWebhookByURL(int $repoID, string $url): object|false
+    {
+        $hookList = $this->apiGetHooks($repoID);
+        if(!is_array($hookList)) return false;
+
+        foreach($hookList as $hook)
+        {
+            if(isset($hook->url) && $hook->url == $url) return $hook;
+        }
+
+        return false;
+    }
+
+    /**
      * 添加一个推送和合并请求事件的webhook到gitfox项目。
      * Add webhook with push and merge request events to GitLab project.
      *
@@ -439,14 +491,39 @@ class gitfoxModel extends model
     {
         $systemURL = dirname(common::getSysURL() . $_SERVER['REQUEST_URI']);
 
+        $this->loadModel('repo');
+        if(empty($repo->gitUID) && !empty($repo->id))
+        {
+            $dbRepo = $this->repo->fetchByID((int)$repo->id);
+            if($dbRepo && !empty($dbRepo->gitUID)) $repo->gitUID = $dbRepo->gitUID;
+        }
+
+        $token = empty($repo->gitUID) ? $token : (string)$repo->gitUID;
+        if($token === '') return false;
+
         $hook = new stdClass;
         $hook->url         = $systemURL . '/api.php/v1/gitfox/webhook?repoID='. $repo->id;
         $hook->displayName = "zentao_{$repo->id}_" . date('Ymd');
         $hook->enabled     = true;
-        if($token) $hook->secret = $token;
+        $hook->secret      = $token;
+        $hook->authMethod  = 'token';
+        $hook->authHeader  = 'X-Gitfox-Token';
 
-        /* Return an empty array if where is one existing webhook. */
-        if($this->isWebhookExists($repo, $hook->url)) return true;
+        /* 已存在回调时补上缺失或不一致的 secret。 */
+        $existingHook = $this->getWebhookByURL((int)$repo->id, $hook->url);
+        if($existingHook)
+        {
+            if(!empty($existingHook->secret) && (string)$existingHook->secret === $token) return true;
+
+            $updateHook = new stdClass;
+            $updateHook->secret     = $token;
+            $updateHook->authMethod = 'token';
+            $updateHook->authHeader = 'X-Gitfox-Token';
+
+            $result = $this->apiUpdateWebhook((int)$repo->id, (int)$existingHook->id, $updateHook);
+            if(!empty($result->id)) return true;
+            return !dao::isError();
+        }
 
         $result = $this->apiCreateHook((int)$repo->id, $hook);
 
@@ -1086,5 +1163,26 @@ class gitfoxModel extends model
 
         $response = json_decode(common::http($url, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $apiRoot->header, 'json', 'PUT'));
         return $this->getResponse($response);
+    }
+
+    /**
+     * 获取仓库的差异。
+     * Get repo diffs.
+     *
+     * @param  int $repoID
+     * @param  string $from
+     * @param  string $to
+     * @access public
+     * @return string
+     */
+    public function apiGetRepoDiffs(int $repoID, string $from, string $to): string
+    {
+        $apiRoot = $this->getApiRoot();
+        $url     = sprintf($apiRoot->url, "/repos/{$repoID}/diff");
+
+        $result = common::http($url, array('range' => "{$from}...{$to}"), array(), $apiRoot->header, 'json');
+        if(empty($result)) return '';
+
+        return $result;
     }
 }

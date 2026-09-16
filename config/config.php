@@ -16,7 +16,7 @@ if(!class_exists('config')){class config{}}
 if(!function_exists('getWebRoot')){function getWebRoot(){}}
 
 /* 基本设置。Basic settings. */
-$config->version       = '22.5';               // ZenTaoPHP的版本。 The version of ZenTaoPHP. Don't change it.
+$config->version       = '22.6';               // ZenTaoPHP的版本。 The version of ZenTaoPHP. Don't change it.
 $config->liteVersion   = '1.2';                // 迅捷版版本。      The version of Lite.
 $config->charset       = 'UTF-8';              // ZenTaoPHP的编码。 The encoding of ZenTaoPHP.
 $config->cookieLife    = time() + 2592000;     // Cookie的生存时间。The cookie life time.
@@ -245,7 +245,7 @@ if($config->inContainer || $config->inQuickon)
 $config->devops = new stdclass();
 $config->devops->gitfoxURL     = 'http://localhost';
 $config->devops->gitfoxPort    = 3000;
-$config->devops->gitfoxVersion = '2.0';
+$config->devops->gitfoxVersion = '2.1';
 
 /* 引用自定义的配置。 Include the custom config file. */
 $myConfigRoot = (defined('RUN_MODE') and in_array(RUN_MODE, array('test', 'uitest'))) ? dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'config' : dirname(__FILE__);

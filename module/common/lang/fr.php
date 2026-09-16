@@ -230,6 +230,7 @@ $lang->userSelector->emptyText     = 'Aucun utilisateur disponible';
 $lang->common->common       = 'Module Commun';
 $lang->common->story        = 'Story';
 $lang->cache->common        = 'Cache';
+$lang->errorlog->common     = 'Journal des erreurs';
 $lang->my->common           = 'My';
 $lang->todo->common         = 'Agenda';
 $lang->block->common        = 'Bloc';

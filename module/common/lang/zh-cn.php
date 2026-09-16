@@ -230,6 +230,7 @@ $lang->userSelector->emptyText     = '暂无可选用户';
 $lang->common->common       = '公有模块';
 $lang->common->story        = '需求';
 $lang->cache->common        = '缓存';
+$lang->errorlog->common     = '错误日志';
 $lang->my->common           = '地盘';
 $lang->todo->common         = '待办';
 $lang->block->common        = '区块';
@@ -384,7 +385,7 @@ $lang->devops->execution        = '执行历史';
 $lang->artifact->common         = '制品库';
 $lang->ssh->common              = 'SSH密钥';
 $lang->codeReview->common       = '代码评审';
-$lang->runner->common           = '执行节点';
+$lang->runner->common           = 'Runner';
 $lang->repobranchrule->common   = '分支规则';
 
 $lang->dashboard       = '仪表盘';

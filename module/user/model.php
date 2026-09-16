@@ -124,9 +124,23 @@ class userModel extends model
     {
         if(empty($user->password1))
         {
+            unset($user->passwordPlain);
             if(!$canNoPassword) dao::$errors['password1'][] = sprintf($this->lang->error->notempty, $this->lang->user->password);
             return !dao::isError();
         }
+
+        /* 服务端根据明文重新计算密码强度与长度，避免信任客户端提交的 passwordStrength/passwordLength 字段。*/
+        /* Recompute the password strength and length on the server, never trust the client submitted fields. */
+        $passwordPlain = isset($user->passwordPlain) ? trim((string)$user->passwordPlain) : '';
+        if($passwordPlain === '' && isset($this->post->passwordPlain)) $passwordPlain = trim((string)$this->post->passwordPlain);
+        if($passwordPlain === '')
+        {
+            dao::$errors['password1'][] = $this->lang->user->error->password;
+            return !dao::isError();
+        }
+        $user->passwordLength   = strlen($passwordPlain);
+        $user->passwordStrength = $this->computePasswordStrength($passwordPlain);
+        unset($user->passwordPlain);
 
         /* 检查密码强度是否符合安全设置。*/
         /* Check if the password strength meets the security settings. */
@@ -504,7 +518,7 @@ class userModel extends model
             $requiredFields = trim(str_replace(array(',dept,', ',commiter,'), '', ',' . $requiredFields . ','), ',');
         }
 
-        $this->dao->insert(TABLE_USER)->data($user, 'new,newCompany,password1,password2,group,verifyPassword,passwordLength,passwordStrength')
+        $this->dao->insert(TABLE_USER)->data($user, 'new,newCompany,password1,password2,group,verifyPassword,passwordLength,passwordStrength,passwordPlain')
             ->batchCheck($requiredFields, 'notempty')
             ->checkIF($user->account, 'account', 'unique')
             ->checkIF($user->account, 'account', 'account')
@@ -668,7 +682,7 @@ class userModel extends model
         /* Remove unavailable contact fields from available fields. */
         $requiredFields = implode(',', array_diff($requiredFields, $unAvailableContactFields));
 
-        $this->dao->update(TABLE_USER)->data($user, 'new,newCompany,password1,password2,group,verifyPassword,passwordLength,passwordStrength')
+        $this->dao->update(TABLE_USER)->data($user, 'new,newCompany,password1,password2,group,verifyPassword,passwordLength,passwordStrength,passwordPlain')
             ->batchCheck($requiredFields, 'notempty')
             ->checkIF($user->account, 'account', 'unique', "id != '$user->id'")
             ->checkIF($user->account, 'account', 'account')
@@ -1022,6 +1036,7 @@ class userModel extends model
         $user->view   = $this->grantUserView($user->account, $user->rights['acls']);
         $this->session->set('user', $user);
         $this->app->user = $this->session->user;
+        $this->regenerateSession();
         $this->loadModel('action')->create('user', $user->id, 'login');
         $this->loadModel('score')->create('user', 'login');
         $this->loadModel('common')->loadConfigFromDB();
@@ -1048,6 +1063,7 @@ class userModel extends model
         $user->view   = $this->grantUserView($user->account, $user->rights['acls']);
         $this->session->set('user', $user);
         $this->app->user = $this->session->user;
+        $this->regenerateSession();
         $this->loadModel('action')->create('user', $user->id, 'login');
         $this->loadModel('score')->create('user', 'login');
         $this->loadModel('common')->loadConfigFromDB();
@@ -1209,6 +1225,10 @@ class userModel extends model
         $this->session->set('user', $user);
         $this->app->user = $this->session->user;
 
+        /* 登录成功后轮换会话 ID，防止会话固定。*/
+        /* Regenerate session ID after login to prevent session fixation. */
+        $this->regenerateSession();
+
         /* 记录登录日志并发放积分。*/
         /* Save log and give login score. */
         if(isset($user->id) and $addAction) $this->loadModel('action')->create('user', $user->id, 'login');
@@ -1219,6 +1239,28 @@ class userModel extends model
         if($keepLogin) $this->keepLogin($user);
 
         return $user;
+    }
+
+    /**
+     * 登录成功后轮换会话 ID，并重发会话 cookie，防止会话固定攻击。
+     * Regenerate session ID after login and resend session cookie to prevent session fixation.
+     *
+     * @access protected
+     * @return void
+     */
+    protected function regenerateSession(): void
+    {
+        if(empty(session_id()) or headers_sent()) return;
+
+        session_regenerate_id(true);
+
+        /* 同步 app->sessionID，避免 www/index.php 的还原逻辑把轮换后的会话还原回旧 ID。*/
+        /* Keep app->sessionID in sync to prevent the restore logic in www/index.php reverting the rotated session. */
+        if(isset($this->app->sessionID)) $this->app->sessionID = session_id();
+
+        /* 同步重发会话 cookie，确保浏览器和客户端使用新的会话 ID。*/
+        /* Resend the session cookie so clients use the new session ID. */
+        helper::setcookie($this->config->sessionVar, session_id(), 0);
     }
 
     /**
@@ -1316,13 +1358,26 @@ class userModel extends model
         $projectStoryCountAndEstimate = $this->userTao->fetchProjectStoryCountAndEstimate(array_keys($projects));
         $projectExecutionCount        = $this->userTao->fetchProjectExecutionCount(array_keys($projects));
 
+        /* Get workingDays. */
+        $today       = helper::today();
+        $earliestEnd = $today;
+        foreach($projects as $project)
+        {
+            if(!empty($project->end) && !helper::isZeroDate($project->end) && $project->end < $earliestEnd) $earliestEnd = $project->end;
+        }
+        $workingDays = $this->loadModel('holiday')->getActualWorkingDays($earliestEnd, $today);
         foreach($projects as $project)
         {
             /* Judge whether the project is delayed. */
             if($project->status != 'done' && $project->status != 'closed' && $project->status != 'suspended')
             {
-                $delay = helper::diffDate(helper::today(), $project->end);
-                if($delay > 0) $project->delay = $delay;
+                $betweenDays = $this->holiday->getDaysBetween($project->end, $today);
+                if($betweenDays)
+                {
+                    $delayDays = array_intersect($betweenDays, $workingDays);
+                    $delay     = count($delayDays) - 1;
+                    if($delay > 0) $project->delay = $delay;
+                }
             }
 
             $projectStory = zget($projectStoryCountAndEstimate, $project->id, '');

@@ -16,6 +16,7 @@ class codescan extends control
         parent::__construct();
         $serverHeath = $this->loadModel('gitfox')->checkHealth();
         if(!$serverHeath) return $this->locate($this->createLink('gitfox', "installGitFox"));
+        if($serverHeath == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $spaceID = 0;
         $repoID  = (int)zget($this->app->params, 'repoID', 0);
@@ -1015,7 +1016,7 @@ class codescan extends control
 
         $pager->recTotal = empty($taskList->pager) ? 0 : zget($taskList->pager, 'total', 0);
 
-        $taskList = zget($taskList, 'data', array());
+        $taskList = empty($taskList) ? array() : zget($taskList, 'data', array());
         foreach($taskList as $task) $task = $this->codescanZen->processTaskData($task, $this->view->repoList);
 
         $this->view->title    = $this->lang->codescan->task;
@@ -1222,6 +1223,8 @@ class codescan extends control
     {
         $decodeExtras = str_replace(array(',', ' ', '*'), array('&', '', '-'), trim($extras, ','));
         parse_str($decodeExtras, $params);
+        if(!empty($params['branch64'])) $params['branch'] = helper::safe64Decode($params['branch64']);
+        if(!empty($params['path64']))   $params['path']   = helper::safe64Decode($params['path64']);
 
         if($repoID)
         {
@@ -1265,7 +1268,7 @@ class codescan extends control
             if(empty($serviceRepoID)) $serviceRepoID = $repo->id;
 
             $urlTpl   = inLink('issue', "repoID={$repoID}&taskID=0&serviceRepoID={$serviceRepoID}&type=" . ($type == 'bySearch' ? 'wait' : $type) . "&queryID=0&severity={$severity}&extras=%s&orderBy={$orderBy}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}");
-            $fileTree = $this->codescan->getIssueTreeList($repoID, $taskID);
+            $fileTree = $this->codescan->getIssueTreeList($repoID, $taskID, 'file', array('check', 'smell'));
             $ruleTree = $this->codescan->getIssueTreeList($repoID, $taskID, 'rule');
 
             $this->view->fileTree = $this->codescanZen->processIssueFileTree($fileTree, $urlTpl, $params);
@@ -1281,10 +1284,12 @@ class codescan extends control
         $condition = $repoID ? "repoID=$serviceRepoID" : "taskID=$taskID";
         if($severity) $condition .= "&priority=$severity";
         if(!empty($params['ruleID']) && $params['ruleID'] != 'all') $condition .= "&ruleID={$params['ruleID']}";
-        if(!empty($params['branch']) && $this->cookie->issueFile) $condition .= "&branch={$params['branch']}&file={$this->cookie->issueFile}";
+        $issueFile = !empty($params['path']) ? $params['path'] : $this->cookie->issueFile;
+        if(!empty($params['branch']) && $issueFile) $condition .= "&branch={$params['branch']}&file={$issueFile}";
 
         $conditions = $this->codescanZen->buildParams($type, $condition, (int)$queryID, $orderBy, $pager->recPerPage, $pager->pageID);
         $conditions = $type == 'bySearch' && $repoID ? array_merge($conditions, array('repoID' => $serviceRepoID)) : array_merge($conditions, array('taskID' => $taskID));
+        $conditions['scanMethods'] = array('check', 'smell');
         $issueList  = $this->codescan->getScanIssueList((int)$taskID, $conditions);
         $pager->recTotal = zget(zget($issueList, 'pager', array()), 'total', 0);
 

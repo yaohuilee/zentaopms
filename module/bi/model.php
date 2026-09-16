@@ -625,6 +625,7 @@ class biModel extends model
             $wheres = array();
             foreach($filters as $field => $filter)
             {
+                if(!self::isSafeFilterField((string)$field) || !self::isAllowedFilterOperator((string)$filter['operator'])) continue;
                 $wheres[] = "$field {$filter['operator']} {$filter['value']}";
             }
             $moleculeWheres    = array_merge($moleculeWheres, $wheres);
@@ -700,6 +701,7 @@ class biModel extends model
                 $wheres = array();
                 foreach($filters as $field => $filter)
                 {
+                    if(!self::isSafeFilterField((string)$field) || !self::isAllowedFilterOperator((string)$filter['operator'])) continue;
                     $wheres[] = "`$field` {$filter['operator']} {$filter['value']}";
                 }
 
@@ -2085,7 +2087,7 @@ class biModel extends model
                 $drillConditions[$field] = $this->processDrills($field, $drillFields, $columns);
                 $isDrill[$field]         = isset($columns[$field]['link']) && $totalColspan === 0;
 
-                if(is_string($value)) $columnMaxLen[$field] = max($columnMaxLen[$field], mb_strlen($value));
+                if(is_string($value)) $columnMaxLen[$field] = max(zget($columnMaxLen, $field, 0), mb_strlen($value));
 
                 /* 定义数据表格合并单元格的配置。*/
                 /* Define configuration to merge cell of the data table. */
@@ -2145,7 +2147,7 @@ class biModel extends model
      */
     public function processDrills(string $field, array $drillFields, array $columns): array
     {
-        $column = $columns[$field];
+        $column = zget($columns, $field, array());
         if(!isset($column['drillField'])) return array();
 
         return $this->prepareDrillConditions($drillFields, $column['condition'], $column['drillField']);
@@ -2407,5 +2409,32 @@ class biModel extends model
         if(empty($object)) return null;
         if(is_scalar($object)) return $object;
         return json_encode($object);
+    }
+
+    /**
+     * 过滤操作符白名单。
+     * Filter operator whitelist.
+     *
+     * @param  string $operator
+     * @access private
+     * @return bool
+     */
+    private static function isAllowedFilterOperator(string $operator): bool
+    {
+        $allowed = array('IN', 'NOT IN', 'LIKE', 'NOT LIKE', 'BETWEEN', '=', '!=', '<>', '>', '<', '>=', '<=', 'IS NULL', 'IS NOT NULL');
+        return in_array(strtoupper(trim($operator)), $allowed);
+    }
+
+    /**
+     * 过滤字段标识符校验。
+     * Validate the filter field identifier.
+     *
+     * @param  string $field
+     * @access private
+     * @return bool
+     */
+    private static function isSafeFilterField(string $field): bool
+    {
+        return preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$/', $field) === 1;
     }
 }

@@ -49,6 +49,18 @@ foreach($bugs as $bug)
         $bug->link = $this->repo->createLink('diff', "repoID={$bug->repo}&objectID={$objectID}&entry={$fileEntry}&oldRevision={$v1}&newRevision={$v2}");
     }
 }
+if(hasPriv('bug', 'batchAssignTo'))
+{
+    $pinyinItems     = common::convert2Pinyin($users);
+    $assignedToItems = array();
+    foreach($users as $key => $value)
+    {
+        if($key == 'closed') continue;
+        $key = base64_encode((string)$key); // 编码用户名中的特殊字符
+        $assignedToItems[] = array('text' => $value, 'keys' => zget($pinyinItems, $value, ''), 'innerClass' => 'batch-btn ajax-btn not-open-url', 'data-url' => helper::createLink('bug', 'batchAssignTo', "assignedTo=$key&productID=0&type=product"));
+    }
+    $footToolbar['items'][] = array('caret' => 'up', 'text' => $lang->bug->assignedTo, 'type' => 'dropdown', 'data-placement' => 'top-start', 'items' => $assignedToItems, 'data-menu' => array('searchBox' => true));
+}
 $bugs = initTableData($bugs, $config->repo->reviewDtable->fieldList);
 
 if($app->tab == 'project' || $app->tab == 'execution') $repoID = 0;
@@ -66,5 +78,6 @@ dtable
     set::sortLink(createLink('repo', 'review', "repoID=$repoID&browseType=$browseType&objectID={$objectID}&orderBy={name}_{sortType}&recTotal={$pager->recTotal}&recPerPage={$pager->recPerPage}&pageID={$pager->pageID}")),
     set::orderBy($orderBy),
     set::onRenderCell(jsRaw('window.renderRepobugList')),
+    hasPriv('bug', 'batchAssignTo') ? set::footToolbar($footToolbar) : null,
     set::footPager(usePager())
 );

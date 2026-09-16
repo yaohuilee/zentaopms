@@ -276,6 +276,37 @@ class executionModelTest extends baseTest
     }
 
     /**
+     * 测试编辑执行时关联产品、关联计划必填校验。
+     *
+     * @param  int    $executionID
+     * @param  array  $param
+     * @param  string $requiredFields
+     * @access public
+     * @return array|string
+     */
+    public function updateRequiredProductPlanTest(int $executionID, array $param, string $requiredFields): array|string
+    {
+        $oldRequired = $this->instance->config->execution->edit->requiredFields;
+        $this->instance->config->execution->edit->requiredFields = $requiredFields;
+        $result = $this->updateObject($executionID, $param);
+        $this->instance->config->execution->edit->requiredFields = $oldRequired;
+
+        if(is_array($result))
+        {
+            $errors = array();
+            foreach($result as $key => $value)
+            {
+                $message = is_array($value) ? reset($value) : $value;
+                if(strpos((string)$key, 'products') !== false) $errors['products'] = $message;
+                if(strpos((string)$key, 'plans') !== false)    $errors['plans']    = $message;
+            }
+            if($errors) return $errors;
+        }
+
+        return $result;
+    }
+
+    /**
      * function batchUpdate test by execution
      *
      * @param  array  $param
@@ -1177,6 +1208,34 @@ class executionModelTest extends baseTest
         {
             return $this->instance->dao->select('*')->from(TABLE_PROJECTPRODUCT)->where('project')->eq($executionID)->fetchAll();
         }
+    }
+
+    /**
+     * 更新执行产品后，获取所属项目关联的计划。
+     * Update execution products and get the parent project's linked plans.
+     *
+     * @param  int   $executionID
+     * @param  array $param
+     * @param  int   $productID
+     * @access public
+     * @return string
+     */
+    public function updateProductsAndGetProjectPlanTest(int $executionID, array $param = array(), int $productID = 1): string
+    {
+        $postData = new stdclass();
+        foreach($param as $key => $value) $postData->$key = $value;
+
+        $this->instance->updateProducts($executionID, $postData);
+        if(dao::isError()) return json_encode(dao::getError());
+
+        $execution = $this->instance->fetchByID($executionID);
+        if(empty($execution)) return '';
+
+        $plan = $this->instance->dao->select('plan')->from(TABLE_PROJECTPRODUCT)
+            ->where('project')->eq((int)$execution->project)
+            ->andWhere('product')->eq($productID)
+            ->fetch('plan');
+        return (string)$plan;
     }
 
     /**

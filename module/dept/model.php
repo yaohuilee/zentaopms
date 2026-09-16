@@ -355,7 +355,7 @@ class deptModel extends model
      * @param  string $key     id|account
      * @param  string $type    inside|outside
      * @param  string $params  all
-     * @param  bool   $followShowOutside 
+     * @param  bool   $followShowOutside
      * @access public
      * @return array
      */

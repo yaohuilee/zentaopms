@@ -844,7 +844,7 @@ class codescanModel extends model
         foreach($issueIdList as $issueID)
         {
             $issue = $this->getScanIssue($issueID, false);
-            $extra = empty($issue) || empty($repoPair[$issue->repoID]) ? '' : "{$issue->message}|issueID={$issueID}&repoID={$repoPair[$issue->repoID]}";
+            $extra = empty($issue) || empty($repoPair[$issue->repoID]) ? '' : "{$issue->title}|issueID={$issueID}&repoID={$repoPair[$issue->repoID]}";
             $this->action->create('codescanissue', $issueID, $status . 'ScanIssue', '', $extra);
         }
 
@@ -862,6 +862,9 @@ class codescanModel extends model
      */
     public function getScanIssueList(int $taskID, array $params = array()): object|array
     {
+        $file = zget($params, 'file', '');
+        if($file != '') $params['path'] = $file;
+        unset($params['file']);
         if(isset($params['repoID']))   $params['repoID'] = (int)$params['repoID'];
         if(isset($params['ruleID']))   $params['ruleID'] = (int)$params['ruleID'];
         if(isset($params['planID']))   $params['planID'] = (int)$params['planID'];
@@ -935,13 +938,15 @@ class codescanModel extends model
         $result->tool               = zget($result->payload, 'tool', '');
         $result->snippet            = zget($result->payload, 'snippet', '');
         $result->snippetWithContext = zget($result->payload, 'snippetWithContext', '');
-        $result->rangeStartLine     = (int)zget($result->payload->location->range, 'startLine', 0);
-        $result->rangeEndLine       = (int)zget($result->payload->location->range, 'endLine', 0);
-        $result->commit             = zget($result->payload->location, 'commit', array());
-        if($result->rangeStartLine < 1 && !empty($result->line))
+        $location = !empty($result->payload) ? zget($result->payload, 'location', new stdclass()) : new stdclass();
+        $range    = !empty($location) ? zget($location, 'range', new stdclass()) : new stdclass();
+        $result->rangeStartLine     = (int)zget($range, 'startLine', 0);
+        $result->rangeEndLine       = (int)zget($range, 'endLine', 0);
+        $result->commit             = zget($location, 'commit', array());
+        if($result->rangeStartLine < 1 && !empty($result->startLine))
         {
-            $result->rangeStartLine = (int)$result->line;
-            $result->rangeEndLine   = (int)$result->line;
+            $result->rangeStartLine = (int)$result->startLine;
+            $result->rangeEndLine   = !empty($result->endLine) ? (int)$result->endLine : (int)$result->startLine;
         }
         elseif($result->rangeEndLine < $result->rangeStartLine || ($result->rangeEndLine === 0 && $result->rangeStartLine > 0))
         {
@@ -1046,14 +1051,16 @@ class codescanModel extends model
      *
      * @param  int    $repoID
      * @param  int    $taskID
-     * @param  string $type      file|rule
+     * @param  string $type        file|rule
+     * @param  array  $scanMethods 扫描方法过滤，如 array('check', 'smell') 或 array('ai')
      * @access public
      * @return array
      */
-    public function getIssueTreeList(int $repoID, int $taskID, string $type = 'file'): array
+    public function getIssueTreeList(int $repoID, int $taskID, string $type = 'file', array $scanMethods = array()): array
     {
         $url    = "/scan/issues/{$type}-tree";
         $params = array('repoID' => $repoID, 'taskID' => $taskID);
+        if(!empty($scanMethods)) $params['scanMethods'] = $scanMethods;
         $result = $this->loadModel('gitfox')->request($url, 'GET', $params);
         return array($result);
     }

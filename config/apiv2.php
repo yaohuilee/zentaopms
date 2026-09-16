@@ -1,6 +1,93 @@
 <?php
 $routes = array();
 
+$routes['/workflowgroups'] = array('redirect' => '/workflowgroups/project', 'response' => 'groups(array),pager');
+
+$routes['/workflows'] = array(
+    'get'  => array('redirect' => '/workflows/browseFlow', 'response' => 'flows(array),pager'), 'search' => array('enabled' => true, 'searchModule' => 'workflow', 'querySessionKey' => 'workflowQuery'),
+    'post' => array('redirect' => '/workflows/create?type=flow', 'data' => 'type=flow')
+);
+$routes['/workflows/:module/tables'] = array(
+    'get'  => array('redirect' => '/workflows/browseDB?parent=:module', 'response' => 'tables(array)'),
+    'post' => array('redirect' => '/workflows/create?type=table&parent=:module', 'data' => 'type=table&parent=:module')
+);
+$routes['/workflows/:flowID'] = array(
+    'get' => array('response' => 'flow'),
+    'put' => array('response' => '*'),
+    'delete' => array('response' => '*')
+);
+$routes['/workflows/:flowID/copy']              = array('post' => array('response' => '*'));
+$routes['/workflows/:flowID/release']           = array('put' => array('response' => '*'));
+$routes['/workflows/:flowID/deactivate']        = array('put' => array('response' => '*'));
+$routes['/workflows/:flowID/activate']          = array('put' => array('response' => '*'));
+$routes['/workflows/:flowID/setJS']             = array('put' => array('response' => '*'));
+$routes['/workflows/:flowID/setCSS']            = array('put' => array('response' => '*'));
+$routes['/workflows/:flowID/setFulltextSearch'] = array('put' => array('response' => '*'));
+$routes['/workflows/:module/setApproval']       = array('put' => array('redirect' => '/workflow/setApproval?module=:module', 'response' => '*'));
+$routes['/workflows/:module/setValue']          = array('put' => array('redirect' => '/workflowfields/setValue?module=:module', 'response' => '*'));
+$routes['/workflows/:module/setExport']         = array('put' => array('redirect' => '/workflowfields/setExport?module=:module', 'response' => '*'));
+$routes['/workflows/:module/setSearch']         = array('put' => array('redirect' => '/workflowfields/setSearch?module=:module', 'response' => '*'));
+$routes['/workflows/:module/fields'] = array(
+    'get'  => array('redirect' => '/workflowfields/browse?module=:module', 'response' => 'fields(array)'),
+    'post' => array('redirect' => '/workflowfields/create?module=:module')
+);
+$routes['/workflows/:module/actions'] = array(
+    'get'  => array('redirect' => '/workflowactions/browse?module=:module', 'response' => 'actions(array)'),
+    'post' => array('redirect' => '/workflowactions/create?module=:module')
+);
+$routes['/workflows/:module/labels'] = array(
+    'get'  => array('redirect' => '/workflowlabels/browse?module=:module', 'response' => 'labels(array)'),
+    'post' => array('redirect' => '/workflowlabels/create?module=:module')
+);
+
+$routes['/workflowtables/:tableID'] = array(
+    'get'    => array('redirect' => '/workflows/:tableID', 'response' => 'flow'),
+    'put'    => array('redirect' => '/workflows/:tableID', 'response' => '*'),
+    'delete' => array('redirect' => '/workflows/:tableID', 'response' => '*')
+);
+
+$routes['/workflowfields/:fieldID'] = array(
+    'get' => array('response' => 'field'),
+    'put' => array('response' => '*'),
+    'delete' => array('response' => '*')
+);
+
+$routes['/workflowactions/:actionID'] = array(
+    'get' => array('response' => 'action'),
+    'put' => array('response' => '*'),
+    'delete' => array('response' => '*')
+);
+$routes['/workflowactions/:actionID/setVerification'] = array('put' => array('response' => '*'));
+$routes['/workflowactions/:actionID/setNotice']       = array('put' => array('response' => '*'));
+$routes['/workflowactions/:actionID/setJS']           = array('put' => array('response' => '*'));
+$routes['/workflowactions/:actionID/setCSS']          = array('put' => array('response' => '*'));
+
+$routes['/workflowlabels/:labelID'] = array(
+    'get' => array('response' => 'label'),
+    'put' => array('response' => '*'),
+    'delete' => array('response' => '*')
+);
+
+$routes['/workflowdatasources'] = array(
+    'get' => array('response' => 'datasources(array),pager'),
+    'post' => array('response' => '*')
+);
+$routes['/workflowdatasources/:datasourceID'] = array(
+    'get' => array('response' => 'datasource'),
+    'put' => array('response' => '*'),
+    'delete' => array('response' => '*')
+);
+
+$routes['/workflowrules'] = array(
+    'get' => array('response' => 'rules(array),pager'),
+    'post' => array('response' => '*')
+);
+$routes['/workflowrules/:ruleID'] = array(
+    'get' => array('response' => 'rule'),
+    'put' => array('response' => '*'),
+    'delete' => array('response' => '*')
+);
+
 $routes['/programs']                     = array('response' => 'programs(array),pager', 'search' => array('enabled' => true));
 $routes['/programs/:programID']          = array('redirect' => '/programs/:programID/edit', 'response' => 'program');
 $routes['/programs/:programID/projects'] = array('redirect' => '/programs/:programID/project', 'response' => 'projectStats(array)|projects,pager');
@@ -19,6 +106,7 @@ $routes['/projects/:projectID/stories']     = array(
 );
 $routes['/executions/:executionID/stories'] = array('redirect' => '/executions/story?executionID=:executionID', 'search' => array('enabled' => true, 'searchModule' => 'executionStory', 'querySessionKey' => 'executionStory'));
 $routes['/stories/:storyID']                = array('response' => 'story,actions(array)');
+$routes['/storygrades']                     = array('redirect' => '/story/ajaxGetGradeList', 'response' => 'grades(array)');
 
 $routes['/products/:productID/epics']     = array('redirect' => '/products/browse?productID=:productID&storyType=epic', 'response' => 'stories(array)|epics,pager', 'search' => array('enabled' => true));
 $routes['/epics/:storyID'] = array(
@@ -317,3 +405,9 @@ $routes['/:type/modules/:moduleID'] = array(
     'put'    => array('redirect' => '/tree/edit?moduleID=:moduleID&type=:type', 'data' => 'moduleID=:moduleID&type=:type'),
     'delete' => array('redirect' => '/tree/delete?moduleID=:moduleID')
 );
+
+/* 加载扩展模块的路由配置。Load the route configuration of the extension module. */
+foreach(glob(__DIR__ . DS . 'ext' . DS . 'apiv2' . DS . '*.php') as $file)
+{
+    if(is_file($file)) include_once $file;
+}

@@ -242,6 +242,31 @@ class my extends control
 
         foreach($stories as $story) $story->estimate = $story->estimate . $this->config->hourUnit;
 
+        /* 补充TBC、关联对象列数据。 */
+        if(!empty($stories))
+        {
+            $storyIdList = array_keys($stories);
+            $storyTasks  = $this->loadModel('task')->getStoryTaskCounts($storyIdList);
+            $storyBugs   = $this->loadModel('bug')->getStoryBugCounts($storyIdList);
+            $storyCases  = $this->loadModel('testcase')->getStoryCaseCounts($storyIdList);
+
+            $relatedObjectList = array();
+            if($this->config->edition != 'open')
+            {
+                $this->loadModel('custom');
+                $relatedObjectList = $this->custom->getRelatedObjectList($storyIdList, 'story', 'byRelation', true);
+            }
+
+            foreach($stories as $story)
+            {
+                $story->taskCount     = zget($storyTasks, $story->id, 0);
+                $story->bugCount      = zget($storyBugs,  $story->id, 0);
+                $story->caseCount     = zget($storyCases, $story->id, 0);
+                $story->relatedObject = zget($relatedObjectList, $story->id, 0);
+                $story->productTitle  = htmlspecialchars_decode((string)$story->productTitle, ENT_QUOTES);
+            }
+        }
+
          /* Build the search form. */
         $currentMethod = $this->app->rawMethod;
         $actionURL     = $this->createLink('my', $currentMethod, "mode=story&browseType=bysearch&param=myQueryID&orderBy={$orderBy}&recTotal={$recTotal}&recPerPage={$recPerPage}&pageID={$pageID}");
@@ -309,6 +334,24 @@ class my extends control
         if(!empty($stories)) $stories = $this->story->mergeReviewer($stories);
 
         foreach($stories as $story) $story->estimate = $story->estimate . $this->config->hourUnit;
+
+        /* 补充关联对象列数据。 */
+        if(!empty($stories))
+        {
+            $storyIdList = array_keys($stories);
+
+            $relatedObjectList = array();
+            if($this->config->edition != 'open')
+            {
+                $this->loadModel('custom');
+                $relatedObjectList = $this->custom->getRelatedObjectList($storyIdList, 'epic', 'byRelation', true);
+            }
+
+            foreach($stories as $story)
+            {
+                $story->relatedObject = zget($relatedObjectList, $story->id, 0);
+            }
+        }
 
          /* Build the search form. */
         $currentMethod = $this->app->rawMethod;
@@ -378,6 +421,24 @@ class my extends control
         if(!empty($stories)) $stories = $this->story->mergeReviewer($stories);
 
         foreach($stories as $story) $story->estimate = $story->estimate . $this->config->hourUnit;
+
+        /* 补充关联对象列数据。 */
+        if(!empty($stories))
+        {
+            $storyIdList = array_keys($stories);
+
+            $relatedObjectList = array();
+            if($this->config->edition != 'open')
+            {
+                $this->loadModel('custom');
+                $relatedObjectList = $this->custom->getRelatedObjectList($storyIdList, 'requirement', 'byRelation', true);
+            }
+
+            foreach($stories as $story)
+            {
+                $story->relatedObject = zget($relatedObjectList, $story->id, 0);
+            }
+        }
 
          /* Build the search form. */
         $currentMethod = $this->app->rawMethod;
@@ -450,6 +511,12 @@ class my extends control
         $this->my->buildTaskSearchForm($queryID, $actionURL, $this->app->rawMethod . 'Task');
 
         $this->myZen->showWorkCount($recTotal, $recPerPage, $pageID);
+
+        foreach($tasks as $task)
+        {
+            $task->projectName   = htmlspecialchars_decode((string)$task->projectName, ENT_QUOTES);
+            $task->executionName = htmlspecialchars_decode((string)$task->executionName, ENT_QUOTES);
+        }
 
         /* Assign. */
         $this->view->title      = $this->lang->my->common . $this->lang->hyphen . $this->lang->my->task;
@@ -1248,7 +1315,13 @@ class my extends control
         {
             $tickets = $this->loadModel('ticket')->getBySearch($queryID, $orderBy, $pager);
         }
-        foreach($tickets as $ticket) $ticket->feedbackTip = $ticket->feedback != 0 ? '#' . $ticket->feedback : '';
+        /* Processing tickets consumed hours. */
+        $allConsumed = $this->loadModel('ticket')->getConsumedByTicket(array_keys($tickets));
+        foreach($tickets as $ticket)
+        {
+            $ticket->consumed    = isset($allConsumed[$ticket->id]) ? round((float)$allConsumed[$ticket->id], 2) : 0;
+            $ticket->feedbackTip = $ticket->feedback != 0 ? '#' . $ticket->feedback : '';
+        }
 
         $actionURL = $this->createLink('my', $this->app->rawMethod, "mode=ticket&browseType=bysearch&param=myQueryID&orderBy={$orderBy}&recTotal={$recTotal}&recPerPage={$recPerPage}&pageID={$pageID}");
         $this->my->buildTicketSearchForm($queryID, $actionURL);
@@ -1366,9 +1439,6 @@ class my extends control
     {
         $this->lang->navGroup->my = 'system';
 
-        /* Save session. */
-        $this->session->set('userList', $this->app->getURI(true), 'my');
-
         /* Set the pager. */
         $this->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
@@ -1381,7 +1451,7 @@ class my extends control
         $users  = $this->loadModel('company')->getUsers('inside', 'bydept', 0, $deptID, $sort, $pager);
         foreach($users as $user) unset($user->password); // Remove passwd.
 
-        $this->view->title     = $this->lang->my->team;
+        $this->view->title     = $this->lang->dept->common;
         $this->view->users     = $users;
         $this->view->userPairs = $this->loadModel('user')->getPairs('noletter|noclosed');
         $this->view->deptID    = $deptID;
@@ -1573,6 +1643,7 @@ class my extends control
         if($this->app->user->account == 'guest') return print(js::alert('guest') . js::locate('back'));
 
         $user = $this->user->getById($this->app->user->account);
+        unset($user->password);
 
         $this->view->title    = $this->lang->my->common . $this->lang->hyphen . $this->lang->my->profile;
         $this->view->user     = $user;
@@ -1619,7 +1690,7 @@ class my extends control
         $this->view->executionLink    = isset($this->config->executionLink)    ? $this->config->executionLink    : 'execution-task';
         $this->view->docLink          = isset($this->config->docLink)          ? $this->config->docLink          : 'doc-lastViewedSpace';
         $this->view->devopsspaceLink  = isset($this->config->devopsspaceLink)  ? $this->config->devopsspaceLink  : 'repo-maintain';
-        $this->view->devopsLink       = isset($this->config->devopsLink)       ? $this->config->devopsLink       : 'repo-maintain';
+        $this->view->devopsLink       = isset($this->config->devopsLink)       ? $this->config->devopsLink       : 'space-browse';
         $this->view->preferenceSetted = isset($this->config->preferenceSetted) ? true : false;
 
         $this->display();
@@ -1729,7 +1800,7 @@ class my extends control
      */
     public function ajaxSaveVisionTips()
     {
-        $this->loadModel('setting')->setItem("{$this->app->user->account}.common.global.hideVisionTips", 1);
+        if(isset($this->app->user->account)) $this->loadModel('setting')->setItem("{$this->app->user->account}.common.global.hideVisionTips", 1);
         return $this->send(array('result' => 'success', 'load' => helper::createLink('index', 'index')));
     }
 
@@ -1744,6 +1815,7 @@ class my extends control
     {
         $health = $this->loadModel('gitfox')->checkHealth();
         if(!$health) return $this->sendError($this->lang->gitfox->serverFail);
+        if($health == 'upgrade') return $this->locate($this->createLink('gitfox', 'upgradeGitFox'));
 
         $tab = $this->app->tab;
         if($tab != 'my')

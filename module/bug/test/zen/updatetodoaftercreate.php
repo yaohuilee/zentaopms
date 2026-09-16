@@ -1,0 +1,54 @@
+#!/usr/bin/env php
+<?php
+
+include dirname(__FILE__, 5) . '/test/lib/init.php';
+include dirname(__FILE__, 2) . '/lib/zen.class.php';
+
+error_reporting(E_ERROR);
+
+$zd_todo = zenData('todo');
+$zd_todo->id->range('1-5');
+$zd_todo->feedback->range('0');
+$zd_todo->cycle->range('0');
+$zd_todo->finishedDate->range('(M)-(w)')->type('timestamp')->format('YYYY-MM-DD hh:mm:ss');
+$zd_todo->closedDate->range('(M)-(w)')->type('timestamp')->format('YYYY-MM-DD hh:mm:ss');
+$zd_todo->deleted->range('0');
+$zd_todo->gen(5);
+$zd_user = zenData('user');
+$zd_user->id->range('1-1');
+$zd_user->account->range('1-1');
+$zd_user->last->range('(M)-(w)')->type('timestamp')->format('YYYY-MM-DD hh:mm:ss');
+$zd_user->feedback->range('0');
+$zd_user->scoreLevel->range('0');
+$zd_user->resetExpired->range('0');
+$zd_user->jira->range('0');
+$zd_user->deleted->range('0');
+$zd_user->gen(1);
+
+su('admin');
+
+$tester->loadModel('bug');
+helper::import($tester->app->getModulePath('', 'bug') . 'control.php');
+helper::import($tester->app->getModulePath('', 'bug') . 'zen.php');
+
+
+$testObj = new bugZenTest();
+/**
+
+title=测试 bugModel::updateTodoAfterCreate()
+timeout=0
+cid=0
+
+- 步骤1：正常输入 @1
+- 步骤2：边界值输入 @1
+- 步骤3：无效输入 @1
+- 步骤4：大值输入 @1
+- 步骤5：业务规则验证 @1
+
+*/
+
+r($testObj->updateTodoAfterCreateTest(1, 1)) && p() && e('1'); // 步骤1：正常输入
+r($testObj->updateTodoAfterCreateTest(0, 1)) && p() && e('1'); // 步骤2：边界值输入
+r($testObj->updateTodoAfterCreateTest(-1, 1)) && p() && e('1'); // 步骤3：无效输入
+r($testObj->updateTodoAfterCreateTest(999999, 1)) && p() && e('1'); // 步骤4：大值输入
+r($testObj->updateTodoAfterCreateTest(2, 2)) && p() && e('1'); // 步骤5：业务规则验证

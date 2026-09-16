@@ -130,14 +130,14 @@ class ppmModel extends model
         if(dao::isError()) return false;
         if(!empty($diffStats))
         {
-            $ppm->additions   = zget($diffStats, 'additions', 0);
-            $ppm->deletions   = zget($diffStats, 'deletions', 0);
-            $ppm->commitCount = zget($diffStats, 'commits', 0);
-            $ppm->fileCount   = zget($diffStats, 'filesChanged', 0);
+            $ppm->additions    = zget($diffStats, 'additions', 0);
+            $ppm->deletions    = zget($diffStats, 'deletions', 0);
+            $ppm->commitCount  = zget($diffStats, 'commits', 0);
+            $ppm->fileCount    = zget($diffStats, 'filesChanged', 0);
+            $ppm->mergeBaseSHA = zget($diffStats, 'mergeBaseSHA', '');
         }
         $ppm = $this->loadModel('file')->processImgURL($ppm, $this->config->ppm->editor->create['id'], (string)$this->post->uid);
 
-        $ppm->mergeBaseSHA = $ppm->mergeTargetSHA;
         $ppmID = $this->insertMr($ppm);
         if(dao::isError()) return false;
         $this->file->updateObjectID($this->post->uid, $ppmID, 'ppm');
@@ -211,7 +211,10 @@ class ppmModel extends model
     {
         if(empty($actionDate)) $actionDate = helper::now();
 
-        $mrAction = $actionDate . '::' . $this->app->user->account . '::' . helper::createLink($this->moduleName, 'view', "id={$id}");
+        $users = $this->loadModel('user')->getPairs('noletter');
+        $actor = zget($users, $this->app->user->account, $this->app->user->account);
+
+        $mrAction = $actionDate . '::' . $actor . '::' . helper::createLink($this->moduleName, 'view', "id={$id}");
 
         $this->loadModel('action');
         foreach(array('story', 'task', 'bug') as $objectType)
@@ -253,7 +256,7 @@ class ppmModel extends model
                 $response = json_decode(commonModel::http($apiURL, null, array(), $apiRoot->header));
                 if(empty($response) || empty($response->data)) break;
                 $commitList = array_merge($commitList, $response->data);
-                if(!empty($response->listArgs) && $response->listArgs->pageSize < 100) break;
+                if(count($response->data) < 100) break;
             }
 
             return $commitList;
@@ -1165,11 +1168,20 @@ class ppmModel extends model
 
         $commitList = array_column($commits, 'sha');
 
-        return $this->dao->select('*, concat("code") as source')->from(TABLE_BUG)
+        $bugs = $this->dao->select('*, `entry`, concat("code") as source')->from(TABLE_BUG)
             ->where('repo')->eq($repoID)
-            ->andWhere('v2')->in($commitList)
+            ->andWhere('(v2')->in($commitList)
+            ->orWhere('mr')->eq($ppmID)
+            ->markRight()
             ->andWhere('deleted')->eq(0)
             ->page($pager)
             ->fetchAll('id');
+
+        $this->loadModel('repo');
+        foreach($bugs as $bug)
+        {
+            $bug->file = $this->repo->decodePath($bug->entry);
+        }
+        return $bugs;
     }
 }

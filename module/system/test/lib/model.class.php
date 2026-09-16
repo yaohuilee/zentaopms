@@ -9,20 +9,6 @@ class systemModelTest extends baseTest
     protected $className  = 'model';
 
     /**
-     * Test updateMinioDomain method.
-     *
-     * @access public
-     * @return mixed
-     */
-    public function updateMinioDomainTest()
-    {
-        $result = $this->instance->updateMinioDomain();
-        if(dao::isError()) return dao::getError();
-
-        return is_null($result) ? '0' : $result;
-    }
-
-    /**
      * Test getBackupStatus method.
      *
      * @param  object $instance
@@ -124,34 +110,6 @@ class systemModelTest extends baseTest
     }
 
     /**
-     * Test getLatestRelease method.
-     *
-     * @access public
-     * @return mixed
-     */
-    public function getLatestReleaseTest()
-    {
-        $result = $this->instance->getLatestRelease();
-        if(dao::isError()) return dao::getError();
-
-        return $result;
-    }
-
-    /**
-     * Test isUpgradeable method.
-     *
-     * @access public
-     * @return mixed
-     */
-    public function isUpgradeableTest()
-    {
-        $result = $this->instance->isUpgradeable();
-        if(dao::isError()) return dao::getError();
-
-        return $result;
-    }
-
-    /**
      * Test setSystemRelease method.
      *
      * @param  int    $systemID
@@ -227,4 +185,30 @@ class systemModelTest extends baseTest
 
         return $result;
     }
+
+    /**
+     * Test getByID method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getByIDTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('getByID', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }

@@ -216,6 +216,9 @@ class bug extends control
         $this->session->set('storyList', '', 'product');
         $this->session->set('projectList', $this->app->getURI(true) . "#app={$this->app->tab}", 'project');
 
+        $actions = $this->loadModel('action')->getList('bug', $bug->id);
+        $actions = $this->bug->mergeTaskActions($actions);
+
         $this->view->title       = "BUG #$bug->id $bug->title - " . $product->name;
         $this->view->branchID    = $bug->branch;
         $this->view->product     = $product;
@@ -231,7 +234,7 @@ class bug extends control
         $this->view->branchName  = $product->type == 'normal' ? '' : zget($branches, $bug->branch, '');
         $this->view->builds      = $builds;
         $this->view->linkCommits = $this->loadModel('repo')->getCommitsByObject($bug->id, 'bug');
-        $this->view->actions     = $this->loadModel('action')->getList('bug', $bug->id);
+        $this->view->actions     = $actions;
         $this->view->preAndNext  = $this->loadModel('common')->getPreAndNextObject('bug', $bugID);
 
         $this->display();
@@ -263,11 +266,11 @@ class bug extends control
         /* 项目型项目没有显式产品，创建 Bug 时自动使用项目的影子产品。For a non-product project, automatically use its shadow product when creating a bug. */
         if(empty($productID) && !empty($params['projectID']))
         {
-            $project = $this->loadModel('project')->getByID($params['projectID']);
+            $project = $this->loadModel('project')->getByID((int)$params['projectID']);
             if($project && empty($project->hasProduct))
             {
-                $productID        = $this->loadModel('product')->getShadowProductByProject($params['projectID'])->id;
-                $_POST['product'] = $productID;
+                $productID = $this->loadModel('product')->getShadowProductByProject((int)$params['projectID'])->id;
+                if(!empty($_POST)) $_POST['product'] = $productID;
             }
         }
 
@@ -309,7 +312,7 @@ class bug extends control
         $this->bugZen->buildCreateForm($bug, $params, $from);
 
         extract($params);
-        $extrasValue = 'productID={product},moduleID={module},projectID={project},executionID={execution},regionID={region},allBuilds={allBuilds},allUsers={allUsers}' . (empty($from) ? '' : "&from=$from");
+        $extrasValue = 'productID={product},moduleID={module},projectID={project},executionID={execution},regionID={region},allBuilds={allBuilds},allUsers={allUsers}' . (empty($from) ? '' : ",from=$from");
         if(!empty($fromType)) $extrasValue .= ",fromType={$fromType}";
         if(!empty($fromID))   $extrasValue .= ",fromID={$fromID}";
         $this->view->loadUrl = $this->createLink('bug', $this->app->rawMethod, "productID={$productID}&branch={branch}&extras={$extrasValue}");
@@ -539,7 +542,7 @@ class bug extends control
         $this->qa->setMenu($oldBug->product, $oldBug->branch);
 
         $users  = $this->loadModel('user')->getPairs('noclosed');
-        $builds = $this->loadModel('build')->getBuildPairs(array($oldBug->product), $oldBug->branch, 'withbranch,noreleased,nofail');
+        $builds = $this->loadModel('build')->getBuildPairs(array($oldBug->product), $oldBug->branch, 'noterminate,withbranch,noreleased,nofail');
 
         /* 展示相关变量。 */
         /* Show the variables associated. */
@@ -1687,17 +1690,25 @@ class bug extends control
      *
      * @param  int    $productID
      * @param  int    $branchID
+     * @param  string $search
+     * @param  int    $limit
+     * @param  int    $caseID
      * @access public
      * @return string
      */
-    public function ajaxGetProductCases(int $productID, int $branchID = 0)
+    public function ajaxGetProductCases(int $productID, int $branchID = 0, string $search = '', int $limit = 0, int $caseID = 0)
     {
         $items = array();
-        $cases = $this->loadModel('testcase')->getPairsByProduct($productID, array(0, $branchID));
-        foreach($cases as $caseID => $caseTitle)
+        $cases = $this->loadModel('testcase')->getPairsByProduct($productID, array(0, $branchID), $search, $limit);
+        if($caseID && empty($cases[$caseID]))
         {
-            if(empty($caseID)) continue;
-            $items[] = array('text' => $caseTitle, 'value' => $caseID);
+            $caseInfo = $this->testcase->fetchByID($caseID);
+            if($caseInfo) $cases[$caseID] = $caseInfo->id . ':' . $caseInfo->title;
+        }
+        foreach($cases as $id => $caseTitle)
+        {
+            if(empty($id)) continue;
+            $items[] = array('text' => $caseTitle, 'value' => $id);
         }
 
         return print(helper::jsonEncode($items));

@@ -85,10 +85,10 @@ $lang->testtask->execTime          = 'Exec Time';
 $lang->testtask->pri               = 'Priorität';
 $lang->testtask->name              = 'Name';
 $lang->testtask->unitName          = 'Name Of Unit Test';
-$lang->testtask->begin             = 'Start';
-$lang->testtask->end               = 'Ende';
-$lang->testtask->realBegan         = 'Actual Started Date';
-$lang->testtask->realFinishedDate  = 'Actual Finished Date';
+$lang->testtask->begin             = 'Plan Start';
+$lang->testtask->end               = 'Plan End';
+$lang->testtask->realBegan         = 'Actual Started';
+$lang->testtask->realFinishedDate  = 'Actual Finished';
 $lang->testtask->desc              = 'Beschreibung';
 $lang->testtask->mailto            = 'Mail an';
 $lang->testtask->status            = 'Status';
@@ -199,6 +199,7 @@ $lang->testtask->action->testtaskstarted = '$date,  <strong>$actor</strong> star
 $lang->testtask->action->testtaskclosed  = '$date,  <strong>$actor</strong> hat die Testaufgabe abgeschlossen <strong>$extra</strong>.' . "\n";
 
 $lang->testtask->unexecuted = 'Nicht ausgeführt';
+$lang->testtask->unassigned = 'Nicht zugewiesen';
 
 /* Statistical statement. */
 $lang->testtask->report = new stdclass();
@@ -212,6 +213,7 @@ $lang->testtask->report->charts['testTaskPerRunResult'] = 'Ergebnisbericht';
 $lang->testtask->report->charts['testTaskPerType']      = 'Berichttyp';
 $lang->testtask->report->charts['testTaskPerModule']    = 'Modulbericht';
 $lang->testtask->report->charts['testTaskPerRunner']    = 'Ausgeführt von Bericht';
+$lang->testtask->report->charts['testTaskPerAssignee']  = 'Zugewiesen an Bericht';
 
 $lang->testtask->featureBar['browse']['totalStatus'] = $lang->testtask->totalStatus;
 $lang->testtask->featureBar['browse']['myinvolved']  = $lang->testtask->myInvolved;

@@ -17,37 +17,29 @@ $createLink = $this->createLink('space', 'create');
 $createItem = array('text' => $lang->space->create, 'url' => $createLink, 'class' => 'primary', 'icon' => 'plus');
 $isJumpRepo = !empty($config->spaceLink) && $config->spaceLink == 'repo-browse';
 
-featureBar();
+featureBar
+(
+    div(searchToggle
+    (
+        set::module('spaceSearch'),
+        set::open($type == 'bysearch')
+    ))
+);
 toolbar
 (
     $canCreate ? item(set($createItem)) : null,
 );
 
-if(empty($spaces))
-{
-    div
-    (
-        setClass('w-full dtable-empty-tip text-center bg-white'),
-        div
-        (
-            setClass('text-gray'),
-            $lang->space->notice->noSpaces,
-            hasPriv('space', 'create') ?
-            btn
-            (
-                set(array('text' => $lang->space->create, 'url' => inLink('create'), 'class' => 'ml-2 primary-pale border-primary', 'icon'  => 'plus'))
-            ) : null
-        ),
-    );
-    return;
-}
-
 $tableData = initTableData($spaces, $config->space->dtable->fieldList, $this->space);
 dtable
 (
+    set::id('spaces'),
     $isJumpRepo ? set::onRenderCell(jsRaw('window.renderCell')) : null,
     set::cols($config->space->dtable->fieldList),
     set::data($tableData),
     set::userMap($users),
+    set::emptyTip($lang->space->notice->noSpaces),
+    hasPriv('space', 'create') ? set::createLink($createLink) : null,
+    hasPriv('space', 'create') ? set::createTip($lang->space->create) : null,
     set::footPager(usePager())
 );

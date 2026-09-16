@@ -38,7 +38,7 @@ function setType()
 {
     const type        = $('input[name=type]').val();
     const parentStage = $('input[name=parent]').val();
-    loadPage($.createLink('execution', 'create', 'projectID=' + projectID + '&executionID=0&copyExecutionID=&planID=0&confirm=no&productID=0&extra=type=' + type + ',parentStage=' + parentStage));
+    loadPage($.createLink('execution', 'create', `projectID=${projectID}&executionID=0&copyExecutionID=&planID=${planID}&confirm=no&productID=${productID}&extra=type=${type},parentStage=${parentStage}`));
 }
 
 /**
@@ -126,5 +126,8 @@ function setParentStage()
 {
     const parentStage = $('input[name=parent]').val();
     const type        = $('input[name=type]').val();
-    loadPage($.createLink('execution', 'create', 'projectID=' + projectID + '&executionID=0&copyExecutionID=&planID=0&confirm=no&productID=0&extra=type=' + type + ',parentStage=' + parentStage));
+
+    let extra = `parentStage=${parentStage}`;
+    if(type) extra += `,type=${type}`;
+    loadPage($.createLink('execution', 'create', `projectID=${projectID}&executionID=0&copyExecutionID=&planID=${planID}&confirm=no&productID=${productID}&extra=${extra}`));
 }

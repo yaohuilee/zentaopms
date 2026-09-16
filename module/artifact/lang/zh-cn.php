@@ -16,6 +16,7 @@ $lang->artifact->deleteArtifact      = '删除制品';
 $lang->artifact->batchDeleteArtifact = '批量删除制品';
 $lang->artifact->copyCMD             = '复制命令';
 $lang->artifact->copied              = '复制成功';
+$lang->artifact->copyFail            = '复制失败，请手动复制';
 
 $lang->artifact->name          = '名称';
 $lang->artifact->code          = '唯一标识';
@@ -70,8 +71,8 @@ $lang->artifact->notice = new stdclass();
 $lang->artifact->notice->deleteConfirm         = '您确定要删除该制品库吗？';
 $lang->artifact->notice->noArtifact            = '暂无制品库';
 $lang->artifact->notice->emptyAsset            = '暂无制品';
-$lang->artifact->notice->nameNotSupportChinese = '名称仅支持英文，数字，下划线（_），中横线（-），英文句号（.）';
-$lang->artifact->notice->dirNameFormatError    = '名称仅支持中文，英文，数字，下划线（_），中横线（-）';
+$lang->artifact->notice->nameNotSupportChinese = '名称仅支持小写英文，数字，下划线（_），中横线（-），英文句号（.）';
+$lang->artifact->notice->dirNameFormatError    = '名称仅支持中文，英文，数字，下划线（_），中横线（-），英文句号（.）';
 $lang->artifact->notice->assetNameFormatError  = '名称不能包含\/:*?"<>|';
 $lang->artifact->notice->confirmDelete         = '删除后文件将会在回收站保留30天，超时后将无法恢复。';
 $lang->artifact->notice->confirmDeleteDir      = '删除目录后，同步删除目录下的子目录和文件，确认要删除吗?';
@@ -92,3 +93,10 @@ $lang->artifact->formatList['container'] = '镜像仓库';
 //$lang->artifact->formatList['helm']      = 'Helm仓库';
 //$lang->artifact->formatList['maven']     = 'Maven仓库';
 //$lang->artifact->formatList['npm']       = 'NPM仓库';
+
+$lang->artifact->pushImageNotice = '如何推送镜像';
+
+$lang->artifact->pushImageTip   = array();
+$lang->artifact->pushImageTip[] = array('title' => '1. 登录仓库',                             'content' => 'docker login GITFOXURL');
+$lang->artifact->pushImageTip[] = array('title' => '2. 标记镜像(自行替换本地镜像名称与版本)', 'content' => 'docker tag image-name:tag GITFOXURL/TYPECODE/LIBCODE/{image-name:tag}');
+$lang->artifact->pushImageTip[] = array('title' => '3. 推送镜像',                             'content' => 'docker push GITFOXURL/TYPECODE/LIBCODE/{image-name:tag}');

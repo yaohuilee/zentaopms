@@ -218,17 +218,18 @@ define('TABLE_USERQUERY',     '`' . $config->db->prefix . 'userquery`');
 define('TABLE_USERCONTACT',   '`' . $config->db->prefix . 'usercontact`');
 define('TABLE_USERVIEW',      '`' . $config->db->prefix . 'userview`');
 
-define('TABLE_BUG',           '`' . $config->db->prefix . 'bug`');
-define('TABLE_CASE',          '`' . $config->db->prefix . 'case`');
-define('TABLE_CASESTEP',      '`' . $config->db->prefix . 'casestep`');
-define('TABLE_CASESPEC',      '`' . $config->db->prefix . 'casespec`');
-define('TABLE_TESTTASK',      '`' . $config->db->prefix . 'testtask`');
-define('TABLE_TESTRUN',       '`' . $config->db->prefix . 'testrun`');
-define('TABLE_TESTRESULT',    '`' . $config->db->prefix . 'testresult`');
-define('TABLE_USERTPL',       '`' . $config->db->prefix . 'usertpl`');
-define('TABLE_ZAHOST',        '`' . $config->db->prefix . 'host`');
-define('TABLE_IMAGE',         '`' . $config->db->prefix . 'image`');
-define('TABLE_AUTOMATION',    '`' . $config->db->prefix . 'automation`');
+define('TABLE_BUG',             '`' . $config->db->prefix . 'bug`');
+define('TABLE_CASE',            '`' . $config->db->prefix . 'case`');
+define('TABLE_CASESTEP',        '`' . $config->db->prefix . 'casestep`');
+define('TABLE_CASESPEC',        '`' . $config->db->prefix . 'casespec`');
+define('TABLE_TESTTASK',        '`' . $config->db->prefix . 'testtask`');
+define('TABLE_TESTRUN',         '`' . $config->db->prefix . 'testrun`');
+define('TABLE_TESTRESULT',      '`' . $config->db->prefix . 'testresult`');
+define('TABLE_TESTTASKPRODUCT', '`' . $config->db->prefix . 'testtaskproduct`');
+define('TABLE_USERTPL',         '`' . $config->db->prefix . 'usertpl`');
+define('TABLE_ZAHOST',          '`' . $config->db->prefix . 'host`');
+define('TABLE_IMAGE',           '`' . $config->db->prefix . 'image`');
+define('TABLE_AUTOMATION',      '`' . $config->db->prefix . 'automation`');
 
 if(!defined('TABLE_ASSET'))  define('TABLE_ASSET', '`' . $config->db->prefix . 'asset`');
 
@@ -308,6 +309,8 @@ define('TABLE_ENTRY',         '`' . $config->db->prefix . 'entry`');
 define('TABLE_WEEKLYREPORT',  '`' . $config->db->prefix . 'weeklyreport`');
 define('TABLE_WEBHOOK',       '`' . $config->db->prefix . 'webhook`');
 define('TABLE_LOG',           '`' . $config->db->prefix . 'log`');
+define('TABLE_ERRORLOG',      '`' . $config->db->prefix . 'errorlog`');
+define('TABLE_ERRORLOGREQ',   '`' . $config->db->prefix . 'errorlogreq`');
 define('TABLE_SCORE',         '`' . $config->db->prefix . 'score`');
 define('TABLE_NOTIFY',        '`' . $config->db->prefix . 'notify`');
 define('TABLE_OAUTH',         '`' . $config->db->prefix . 'oauth`');
@@ -412,6 +415,8 @@ define('TABLE_REVIEWISSUE',            '`' . $config->db->prefix . 'reviewissue`
 define('TABLE_REVIEWRESULT',           '`' . $config->db->prefix . 'reviewresult`');
 define('TABLE_RISK',                   '`' . $config->db->prefix . 'risk`');
 define('TABLE_RISKISSUE',              '`' . $config->db->prefix . 'riskissue`');
+define('TABLE_RULE',                   '`' . $config->db->prefix . 'rule`');
+define('TABLE_RULEQUEUE',              '`' . $config->db->prefix . 'rulequeue`');
 define('TABLE_SOLUTIONS',              '`' . $config->db->prefix . 'solutions`');
 define('TABLE_SQLVIEW',                '`' . $config->db->prefix . 'sqlview`');
 define('TABLE_SQLBUILDER',             '`' . $config->db->prefix . 'sqlbuilder`');
@@ -453,12 +458,15 @@ define('TABLE_AI_AGENT',            '`' . $config->db->prefix . 'ai_agent`');
 define('TABLE_AI_USERAGENT',        '`' . $config->db->prefix . 'ai_useragent`');
 define('TABLE_AI_AGENTFIELD',       '`' . $config->db->prefix . 'ai_agentfield`');
 define('TABLE_AI_AGENTROLE',        '`' . $config->db->prefix . 'ai_agentrole`');
+define('TABLE_AI_TIMERLOG',         '`' . $config->db->prefix . 'ai_timerlog`');
+define('TABLE_AI_TIMERQUEUE',       '`' . $config->db->prefix . 'ai_timerqueue`');
 define('TABLE_AI_MINIPROGRAM',      '`' . $config->db->prefix . 'ai_miniprogram`');
 define('TABLE_AI_MINIPROGRAMFIELD', '`' . $config->db->prefix . 'ai_miniprogramfield`');
 define('TABLE_AI_MINIPROGRAMSTAR',  '`' . $config->db->prefix . 'ai_miniprogramstar`');
 define('TABLE_AI_MESSAGE',          '`' . $config->db->prefix . 'ai_message`');
 define('TABLE_AI_MODEL',            '`' . $config->db->prefix . 'ai_model`');
 define('TABLE_AI_ASSISTANT',        '`' . $config->db->prefix . 'ai_assistant`');
+define('TABLE_AI_VECTORQUEUE',      '`' . $config->db->prefix . 'ai_vectorqueue`');
 
 define('TABLE_SQLITE_QUEUE', '`' . $config->db->prefix . 'sqlite_queue`');
 define('TABLE_DUCKDBQUEUE', '`' . $config->db->prefix . 'duckdbqueue`');
@@ -471,6 +479,14 @@ if(!defined('TABLE_MARKET'))         define('TABLE_MARKET',         '`' . $confi
 if(!defined('TABLE_MARKETREPORT'))   define('TABLE_MARKETREPORT',   '`' . $config->db->prefix . 'marketreport`');
 if(!defined('TABLE_MARKETRESEARCH')) define('TABLE_MARKETRESEARCH', '`' . $config->db->prefix . 'project`');
 if(!defined('TABLE_SYSTEM'))         define('TABLE_SYSTEM', '`' . $config->db->prefix . 'system`');
+
+if(!defined('TABLE_ART'))         define('TABLE_ART', '`' . $config->db->prefix . 'art`');
+if(!defined('TABLE_PI'))          define('TABLE_PI',            '`' . $config->db->prefix . 'pi`');
+if(!defined('TABLE_PIEXECUTION')) define('TABLE_PIEXECUTION',   '`' . $config->db->prefix . 'piexecution`');
+if(!defined('TABLE_PISTORY'))     define('TABLE_PISTORY',       '`' . $config->db->prefix . 'pistory`');
+if(!defined('TABLE_TEAMGROUP'))   define('TABLE_TEAMGROUP',     '`' . $config->db->prefix . 'teamgroup`');
+if(!defined('TABLE_OBJECTIVE'))   define('TABLE_OBJECTIVE',     '`' . $config->db->prefix . 'objective`');
+if(!defined('TABLE_KANBANLINKS')) define('TABLE_KANBANLINKS',   '`' . $config->db->prefix . 'kanbanlinks`');
 
 define('JIRA_TMPRELATION',       '`jiratmprelation`');
 define('CONFLUENCE_TMPRELATION', '`confluencetmprelation`');
@@ -493,6 +509,7 @@ define('TABLE_PIPELINE',         '`ops_pipeline`');
 define('TABLE_PIPELINECONTENT',  '`ops_pipeline_content`');
 define('TABLE_PIPELINEEXEC',     '`ops_pipeline_executions`');
 define('TABLE_PIPELINETRIGGER',  '`ops_triggers`');
+define('TABLE_OPSWEBHOOK',       '`ops_webhooks`');
 define('TABLE_ARTIFACT',         '`ops_artifact_libs`');
 define('TABLE_ARTIFACTASSET',    '`ops_artifact_assets`');
 define('TABLE_ARTIFACTBLOBS',    '`ops_artifact_blobs`');
@@ -500,6 +517,7 @@ define('TABLE_ARTIFACTGROUPS',   '`ops_artifact_groups`');
 define('TABLE_ARTIFACTPACKAGES', '`ops_artifact_packages`');
 define('TABLE_ARTIFACTVERSIONS', '`ops_artifact_versions`');
 define('TABLE_PROVIDER',         '`ops_provider`');
+define('TABLE_RUNNER',           '`ops_runner`');
 
 $config->objectTables['dept']           = TABLE_DEPT;
 $config->objectTables['product']        = TABLE_PRODUCT;
@@ -598,6 +616,7 @@ $config->objectTables['ops_review_flow'] = TABLE_REVIEWFLOW;
 
 $config->objectTables['repobranchtype'] = TABLE_BRANCHTYPE;
 $config->objectTables['provider']       = TABLE_PROVIDER;
+$config->objectTables['runner']         = TABLE_RUNNER;
 
 $config->newFeatures      = array('introduction', 'tutorial', 'youngBlueTheme', 'visions', 'aiPrompts', 'promptDesign', 'promptExec');
 $config->disabledFeatures = '';

@@ -728,6 +728,35 @@ class testtaskModel extends model
     }
 
     /**
+     * 按指派人统计测试单中的用例。
+     * Get report data of a testtask by case assignee.
+     *
+     * @param  int    $taskID
+     * @param  string $caseQuery
+     * @param  int    $moduleID
+     * @access public
+     * @return array
+     */
+    public function getDataOfTestTaskPerAssignee(int $taskID, string $caseQuery, int $moduleID = 0): array
+    {
+        $datas = $this->dao->select('t1.`assignedTo` AS name, COUNT(1) AS value')->from(TABLE_TESTRUN)->alias('t1')
+            ->leftJoin(TABLE_CASE)->alias('t2')->on('t1.case = t2.id')
+            ->where($caseQuery)
+            ->andWhere('t1.task')->eq($taskID)
+            ->andWhere('t2.deleted')->eq('0')
+            ->beginIF($moduleID)->andWhere('t2.module')->eq($moduleID)->fi()
+            ->groupBy('t1.`assignedTo`')
+            ->orderBy('value DESC')
+            ->fetchAll('name');
+        if(!$datas) return array();
+
+        $users = $this->loadModel('user')->getPairs('noclosed|noletter');
+        foreach($datas as $result => $data) $data->name = $result ? zget($users, $result) : $this->lang->testtask->unassigned;
+
+        return $datas;
+    }
+
+    /**
      * 更新测试单。
      * Update a test task.
      *
@@ -1191,9 +1220,29 @@ class testtaskModel extends model
      */
     public function getSceneCases(int|array $productID, array $runs)
     {
+        foreach($runs as $run)
+        {
+            $run->parent  = 0;
+            $run->isScene = false;
+        }
+
+        /* 从用例所属场景的 path 中取出全部祖先场景。*/
+        /* Collect ancestor scenes from case scene paths. */
+        $caseScenes = array_unique(array_filter(array_column($runs, 'scene')));
+        if(!$caseScenes) return array($runs, array());
+
+        $pathList = $this->dao->select('path')->from(TABLE_SCENE)
+            ->where('deleted')->eq('0')
+            ->andWhere('product')->in($productID)
+            ->andWhere('id')->in($caseScenes)
+            ->fetchPairs();
+        $idList = array_unique(array_filter(explode(',', implode(',', $pathList))));
+        if(!$idList) return array($runs, array());
+
         $scenes = $this->dao->select('*')->from(TABLE_SCENE)
             ->where('deleted')->eq('0')
             ->andWhere('product')->in($productID)
+            ->andWhere('id')->in($idList)
             ->orderBy('grade_desc, sort_asc')
             ->fetchAll('id', false);
 
@@ -1201,7 +1250,8 @@ class testtaskModel extends model
         foreach($runs as $run)
         {
             if(!empty($run->scene)) $displayScenes[] = $run->scene;
-            $run->parent  = !empty($run->scene) ? 'scene-' . $scenes[$run->scene]->id : 0;
+            if(empty($run->scene) || !isset($scenes[$run->scene])) continue;
+            $run->parent  = 'scene-' . $run->scene;
             $run->isScene = false;
         }
 
@@ -1216,11 +1266,9 @@ class testtaskModel extends model
             }
         }
 
-        $displayScenes = array_unique($displayScenes);
         foreach($scenes as $id => $scene)
         {
-            if(!in_array($id, $displayScenes)) unset($scenes[$id]);
-            $scene->parent  = !empty($scene->parent) ? 'scene-' . $scene->parent : 0;
+            $scene->parent  = !empty($scene->parent) && isset($scenes[$scene->parent]) ? 'scene-' . $scene->parent : 0;
             $scene->id      = 'scene-' . $scene->id;
             $scene->isScene = true;
         }

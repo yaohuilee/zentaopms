@@ -47,8 +47,8 @@ if(isset($_SESSION['tutorialMode']) && $_SESSION['tutorialMode'])
     $projectMethod   = 'browse';
     $executionModule = 'execution';
     $executionMethod = 'task';
-    $devopsModule    = 'repo';
-    $devopsMethod    = 'maintain';
+    $devopsModule    = 'space';
+    $devopsMethod    = 'browse';
 }
 
 /* Main Navigation. */
@@ -532,12 +532,12 @@ $lang->qa->menu->automation['subMenu']->zanode      = array('link' => "{$lang->z
 $lang->devops->homeMenu = new stdclass();
 $lang->devops->homeMenu->space    = array('link' => "{$lang->space->common}|space|browse", 'alias' => 'create,edit', 'exclude' => 'space-view');
 $lang->devops->homeMenu->repos    = array('link' => "{$lang->devops->repo}|repo|maintain", 'alias' => 'create,edit,import,createrepo,binduser', 'exclude' => 'repo-setrules');
-$lang->devops->homeMenu->pipeline = array('link' => "{$lang->pipeline->common}|pipeline|browse|spaceID=%s&repoID=0&type=space", 'subModule' => 'pipeline,runner');
+$lang->devops->homeMenu->pipeline = array('link' => "{$lang->pipeline->common}|pipeline|browse|spaceID=%s&repoID=0&type=space", 'subModule' => 'pipeline');
 $lang->devops->homeMenu->artifact = array('link' => "{$lang->artifact->common}|artifact|browse|spaceID=%s&repoID=0&type=space", 'subModule' => 'artifact');
 $lang->devops->homeMenu->codescan = array('link' => "{$lang->devops->codescan}|codescan|task", 'subModule' => 'codescan');
 $lang->devops->homeMenu->system   = array('link' => "{$lang->devops->system}|repo|browsesystem", 'subModule' => 'system', 'exclude' => 'system-dashboard,system-dblist,system-domainview,system-ossview');
 
-$lang->devops->homeMenu->configure = array('link' => "{$lang->devops->configure}|repobranchtype|browse|", 'subModule' => 'system,store,instance,repo,gitlab,gitea,gogs,gitfox,jenkins,sonarqube,repobranchtype,provider', 'exclude' => 'repo-maintain,repo-browsesystem,system-view,repo-create,repo-createrepo,repo-import,repo-edit,repo-binduser');
+$lang->devops->homeMenu->configure = array('link' => "{$lang->devops->configure}|repobranchtype|browse|", 'subModule' => 'system,store,instance,repo,gitlab,gitea,gogs,gitfox,jenkins,sonarqube,repobranchtype,provider,runner', 'exclude' => 'repo-maintain,repo-browsesystem,system-view,repo-create,repo-createrepo,repo-import,repo-edit,repo-binduser');
 
 $lang->devops->homeMenu->spaceSetting = array('link' => "{$lang->devops->spaceSetting}|space|view|spaceID=%s", 'subModule' =>'space', 'exclude' => 'repo-maintain,repo-browsesystem,system-view,repo-create,repo-createrepo,repo-import,repo-edit');
 $lang->devops->homeMenu->spaceSetting['subMenu'] = new stdclass();
@@ -579,6 +579,9 @@ $lang->devops->menu->review['subMenu'] = new stdclass();
 $lang->devops->menu->review['subMenu']->review   = array('link' => "{$lang->devops->reviewIssue}|repo|review|repoID=%s", 'subModule' => 'bug');
 $lang->devops->menu->review['subMenu']->codescan = array('link' => "{$lang->devops->scanIssue}|codescan|issue|repoID=%s", 'alias' => 'issueview', 'subModule' => 'bug', 'exclude' => 'bug-view');
 
+$lang->devops->menu->review['menuOrder'][10] = 'review';
+$lang->devops->menu->review['menuOrder'][15] = 'codescan';
+
 $lang->devops->menu->settings = array('link' => "{$lang->repoSettings->common}|repobranchtype|browse|repoID=%s", 'subModule' => 'reporeviewflow,repobranchtype', 'alias' => 'browsewebhooks,browserule,createwebhook,editwebhook,logwebhook,setarchive');
 
 $lang->devops->menu->settings['subMenu'] = new stdclass();
@@ -590,10 +593,12 @@ $lang->devops->homeMenu->configure['subMenu'] = new stdclass();
 $lang->devops->homeMenu->configure['subMenu']->branchType = array('link' => "{$lang->devops->branchType}|repobranchtype|browse|", 'alias' => 'create,edit,delete,import');
 $lang->devops->homeMenu->configure['subMenu']->rules      = array('link' => "{$lang->devops->rules}|repo|setrules|", 'subModule' => 'repo');
 $lang->devops->homeMenu->configure['subMenu']->provider   = array('link' => "{$lang->provider->common}|provider|browse|", 'alias' => 'create,edit');
+$lang->devops->homeMenu->configure['subMenu']->runner     = array('link' => "{$lang->runner->common}|runner|browse|");
 
 $lang->devops->homeMenu->configure['menuOrder'][5]  = 'branchType';
 $lang->devops->homeMenu->configure['menuOrder'][10] = 'rules';
 $lang->devops->homeMenu->configure['menuOrder'][15] = 'provider';
+$lang->devops->homeMenu->configure['menuOrder'][20] = 'runner';
 
 /* The menu order $lang->devops->menuOrder[30] is a reserved position for 'artifactrepo'. */
 $lang->devops->menuOrder[5]   = 'space';
@@ -607,6 +612,7 @@ $lang->devops->menuOrder[42]  = 'pipeline';
 $lang->devops->menuOrder[43]  = 'artifact';
 $lang->devops->menuOrder[47]  = 'repoCodeScan';
 $lang->devops->menuOrder[49]  = 'codescan';
+$lang->devops->menuOrder[51]  = 'aiCodeReview';
 $lang->devops->menuOrder[53]  = 'system';
 $lang->devops->menuOrder[55]  = 'deploy';
 $lang->devops->menuOrder[65]  = 'review';
@@ -681,7 +687,7 @@ $lang->subject->menu->storyConcept = array('link' => "{$lang->storyConcept}|cust
 
 /* System menu. */
 $lang->system->menu          = new stdclass();
-$lang->system->menu->team    = array('link' => "{$lang->team->common}|my|team|", 'subModule' => 'user');
+$lang->system->menu->team    = array('link' => "{$lang->dept->common}|my|team|", 'subModule' => 'user');
 $lang->system->menu->dynamic = array('link' => "$lang->dynamic|company|dynamic|");
 $lang->system->menu->view    = array('link' => "{$lang->company->common}|company|view");
 
@@ -694,7 +700,7 @@ $lang->system->menuOrder[20] = 'view';
 /* AI menu. */
 $lang->aiapp->menu = new stdclass();
 $lang->aiapp->menu->conversation = array('link' => "{$lang->aiapp->conversation}|aiapp|conversation|");
-$lang->aiapp->menu->zentaoAgent  = array('link' => "{$lang->aiapp->zentaoAgent}|ai|prompts|", 'alias' => 'createprompt,promptview,promptbasicinfo,promptselectdatasource,promptsetinputfields,promptsetpurpose,promptsetinputform,promptsettargetform,promptfinalize');
+$lang->aiapp->menu->zentaoAgent  = array('link' => "{$lang->aiapp->zentaoAgent}|ai|prompts|", 'alias' => 'createprompt,promptview,promptbasicinfo,promptselectdatasource,promptsetinputfields,promptsetpurpose,promptsetinputform,promptsettargetform,promptfinalize,timerbasicinfo');
 $lang->aiapp->menu->generalAgent = array('link' => "{$lang->aiapp->generalAgent}|aiapp|square|", 'alias' => 'view,miniprograms,editMiniProgramCategory,miniprogramview,createMiniProgram,editminiprogram,configuredMiniProgram');
 $lang->aiapp->menu->models       = array('link' => "{$lang->aiapp->models}|aiapp|models|");
 $lang->aiapp->menu->config       = array('link' => "{$lang->aiapp->config}|zai|setting|", 'alias' => 'vectorized');
@@ -823,10 +829,12 @@ $lang->navGroup->space            = 'devops';
 $lang->navGroup->store            = 'devops';
 $lang->navGroup->instance         = 'devops';
 $lang->navGroup->deploy           = 'devops';
+$lang->navGroup->aiCodeReview     = 'devops';
 $lang->navGroup->host             = 'devops';
 $lang->navGroup->artifact         = 'devops';
 $lang->navGroup->provider         = 'devops';
 $lang->navGroup->gitfox           = 'devops';
+$lang->navGroup->runner           = 'devops';
 
 $lang->navGroup->company        = 'system';
 $lang->navGroup->systemteam     = 'system';
@@ -875,6 +883,7 @@ $lang->navGroup->system        = 'system';
 $lang->navGroup->serverroom    = 'devops';
 $lang->navGroup->holiday       = 'admin';
 $lang->navGroup->cache         = 'admin';
+$lang->navGroup->errorlog      = 'admin';
 
 $lang->navGroup->aiapp = 'aiapp';
 

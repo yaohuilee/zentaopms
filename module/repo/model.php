@@ -269,6 +269,7 @@ class repoModel extends model
         if($repoID)
         {
             $repo->id = $repoID;
+            if(isset($response->gitUID)) $repo->gitUID = $response->gitUID;
             $res = $this->loadModel('gitfox')->addPushWebhook($repo);
             if(!$res)
             {
@@ -620,35 +621,43 @@ class repoModel extends model
 
         /* Get project products. */
         $projectProductIds = in_array($type, array('project', 'execution')) ? $this->loadModel('product')->getProductIDByProject($projectID, false) : array();
+        $spaces            = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->fetchPairs('id', 'name');
 
         /* Get repo data for dropmenu. */
-        $repoPairs = array();
+        $repoPairs      = array();
+        $spaceRepoPairs = array();
         foreach($repos as $repo)
         {
-            if($this->checkPriv($repo))
+            $repoItem = array();
+            $repoItem['id']       = $repo->id;
+            $repoItem['text']     = $repo->name;
+            $repoItem['keys']     = zget(common::convert2Pinyin(array($repo->name)), $repo->name, '');
+            $repoItem['data-app'] = $this->app->tab;
+            if(!isset($spaceRepoPairs[$repo->spaceID]))
             {
-                $repoItem = array();
-                $repoItem['id']       = $repo->id;
-                $repoItem['text']     = $repo->name;
-                $repoItem['keys']     = zget(common::convert2Pinyin(array($repo->name)), $repo->name, '');
-                $repoItem['data-app'] = $this->app->tab;
+                $spaceRepoPairs[$repo->spaceID]['id']    = $repo->spaceID;
+                $spaceRepoPairs[$repo->spaceID]['type']  = 'space';
+                $spaceRepoPairs[$repo->spaceID]['text']  = zget($spaces, $repo->spaceID);
+                $spaceRepoPairs[$repo->spaceID]['items'] = array();
+            }
 
-                $repoProducts = explode(',', $repo->product);
-                foreach($repoProducts as $productID)
+            $spaceRepoPairs[$repo->spaceID]['items'][] = $repoItem;
+
+            $repoProducts = explode(',', $repo->product);
+            foreach($repoProducts as $productID)
+            {
+                if(!$productID) continue;
+                if(in_array($type, array('project', 'execution')) && $projectID && !in_array($productID, $projectProductIds)) continue;
+
+                if(strpos(",$repo->product,", ",$productID,") !== false)
                 {
-                    if(!$productID) continue;
-                    if(in_array($type, array('project', 'execution')) && $projectID && !in_array($productID, $projectProductIds)) continue;
-
-                    if(strpos(",$repo->product,", ",$productID,") !== false)
-                    {
-                        if(!isset($repoPairs[$productID])) $repoPairs[$productID] = $productItems[$productID];
-                        $repoPairs[$productID]['items'][] = $repoItem;
-                    }
+                    if(!isset($repoPairs[$productID])) $repoPairs[$productID] = $productItems[$productID];
+                    $repoPairs[$productID]['items'][] = $repoItem;
                 }
             }
         }
 
-        return $repoPairs;
+        return array('space' => $spaceRepoPairs, 'product' => $repoPairs);
     }
 
     /**
@@ -1566,13 +1575,25 @@ class repoModel extends model
      */
     public function saveAction2PMS(array $objects, object $log, string $repoRoot = '', string $encodings = 'utf-8', string $scm = 'svn', array $gitlabAccountPairs = array()): bool
     {
-        $committers  = $this->loadModel('user')->getCommiters('account');
-        $log->author = zget($gitlabAccountPairs, $log->author, zget($committers, $log->author));
+        $committers = $this->loadModel('user')->getCommiters('account');
+        $rawAuthor  = trim((string)$log->author);
+        $author     = zget($committers, $rawAuthor, '');
+        if(!$author && isset($gitlabAccountPairs[$rawAuthor]))
+        {
+            $candidate = $gitlabAccountPairs[$rawAuthor];
+            if($this->loadModel('user')->getById($candidate)) $author = $candidate;
+        }
+        if(!$author && $this->loadModel('user')->getById($rawAuthor)) $author = $rawAuthor;
+        $log->author = $author ?: $rawAuthor;
 
+        $originalUser = null;
         if(isset($this->app->user))
         {
-            $account = $this->app->user->account;
-            $this->app->user->account = $log->author;
+            $originalUser = clone $this->app->user;
+            $authorUser = $this->loadModel('user')->getById($log->author);
+            $this->app->user->account  = $log->author;
+            $this->app->user->id       = $authorUser ? $authorUser->id : 0;
+            $this->app->user->realname = $authorUser ? $authorUser->realname : ($rawAuthor ?: 'system');
         }
 
         $action  = new stdclass();
@@ -1609,7 +1630,7 @@ class repoModel extends model
         $action->action = $scm == 'svn' ? 'svncommited' : 'gitcommited';
         $this->saveObjectToPms($objects, $action, $changes);
 
-        if(isset($this->app->user)) $this->app->user->account = $account;
+        if(isset($originalUser)) $this->app->user = $originalUser;
         return !dao::isError();
     }
 
@@ -1777,7 +1798,7 @@ class repoModel extends model
         $server = $this->loadModel('gitfox')->getServer();
 
         $singleRepo = $this->gitfox->apiGetSingleRepo((int)$repo->id);
-        $repo->path = $singleRepo->gitURL;
+        $repo->path = empty($singleRepo) ? '' : zget($singleRepo, 'gitURL', '');
 
         $repo->apiPath   = $server ? sprintf($this->config->repo->gitfox->apiPath, $server->url, $repo->id) : $repo->path;
         $repo->client    = $server ? $server->url : '';
@@ -1852,8 +1873,15 @@ class repoModel extends model
 
             $log = new stdclass();
             $log->revision = isset($commit->id) ? $commit->id : $commit->sha;
-            $log->msg      = $commit->message;
-            $log->author   = isset($commit->author->identity->name) ? $commit->author->identity->name : $commit->author->name;
+            $log->msg      = isset($commit->message) ? $commit->message : zget($commit, 'title', '');
+            $log->author   = '';
+            if(isset($commit->author) && is_object($commit->author))
+            {
+                if(isset($commit->author->identity) && is_object($commit->author->identity)) $log->author = zget($commit->author->identity, 'name', '');
+                if(!$log->author) $log->author = zget($commit->author, 'name', '');
+                if(!$log->author) $log->author = zget($commit->author, 'username', '');
+                if(!$log->author) $log->author = zget($commit->author, 'email', '');
+            }
             $log->date     = date("Y-m-d H:i:s", strtotime($time));
             $log->files    = array();
             $log->repo     = $repo;
@@ -3492,10 +3520,13 @@ class repoModel extends model
 
         $url = sprintf($apiRoot, "/user/repos");
 
+        $headers = array();
+        if(preg_match('/[?&]token=([^&]+)/', $url, $matches)) $headers[] = 'Authorization: token ' . urldecode($matches[1]);
+
         $allResults = array();
         for($page = 1; true; $page++)
         {
-            $results = json_decode(commonModel::http($url . "&page={$page}&limit=50"));
+            $results = json_decode(commonModel::http($url . "&page={$page}&limit=50", '', array(), $headers));
             if(!is_array($results)) break;
             if(!empty($results)) $allResults = array_merge($allResults, $results);
             if(count($results) < 50) break;
@@ -3618,6 +3649,54 @@ class repoModel extends model
         if(empty($repo) || isset($repo->message)) return false;
 
         return $repo;
+    }
+
+    /**
+     * 直接更新GitFox webhook配置表中的密钥。
+     * Update GitFox webhook secret in ops_webhooks.
+     *
+     * @access public
+     * @return bool
+     */
+    public function backfillGitFoxWebhookSecret(): bool
+    {
+        /* 一次查出所有需要回填的 GitFox hook，避免在循环内逐条查询。 */
+        $hooks = $this->dao->select('w.id,w.`repoID`,w.url,r.`gitUID`')->from(TABLE_OPSWEBHOOK)->alias('w')
+            ->leftJoin(TABLE_REPO)->alias('r')->on('w.`repoID` = r.id')
+            ->where('w.deleted')->eq('0')
+            ->andWhere('w.url')->like('%gitfox/webhook%')
+            ->andWhere('r.deleted')->eq('0')
+            ->andWhere('r.`scmType`')->eq('git')
+            ->andWhere('r.mirror')->eq('0')
+            ->andWhere('r.`gitUID`')->ne('')
+            ->andWhere('r.`gitUID`')->notLike('empty_gituid_%')
+            ->fetchAll('id', false);
+        if(empty($hooks)) return true;
+
+        $webhookIDListByGitUID = array();
+        foreach($hooks as $hook)
+        {
+            if(empty($hook->id) || empty($hook->gitUID)) continue;
+            if(!preg_match('/[?&]repoID=' . preg_quote((string)$hook->repoID, '/') . '(&|$)/', $hook->url)) continue;
+
+            $webhookIDListByGitUID[$hook->gitUID][] = (int)$hook->id;
+        }
+        if(empty($webhookIDListByGitUID)) return true;
+
+        foreach($webhookIDListByGitUID as $gitUID => $hookIDs)
+        {
+            $this->dao->update(TABLE_OPSWEBHOOK)
+                ->set('secret')->eq($gitUID)
+                ->set('`authMethod`')->eq('token')
+                ->set('`authHeader`')->eq('X-Gitfox-Token')
+                ->set('`editedBy`')->eq('system')
+                ->set('`editedDate`')->eq(helper::now())
+                ->where('id')->in($hookIDs)
+                ->exec();
+            if(dao::isError()) return false;
+        }
+
+        return !dao::isError();
     }
 
     /**

@@ -277,7 +277,14 @@ class userModelTest extends baseTest
      */
     public function createTest(object $user): array
     {
-        $result = $this->instance->create($user);
+        $userData      = clone $user;
+        $passwordPlain = isset($userData->passwordPlain) ? trim((string)$userData->passwordPlain) : '';
+        unset($userData->passwordPlain);
+
+        if($passwordPlain !== '') $this->instance->post->passwordPlain = $passwordPlain;
+        $result = $this->instance->create($userData);
+        if($passwordPlain !== '') unset($this->instance->post->passwordPlain);
+
         $errors = dao::getError();
 
         foreach($errors as $key => $error)
@@ -369,7 +376,14 @@ class userModelTest extends baseTest
      */
     public function updateTest(object $user): array
     {
-        $result = $this->instance->update($user);
+        $userData      = clone $user;
+        $passwordPlain = isset($userData->passwordPlain) ? trim((string)$userData->passwordPlain) : '';
+        unset($userData->passwordPlain);
+
+        if($passwordPlain !== '') $this->instance->post->passwordPlain = $passwordPlain;
+        $result = $this->instance->update($userData);
+        if($passwordPlain !== '') unset($this->instance->post->passwordPlain);
+
         $errors = dao::getError();
 
         foreach($errors as $key => $error)
@@ -1380,4 +1394,56 @@ class userModelTest extends baseTest
         $result = dao::isError() ? 0 : 1;
         return array('result' => $result, 'errors' => $errors);
     }
+
+    /**
+     * Test hasRepoPrivByAccount method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function hasRepoPrivByAccountTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('hasRepoPrivByAccount', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
+
+    /**
+     * Test regenerateSession method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function regenerateSessionTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('regenerateSession', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }

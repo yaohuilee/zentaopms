@@ -42,12 +42,15 @@ $config->project->dtable->fieldList['status']['statusMap'] = $lang->project->sta
 $config->project->dtable->fieldList['status']['group']     = 2;
 $config->project->dtable->fieldList['status']['show']      = true;
 
-$config->project->dtable->fieldList['hasProduct']['title']    = $lang->project->type;
-$config->project->dtable->fieldList['hasProduct']['name']     = 'hasProduct';
-$config->project->dtable->fieldList['hasProduct']['type']     = 'category';
-$config->project->dtable->fieldList['hasProduct']['sortType'] = true;
-$config->project->dtable->fieldList['hasProduct']['map']      = $lang->project->projectTypeList;
-$config->project->dtable->fieldList['hasProduct']['group']    = 2;
+if($config->vision == 'rnd')
+{
+    $config->project->dtable->fieldList['hasProduct']['title']    = $lang->project->type;
+    $config->project->dtable->fieldList['hasProduct']['name']     = 'hasProduct';
+    $config->project->dtable->fieldList['hasProduct']['type']     = 'category';
+    $config->project->dtable->fieldList['hasProduct']['sortType'] = true;
+    $config->project->dtable->fieldList['hasProduct']['map']      = $lang->project->projectTypeList;
+    $config->project->dtable->fieldList['hasProduct']['group']    = 2;
+}
 
 $config->project->dtable->fieldList['PM']['title']       = $lang->project->PM;
 $config->project->dtable->fieldList['PM']['name']        = 'PM';
@@ -103,7 +106,7 @@ $config->project->dtable->fieldList['invested']['show']     = true;
 $config->project->dtable->fieldList['invested']['sortType'] = false;
 if($isEn) $config->project->dtable->fieldList['invested']['width'] = '120px';
 
-if(helper::hasFeature('deliverable') && in_array($config->edition, array('max', 'ipd')))
+if($config->vision == 'rnd' && helper::hasFeature('deliverable') && in_array($config->edition, array('max', 'ipd')))
 {
     $config->project->dtable->fieldList['deliverable']['title']    = $lang->project->deliverableAbbr;
     $config->project->dtable->fieldList['deliverable']['name']     = 'deliverable';
@@ -164,7 +167,7 @@ $config->project->dtable->fieldList['progress']['group'] = 7;
 $config->project->dtable->fieldList['progress']['show']  = true;
 if($isEn) $config->project->dtable->fieldList['progress']['width'] = '100px';
 
-if($config->edition != 'open')
+if($config->vision == 'rnd' && $config->edition != 'open')
 {
     $config->project->dtable->fieldList['workflowGroup']['title']    = $lang->project->workflowGroup;
     $config->project->dtable->fieldList['workflowGroup']['name']     = 'workflowGroup';
@@ -518,6 +521,13 @@ $config->project->dtable->testtask->fieldList['pri']['title'] = $lang->priAB;
 $config->project->dtable->testtask->fieldList['pri']['type']  = 'pri';
 $config->project->dtable->testtask->fieldList['pri']['show']  = true;
 
+$config->project->dtable->testtask->fieldList['type']['name']  = 'type';
+$config->project->dtable->testtask->fieldList['type']['title'] = $lang->testtask->type;
+$config->project->dtable->testtask->fieldList['type']['type']  = 'category';
+$config->project->dtable->testtask->fieldList['type']['map']   = $lang->testtask->typeList;
+$config->project->dtable->testtask->fieldList['type']['show']  = true;
+$config->project->dtable->testtask->fieldList['type']['width'] = 150;
+
 $config->project->dtable->testtask->fieldList['build']['name']  = 'buildName';
 $config->project->dtable->testtask->fieldList['build']['title'] = $lang->testtask->build;
 $config->project->dtable->testtask->fieldList['build']['type']  = 'text';
@@ -539,6 +549,16 @@ $config->project->dtable->testtask->fieldList['end']['name']  = 'end';
 $config->project->dtable->testtask->fieldList['end']['title'] = $lang->testtask->end;
 $config->project->dtable->testtask->fieldList['end']['type']  = 'date';
 $config->project->dtable->testtask->fieldList['end']['group'] = '4';
+
+$config->project->dtable->testtask->fieldList['realBegan']['name']  = 'realBegan';
+$config->project->dtable->testtask->fieldList['realBegan']['title'] = $lang->testtask->realBegan;
+$config->project->dtable->testtask->fieldList['realBegan']['type']  = 'date';
+$config->project->dtable->testtask->fieldList['realBegan']['group'] = '4';
+
+$config->project->dtable->testtask->fieldList['realFinishedDate']['name']  = 'realFinishedDate';
+$config->project->dtable->testtask->fieldList['realFinishedDate']['title'] = $lang->testtask->realFinishedDate;
+$config->project->dtable->testtask->fieldList['realFinishedDate']['type']  = 'date';
+$config->project->dtable->testtask->fieldList['realFinishedDate']['group'] = '4';
 
 $config->project->dtable->testtask->fieldList['status']['name']      = 'status';
 $config->project->dtable->testtask->fieldList['status']['title']     = $lang->testtask->status;

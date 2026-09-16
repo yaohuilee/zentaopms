@@ -23,7 +23,7 @@ foreach($needProcess as $processKey => $processType)
 
 jsVar('window.finish', $finish);
 jsVar('window.needProcess', $needProcess);
-jsVar('window.processLink', inlink('afterExec', "fromVersion=$fromVersion&processed=yes&skipMoveFile=yes"));
+jsVar('window.processLink', inlink('afterExec', "fromVersion=$fromVersion&processed=yes&skipMoveFile=yes&skipUpdateDocs=yes&skipUpdateDocTemplates=yes&skipUpdateProjectReports=yes&skipInstallGitFox=yes&skipUpgradeGitFox=yes"));
 
 $tips = array();
 if(!empty($needProcess['changeEngine']))
@@ -37,6 +37,19 @@ if(!empty($needProcess['changeEngine']))
             'help'
         ),
         $lang->upgrade->needChangeEngine
+    );
+}
+if(!empty($needProcess['changeCharset']))
+{
+    $tips[] = div
+    (
+        setClass('flex w-full justify-center items-center'),
+        icon
+        (
+            setClass('text-warning px-1'),
+            'help'
+        ),
+        $lang->upgrade->needChangeCharset
     );
 }
 if(!empty($needProcess['search']))

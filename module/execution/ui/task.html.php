@@ -118,6 +118,8 @@ if(common::canModify('execution', $execution))
 }
 
 $cols = $this->loadModel('datatable')->getSetting('execution');
+if(isset($cols['execution'])) $cols['execution']['map'] = $this->loadModel('execution')->getPairs(0, 'all', 'nocode');
+if(isset($cols['project']))   $cols['project']['map']   = $this->loadModel('project')->getPairs();
 
 if($isFromDoc || $isFromAI)
 {
@@ -275,7 +277,7 @@ if($canBatchAction)
         $moduleItems = array();
         foreach($modules as $moduleID => $module)
         {
-            $moduleItems[] = array('text' => $module, 'innerClass' => 'batch-btn ajax-btn', 'data-url' => createLink('task', 'batchChangeModule', "moduleID=$moduleID"));
+            $moduleItems[] = array('text' => $module, 'hint' => $module, 'innerClass' => 'batch-btn ajax-btn', 'data-url' => createLink('task', 'batchChangeModule', "moduleID=$moduleID"));
         }
     }
 

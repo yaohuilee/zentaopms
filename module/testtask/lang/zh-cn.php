@@ -85,10 +85,10 @@ $lang->testtask->execTime          = '执行时间';
 $lang->testtask->pri               = '优先级';
 $lang->testtask->name              = '测试单名称';
 $lang->testtask->unitName          = '单测名称';
-$lang->testtask->begin             = '开始日期';
-$lang->testtask->end               = '结束日期';
-$lang->testtask->realBegan         = '实际开始日期';
-$lang->testtask->realFinishedDate  = '实际完成日期';
+$lang->testtask->begin             = '计划开始';
+$lang->testtask->end               = '计划完成';
+$lang->testtask->realBegan         = '实际开始';
+$lang->testtask->realFinishedDate  = '实际完成';
 $lang->testtask->desc              = '描述';
 $lang->testtask->mailto            = '抄送给';
 $lang->testtask->status            = '当前状态';
@@ -199,6 +199,7 @@ $lang->testtask->action->testtaskstarted = '$date, 由 <strong>$actor</strong> �
 $lang->testtask->action->testtaskclosed  = '$date, 由 <strong>$actor</strong> 完成测试单 <strong>$extra</strong>。' . "\n";
 
 $lang->testtask->unexecuted = '未执行';
+$lang->testtask->unassigned = '未指派';
 
 /* 统计报表。*/
 $lang->testtask->report = new stdclass();
@@ -212,6 +213,7 @@ $lang->testtask->report->charts['testTaskPerRunResult'] = '按用例结果统计
 $lang->testtask->report->charts['testTaskPerType']      = '按用例类型统计';
 $lang->testtask->report->charts['testTaskPerModule']    = '按用例模块统计';
 $lang->testtask->report->charts['testTaskPerRunner']    = '按用例执行人统计';
+$lang->testtask->report->charts['testTaskPerAssignee']  = '按用例指派人统计';
 
 $lang->testtask->featureBar['browse']['totalStatus'] = $lang->testtask->totalStatus;
 $lang->testtask->featureBar['browse']['myinvolved']  = $lang->testtask->myInvolved;

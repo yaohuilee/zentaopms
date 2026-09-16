@@ -65,6 +65,26 @@ if($browseType == 'assignedTo') unset($config->my->task->dtable->fieldList['assi
 if($browseType == 'openedBy')   unset($config->my->task->dtable->fieldList['openedBy']);
 if($browseType == 'finishedBy') unset($config->my->task->dtable->fieldList['finishedBy']);
 
+if(isset($config->my->task->dtable->fieldList['relatedObject']))
+{
+    $config->my->task->dtable->fieldList['relatedObject']['link'] = hasPriv('custom', 'showRelationGraph') ? "RAWJS<function(info){ if(info.row.data.relatedObject == 0) return 0; else return '" . helper::createLink('custom', 'showRelationGraph', 'objectID={id}&objectType=task') . "'; }>RAWJS" : null;
+}
+
+if($config->edition != 'open' && !empty($tasks))
+{
+    $relatedObjectList = $this->loadModel('custom')->getRelatedObjectList(array_keys($tasks), 'task', 'byRelation', true);
+    foreach($tasks as $task) $task->relatedObject = zget($relatedObjectList, $task->id, 0);
+}
+
+$executionPairs = $this->loadModel('execution')->getPairs(0, 'all', 'nocode');
+$projectPairs   = $this->loadModel('project')->getPairs();
+foreach($tasks as $task)
+{
+    if(empty($task->executionMultiple)) $executionPairs[$task->execution] = '';
+}
+if(isset($config->my->task->dtable->fieldList['execution'])) $config->my->task->dtable->fieldList['execution']['map'] = $executionPairs;
+if(isset($config->my->task->dtable->fieldList['project']))   $config->my->task->dtable->fieldList['project']['map']   = $projectPairs;
+
 $tasks = initTableData($tasks, $config->my->task->dtable->fieldList, $this->task);
 $cols = $this->loadModel('datatable')->getSetting('my', 'task');
 $lang->task->statusList['changed'] = $lang->task->storyChange;

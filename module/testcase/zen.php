@@ -221,7 +221,7 @@ class testcaseZen extends testcase
         $this->config->testcase->search['params']['lib'] = array('operator' => '=', 'control' => 'select', 'values' => array('' => '', $libID => $libraries[$libID], 'all' => $this->lang->caselib->all));
         $this->config->testcase->search['params']['module']['values']  = $this->loadModel('tree')->getOptionMenu($libID, 'caselib');
 
-        if(!$this->config->testcase->needReview) unset($this->config->testcase->search['params']['status']['values']['wait']);
+        if(!$this->config->testcase->needReview && empty($this->config->testcase->forceReview)) unset($this->config->testcase->search['params']['status']['values']['wait']);
         unset($this->config->testcase->search['fields']['product']);
         unset($this->config->testcase->search['fields']['branch']);
 
@@ -1405,6 +1405,8 @@ class testcaseZen extends testcase
         $account        = $this->app->user->account;
         $cases          = form::batchData($this->config->testcase->form->batchEdit)->get();
         $forceNotReview = $this->testcase->forceNotReview();
+        $storyIdList    = array_unique(array_column($cases, 'story'));
+        $storyVersions  = !empty($storyIdList) ? $this->loadModel('story')->getVersions($storyIdList) : array();
         foreach($cases as $caseID => $case)
         {
             $oldCase = $oldCases[$caseID];
@@ -1413,6 +1415,7 @@ class testcaseZen extends testcase
             $case->lastEditedBy   = $account;
             $case->lastEditedDate = $now;
             if(!isset($case->precondition)) $case->precondition = $oldCase->precondition;
+            if(!empty($case->story) && $case->story != $oldCase->story && !empty($storyVersions[$case->story])) $case->storyVersion = $storyVersions[$case->story];
 
             $versionChanged = false;
             if($case->title && $case->title != $oldCase->title) $versionChanged = true;

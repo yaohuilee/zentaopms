@@ -81,10 +81,15 @@ $config->pipeline->actionList['execution']['text'] = $lang->pipeline->execution;
 $config->pipeline->actionList['execution']['hint'] = $lang->pipeline->execution;
 $config->pipeline->actionList['execution']['url']  = array('module' => 'pipeline', 'method' => 'execution', 'params' => "spaceID={spaceID}&repoID={repoID}&type={scope}&pipelineID={id}");
 
-$config->pipeline->actionList['edit']['icon']        = 'edit';
-$config->pipeline->actionList['edit']['text']        = $lang->pipeline->edit;
-$config->pipeline->actionList['edit']['hint']        = $lang->pipeline->edit;
-$config->pipeline->actionList['edit']['url']         = helper::createLink('pipeline', 'edit', "id={id}");
+$config->pipeline->actionList['edit']['icon'] = 'edit';
+$config->pipeline->actionList['edit']['text'] = $lang->pipeline->edit;
+$config->pipeline->actionList['edit']['hint'] = $lang->pipeline->edit;
+$config->pipeline->actionList['edit']['url']  = helper::createLink('pipeline', 'edit', "id={id}");
+
+$config->pipeline->actionList['arrange']['icon'] = 'design';
+$config->pipeline->actionList['arrange']['text'] = $lang->pipeline->arrange;
+$config->pipeline->actionList['arrange']['hint'] = $lang->pipeline->arrange;
+$config->pipeline->actionList['arrange']['url']  = helper::createLink('pipeline', 'arrange',"id={id}&space={spaceID}&repoID={repoID}&type={scope}");
 
 $config->pipeline->actionList['delete']['icon']       = 'trash';
 $config->pipeline->actionList['delete']['text']       = $lang->pipeline->delete;
@@ -96,7 +101,7 @@ $config->pipeline->dtable->fieldList['actions']['name']  = 'actions';
 $config->pipeline->dtable->fieldList['actions']['title'] = $lang->actions;
 $config->pipeline->dtable->fieldList['actions']['width'] = 170;
 $config->pipeline->dtable->fieldList['actions']['type']  = 'actions';
-$config->pipeline->dtable->fieldList['actions']['menu']  = array('exec', 'execution', 'edit', 'delete');
+$config->pipeline->dtable->fieldList['actions']['menu']  = array('exec', 'execution', 'edit|arrange', 'delete');
 $config->pipeline->dtable->fieldList['actions']['list']  = $config->pipeline->actionList;
 
 $config->pipeline->execution->dtable = new stdclass();

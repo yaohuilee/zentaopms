@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 $config->repo->form = new stdclass();
 
 $config->repo->form->create = array();
@@ -88,10 +86,10 @@ $config->repo->form->addBug['execution']     = array('required' => false, 'type'
 $config->repo->form->addBug['pri']           = array('required' => false, 'type' => 'int',    'default' => 3);
 $config->repo->form->addBug['severity']      = array('required' => false, 'type' => 'int',    'default' => 3);
 $config->repo->form->addBug['module']        = array('required' => false, 'type' => 'int',    'default' => 0);
-$config->repo->form->addBug['repoType']      = array('required' => false, 'type' => 'string', 'default' => '');
+$config->repo->form->addBug['repoType']      = array('required' => false, 'type' => 'string', 'default' => 'codeerror');
 $config->repo->form->addBug['assignedTo']    = array('required' => false, 'type' => 'string', 'default' => '');
 $config->repo->form->addBug['steps']         = array('required' => false, 'type' => 'string', 'default' => '', 'control' => 'editor');
-$config->repo->form->addBug['fromReversion'] = array('required' => false, 'type' => 'string', 'default' => '');
+$config->repo->form->addBug['fromRevision']  = array('required' => false, 'type' => 'string', 'default' => '');
 $config->repo->form->addBug['severity']      = array('required' => false, 'type' => 'int',    'default' => 3);
 $config->repo->form->addBug['openedDate']    = array('required' => false, 'type' => 'string', 'default' => $now);
 $config->repo->form->addBug['assignedDate']  = array('required' => false, 'type' => 'string', 'default' => $now);

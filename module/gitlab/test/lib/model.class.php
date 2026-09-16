@@ -59,7 +59,7 @@ class gitlabModelTest extends baseTest
         /* Mock: non-existent or non-gitlab server returns empty. */
         if($gitlabID == 10 || $gitlabID == 4) return '0';
 
-        $baseURL = 'https://gitlabdev.qc.oop.cc/api/v4%s?private_token=glpat-b8Sa1pM9k9ygxMZYPN6w';
+        $baseURL = 'https://gitlabdev.oop.cc/api/v4%s?private_token=glpat-U3zV-zBBm-3PnbVbersM';
 
         /* Mock: non-admin user with sudo returns URL with sudo param. */
         if($sudo && !empty($this->app->user) && !$this->app->user->admin) return $baseURL . '&sudo=1';
@@ -241,4 +241,56 @@ class gitlabModelTest extends baseTest
         }
         return array();
     }
+
+    /**
+     * Test apiGetExecInfo method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function apiGetExecInfoTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('apiGetExecInfo', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
+
+    /**
+     * Test getLogs method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getLogsTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('getLogs', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }

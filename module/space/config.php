@@ -35,3 +35,15 @@ $config->space->actionList['delete']['url']          = array('module' => 'space'
 $config->space->actions = new stdclass();
 $config->space->actions->view['mainActions']   = array('members', 'group');
 $config->space->actions->view['suffixActions'] = array('edit', 'delete');
+
+/* Search config. */
+$config->space->search['module']             = 'spaceSearch';
+$config->space->search['fields']['name']     = $lang->space->name;
+$config->space->search['fields']['code']     = $lang->space->code;
+$config->space->search['fields']['managers'] = $lang->space->manager;
+$config->space->search['fields']['members']  = $lang->space->members;
+
+$config->space->search['params']['name']     = array('operator' => 'include', 'control' => 'input', 'values' => '');
+$config->space->search['params']['code']     = array('operator' => 'include', 'control' => 'input', 'values' => '');
+$config->space->search['params']['managers'] = array('operator' => '=', 'control' => 'select', 'values' => 'users');
+$config->space->search['params']['members']  = array('operator' => '=', 'control' => 'select', 'values' => 'users');

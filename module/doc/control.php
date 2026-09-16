@@ -76,9 +76,10 @@ class doc extends control
             'mine'    => 'mySpace',
             'product' => 'productSpace',
             'project' => 'projectSpace',
+            'quick'   => 'quick',
             'custom'  => 'teamSpace'
         );
-        $method = $spaceMap[$lastViewedSpaceHome];
+        $method = zget($spaceMap, $lastViewedSpaceHome, '');
         if(empty($method) || !common::hasPriv('doc', $method)) return $this->locate($this->createLink('doc', 'mySpace'));
 
         $lastViewedSpace = $this->doc->getLastViewed('lastViewedSpace');
@@ -1065,6 +1066,7 @@ class doc extends control
                 $this->loadModel('message')->sendMentionNotice('doc', 'edit', $response['actionID'], $docData, $doc);
             }
 
+            $response['changes'] = array('type' => 'update', 'objectType' => 'doc', 'objectList' => array($docID));
             return $this->send($response);
         }
 
@@ -1953,7 +1955,7 @@ class doc extends control
                 $_POST['parent'] = 0;
             }
 
-            $data = $this->docZen->prepareDocFormData($spaceType, $space);
+            $data = $this->docZen->prepareDocFormData($spaceType, (string)$space);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $changes = common::createChanges($doc, $data);
@@ -1980,6 +1982,17 @@ class doc extends control
         $this->display();
     }
 
+    /**
+     * 复制文档。
+     * Copy doc.
+     *
+     * @param  int    $docID
+     * @param  int    $libID
+     * @param  string $spaceType
+     * @param  string $space
+     * @access public
+     * @return void
+     */
     public function copyDoc(int $docID, int $libID = 0, string $spaceType = '', string $space = '')
     {
         $doc = $this->docZen->initDocContext($docID, $libID, $spaceType, $space);
@@ -1993,7 +2006,7 @@ class doc extends control
                 $_POST['parent'] = 0;
             }
 
-            $data = $this->docZen->prepareDocFormData($spaceType, $space);
+            $data = $this->docZen->prepareDocFormData($spaceType, (string)$space);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $newDocID = $this->doc->copyDoc($docID, $data);
@@ -2615,13 +2628,14 @@ class doc extends control
      * Get lib summaries by space type and space list.
      *
      * @param  string $spaceType
-     * @param  string $spaceList
      * @access public
      * @return void
      */
-    public function ajaxGetLibSummaries(string $spaceType, string $spaceList)
+    public function ajaxGetLibSummaries(string $spaceType)
     {
-        $libsMap = $this->doc->getLibsOfSpaces($spaceType, $spaceList, 0);
+        $spaceList = !empty($_POST['spaceList']) ? $_POST['spaceList'] : array();
+        $spaceList = is_array($spaceList) ? implode(',', $spaceList) : $spaceList;
+        $libsMap   = $this->doc->getLibsOfSpaces($spaceType, $spaceList, 0);
         echo json_encode($libsMap);
     }
 

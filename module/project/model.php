@@ -397,8 +397,16 @@ class projectModel extends model
         $taskSummary   = $this->projectTao->getTotalTaskByProject($projectIdList);
         $storySummary  = $this->projectTao->getTotalStoriesByProject($projectIdList);
 
+        /* Get workingDays. */
+        $today       = helper::today();
+        $earliestEnd = $today;
+        foreach($projects as $project)
+        {
+            if(!empty($project->end) && !helper::isZeroDate($project->end) && $project->end < $earliestEnd) $earliestEnd = $project->end;
+        }
+        $workingDays = $this->loadModel('holiday')->getActualWorkingDays($earliestEnd, $today);
+
         /* Set project attribute. */
-        $today = helper::today();
         foreach($projects as $projectID => $project)
         {
             $project->leftBugs      = isset($bugSummary[$projectID])   ? $bugSummary[$projectID]->leftBugs             : 0;
@@ -417,8 +425,13 @@ class projectModel extends model
             /* Judge whether the project is delayed. */
             if($project->status != 'done' && $project->status != 'closed' && $project->status != 'suspended')
             {
-                $delay = helper::diffDate($today, $project->end);
-                if($delay > 0) $project->delay = $delay;
+                $betweenDays = $this->holiday->getDaysBetween($project->end, $today);
+                if($betweenDays)
+                {
+                    $delayDays = array_intersect($betweenDays, $workingDays);
+                    $delay     = count($delayDays) - 1;
+                    if($delay > 0) $project->delay = $delay;
+                }
             }
         }
 
@@ -617,7 +630,13 @@ class projectModel extends model
         if($this->config->edition != 'open')
         {
             $flow = $this->loadModel('workflow')->getByModule($module);
-            if(!empty($flow) && $flow->buildin == '0') return helper::createLink('flow', 'ajaxSwitchBelong', "objectID=%s&moduleName=$module") . '#app=' . $flow->app;
+            if(!empty($flow) && $flow->buildin == '0')
+            {
+                /* 工作流的所属视图可能是项目类型，需要转换为项目应用的代号。 */
+                $flowApp = $flow->app;
+                if(in_array($flowApp, array('scrum', 'waterfall', 'kanbanProject'))) $flowApp = 'project';
+                return helper::createLink('flow', 'ajaxSwitchBelong', "objectID=%s&moduleName=$module") . '#app=' . $flowApp;
+            }
         }
 
         $link    = helper::createLink('project', 'index', "projectID=%s");
@@ -1098,7 +1117,7 @@ class projectModel extends model
         $this->config->build->search['actionURL'] = helper::createLink($this->app->rawModule, $this->app->rawMethod, "{$objectIDField}=$projectID&browseType=bysearch&queryID=myQueryID");
         $this->config->build->search['queryID']   = (int)$queryID;
         $this->config->build->search['params']['product']['values'] = $products;
-        $this->config->build->search['params']['system']['values']  = $this->loadModel('system')->getPairs($queryID ? 0 : (int)$productID, '0');
+        $this->config->build->search['params']['system']['values']  = $this->loadModel('system')->getPairsByProducts(array_keys($products));
 
         $this->loadModel('search')->setSearchParams($this->config->build->search);
         return true;

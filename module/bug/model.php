@@ -1037,7 +1037,7 @@ class bugModel extends model
                 ->beginIF(!empty($productID) and $branchID != 'all')->andWhere('t1.branch')->eq($branchID)->fi()
                 ->beginIF($type == 'unresolved')->andWhere('t1.status')->eq('active')->fi()
                 ->beginIF($type == 'unclosed' || $type == 'noclosed')->andWhere('t1.status')->ne('closed')->fi()
-                ->beginIF($type == 'assignedtome')->andWhere('t1.`assignedTo`')->eq($this->app->user->account)->fi()
+                ->beginIF($type == 'assigntome' || $type == 'assignedtome')->andWhere('t1.`assignedTo`')->eq($this->app->user->account)->fi()
                 ->beginIF($type == 'openedbyme')->andWhere('t1.`openedBy`')->eq($this->app->user->account)->fi()
                 ->beginIF($type == 'resolvedbyme')->andWhere('t1.`resolvedBy`')->eq($this->app->user->account)->fi()
                 ->beginIF($type == 'assigntonull')->andWhere('t1.`assignedTo`')->eq('')->fi()
@@ -1050,6 +1050,7 @@ class bugModel extends model
                 ->beginIF($type == 'needconfirm')->andWhere('t3.status')->eq('active')->andWhere('t3.version > t1.`storyVersion`')->fi()
                 ->beginIF($type == 'review')->andWhere("FIND_IN_SET('{$this->app->user->account}', reviewers)")->fi()
                 ->beginIF($type == 'reviewedby')->andWhere("FIND_IN_SET('{$this->app->user->account}', `reviewedBy`)")->fi()
+                ->beginIF($type == 'feedback')->andWhere('t1.`feedback`')->ne('0')->fi()
                 ->beginIF(!empty($param))->andWhere('t2.path')->like("%,$param,%")->andWhere('t2.deleted')->eq(0)->fi()
                 ->beginIF($build)->andWhere("CONCAT(',', t1.`openedBuild`, ',') like '%,$build,%'")->fi()
                 ->beginIF($excludeBugs)->andWhere('t1.id')->notIN($excludeBugs)->fi()
@@ -1139,6 +1140,7 @@ class bugModel extends model
                 ->fi()
                 ->beginIF($type == 'review')->andWhere("FIND_IN_SET('{$this->app->user->account}', reviewers)")->fi()
                 ->beginIF($type == 'reviewedby')->andWhere("FIND_IN_SET('{$this->app->user->account}', `reviewedBy`)")->fi()
+                ->beginIF($type == 'feedback')->andWhere('t1.`feedback`')->ne('0')->fi()
                 ->beginIF($excludeBugs)->andWhere('t1.id')->notIN($excludeBugs)->fi()
                 ->orderBy($orderBy)
                 ->page($pager)
@@ -2342,5 +2344,48 @@ class bugModel extends model
             ->andWhere('t1.deleted')->eq(0)
             ->andWhere('t2.deleted')->eq(0)
             ->fetchAll('id');
+    }
+
+    /**
+     * 合并由Bug转化的任务动作到Bug。
+     * Merge converted task actions to bug actions
+     *
+     * @param  array  $actions
+     * @access public
+     * @return array
+     */
+    public function mergeTaskActions(array $actions): array
+    {
+        $this->loadModel('action');
+
+        /* 合并由Bug转化的任务动作到Bug。 */
+        $totalActions  = array();
+        $storyIdList   = array();
+        $sourceActions = $this->dao->select('*')->from(TABLE_ACTION)->where('id')->in(array_keys($actions))->fetchAll('id', false);
+        foreach($sourceActions as $actionID => $action)
+        {
+            $totalActions[$actionID] = $actions[$actionID];
+
+            if($action->action != 'converttotask' || empty($action->extra)) continue;
+
+            $taskActions = $this->action->getList('task', (int)$action->extra);
+            foreach($taskActions as $taskActionID => $taskAction)
+            {
+                if($taskAction->action == 'opened') continue;
+                $taskAction->from = 'feedback';
+                $totalActions[$taskActionID] = $taskAction;
+            }
+        }
+
+        /* 重新排序。 */
+        $actions   = array();
+        $orderList = $this->dao->select('id')->from(TABLE_ACTION)->where('id')->in(array_keys($totalActions))->orderBy('date,id')->fetchPairs('id', 'id');
+        foreach($orderList as $orderID)
+        {
+            if(!isset($totalActions[$orderID])) continue;
+            $actions[$orderID] = $totalActions[$orderID];
+        }
+
+        return $actions;
     }
 }

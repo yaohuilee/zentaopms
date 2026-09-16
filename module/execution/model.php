@@ -450,6 +450,35 @@ class executionModel extends model
             if((in_array($field, array('QD', 'RD')) && in_array($execution->attribute, array('request', 'design', 'review'))) || ($field == 'PO' && $execution->attribute == 'review')) $requiredFields = trim(str_replace(",{$field},", ',', ",{$requiredFields},"), ',');
         }
 
+        /* 关联产品和关联计划不在执行表中，单独校验。 */
+        if(strpos(",{$requiredFields},", ',products,') !== false)
+        {
+            $project = $this->loadModel('project')->fetchByID((int)$oldExecution->project);
+            if(empty($project) || !empty($project->hasProduct))
+            {
+                $products = array_filter((array)zget($postData, 'products', array()));
+                if(empty($products)) dao::$errors['products[0]'] = sprintf($this->lang->error->notempty, $this->lang->execution->manageProducts);
+            }
+            $requiredFields = trim(str_replace(',products,', ',', ",{$requiredFields},"), ',');
+        }
+        if(strpos(",{$requiredFields},", ',plans,') !== false)
+        {
+            $hasPlan = false;
+            $plans   = zget($postData, 'plans', array());
+            foreach((array)$plans as $productPlans)
+            {
+                if(!empty(array_filter((array)$productPlans))) $hasPlan = true;
+            }
+            if(!$hasPlan)
+            {
+                $planErrorKey = 'plans[0][]';
+                if(!empty($plans) && is_array($plans)) $planErrorKey = 'plans[' . key($plans) . '][]';
+                dao::$errors[$planErrorKey] = sprintf($this->lang->error->notempty, $this->lang->execution->linkPlan);
+            }
+            $requiredFields = trim(str_replace(',plans,', ',', ",{$requiredFields},"), ',');
+        }
+        if(dao::isError()) return false;
+
         /* Update data. */
         $this->lang->error->unique = $this->lang->error->repeat;
         $executionProject = isset($execution->project) ? $execution->project : $oldExecution->project;
@@ -1053,7 +1082,8 @@ class executionModel extends model
         if(dao::isError() && !empty(dao::$errors['realEnd']) && count(dao::$errors['realEnd']) > 1) dao::$errors['realEnd'] = dao::$errors['realEnd'][0];
         if(dao::isError()) return false;
 
-        $changes = common::createChanges($oldExecution, $execution);
+        $changes  = common::createChanges($oldExecution, $execution);
+        $actionID = 0;
         if($this->post->comment != '' || !empty($changes))
         {
             $this->loadModel('action');
@@ -2345,10 +2375,11 @@ class executionModel extends model
      * @param  string $actionURL
      * @param  string $type         executionStory
      * @param  object $execution
+     * @param  int    $productID
      * @access public
      * @return void
      */
-    public function buildStorySearchForm(array $products, array $branchGroups, array $modules, int $queryID, string $actionURL, string $type = 'executionStory', ?object $execution = null): void
+    public function buildStorySearchForm(array $products, array $branchGroups, array $modules, int $queryID, string $actionURL, string $type = 'executionStory', ?object $execution = null, int $productID = 0): void
     {
         $this->loadModel('productplan');
         $this->app->loadLang('branch');
@@ -2361,10 +2392,11 @@ class executionModel extends model
         $planPairs    = array();
 
         /* Get the relevant data for the search. */
-        foreach($products as $productID => $product)
+        $planProducts = $productID ? array($productID => $products[$productID]) : $products;
+        foreach($planProducts as $planProductID => $product)
         {
             $productPairs[$product->id] = $product->name;
-            $planGroup = $this->productplan->getBranchPlanPairs($productID, array(BRANCH_MAIN) + $product->branches, '', true);
+            $planGroup = $this->productplan->getBranchPlanPairs($planProductID, array(BRANCH_MAIN) + $product->branches, '', true);
             foreach($planGroup as $plans) $planPairs += $plans;
 
             if($product->type == 'normal') continue;
@@ -2374,7 +2406,7 @@ class executionModel extends model
             foreach($branches[$product->id] as $branchID => $branch)
             {
                 if(!isset($branchGroups[$product->id][$branchID])) continue;
-                if($branchID != BRANCH_MAIN) $branchPairs[$branchID] = ((count($products) > 1) ? $product->name . '/' : '') . $branchGroups[$product->id][$branchID];
+                if($branchID != BRANCH_MAIN) $branchPairs[$branchID] = ((count($planProducts) > 1) ? $product->name . '/' : '') . $branchGroups[$product->id][$branchID];
             }
         }
 
@@ -2387,6 +2419,7 @@ class executionModel extends model
         $this->config->product->search['params']['product']['values'] = $productPairs + array('all' => $this->lang->product->allProductsOfProject);
         $this->config->product->search['params']['plan']['values']    = $planPairs;
         $this->config->product->search['params']['module']['values']  = $modules;
+        $this->config->product->search['params']['release']['values'] = $this->loadModel('release')->getPairs(array(), $productID ? $productID : array_keys($products));
         $this->config->product->search['params']['status']            = array('operator' => '=', 'control' => 'select', 'values' => $this->lang->story->statusList);
         $this->config->product->search['params']['stage']['values']   = array('' => '') + $this->lang->story->stageList;
         if($productType == 'normal')
@@ -2410,6 +2443,7 @@ class executionModel extends model
             {
                 unset($this->config->product->search['fields']['plan']);
                 unset($this->config->product->search['params']['plan']);
+                unset($this->config->product->search['fields']['release'], $this->config->product->search['params']['release']);
             }
         }
 
@@ -2512,7 +2546,53 @@ class executionModel extends model
         $oldProductKeys = array_keys($oldProducts);
         $needUpdate     = array_merge(array_diff($oldProductKeys, $products), array_diff($products, $oldProductKeys));
         if($needUpdate) $this->user->updateUserView($needUpdate, 'product', $members);
+
+        $this->syncPlansToProject($executionID, $plans);
         return true;
+    }
+
+    /**
+     * 将执行关联的计划同步到所属项目。
+     * Sync execution linked plans to the parent project.
+     *
+     * @param  int   $executionID
+     * @param  array $plans
+     * @access public
+     * @return bool
+     */
+    public function syncPlansToProject(int $executionID, array $plans): bool
+    {
+        if(empty($plans)) return true;
+
+        $execution = $this->fetchByID($executionID);
+
+        $projectProducts = $this->dao->select('*')->from(TABLE_PROJECTPRODUCT)
+            ->where('project')->eq((int)$execution->project)
+            ->fetchAll();
+        if(empty($projectProducts)) return true;
+
+        $syncedProducts = array();
+        foreach($projectProducts as $projectProduct)
+        {
+            if(isset($syncedProducts[$projectProduct->product])) continue;
+
+            $newPlans = array_values(array_filter(array_map('intval', (array)zget($plans, $projectProduct->product, array()))));
+            $syncedProducts[$projectProduct->product] = true;
+            if(empty($newPlans)) continue;
+
+            $oldPlans = array_values(array_filter(array_map('intval', explode(',', trim((string)$projectProduct->plan, ',')))));
+            $merged   = array_values(array_unique(array_merge($oldPlans, $newPlans)));
+            if($oldPlans == $merged) continue;
+
+            $plan = empty($merged) ? 0 : ',' . implode(',', $merged) . ',';
+            $this->dao->update(TABLE_PROJECTPRODUCT)
+                ->set('plan')->eq($plan)
+                ->where('project')->eq((int)$execution->project)
+                ->andWhere('product')->eq($projectProduct->product)
+                ->exec();
+        }
+
+        return !dao::isError();
     }
 
     /**
@@ -2538,9 +2618,11 @@ class executionModel extends model
             ->fetchPairs('id');
 
         $branches = str_replace(',', "','", $branches);
-        return $this->dao->select('t1.*, t2.id AS storyID, t2.title AS storyTitle, t2.version AS latestStoryVersion, t2.status AS storyStatus, t3.realname AS assignedToRealName')->from(TABLE_TASK)->alias('t1')
+        return $this->dao->select('t1.*, t2.id AS `storyID`, t2.title AS `storyTitle`, t2.version AS `latestStoryVersion`, t2.status AS `storyStatus`, t3.realname AS `assignedToRealName`, t4.name AS `executionName`, t5.name AS `projectName`')->from(TABLE_TASK)->alias('t1')
             ->leftJoin(TABLE_STORY)->alias('t2')->on('t1.story = t2.id')
             ->leftJoin(TABLE_USER)->alias('t3')->on('t1.`assignedTo` = t3.account')
+            ->leftJoin(TABLE_EXECUTION)->alias('t4')->on('t1.execution = t4.id')
+            ->leftJoin(TABLE_PROJECT)->alias('t5')->on('t1.project = t5.id')
             ->where('t1.status')->in('wait,doing,pause,cancel')
             ->andWhere('t1.deleted')->eq(0)
             ->andWhere('t1.execution')->in(array_keys($executions))
@@ -2969,12 +3051,13 @@ class executionModel extends model
             $data->order   = ++ $lastOrder;
             $this->dao->replace(TABLE_PROJECTSTORY)->data($data)->exec();
 
-            $this->story->setStage($storyID);
             $this->linkCases($executionID, $data->product, $storyID);
 
             $action = $execution->type == 'project' ? 'linked2project' : 'linked2execution';
             if($action == 'linked2execution' and $execution->type == 'kanban') $action = 'linked2kanban';
             if($execution->multiple or $execution->type == 'project') $this->action->create('story', $storyID, $action, '', $executionID);
+
+            $this->story->setStage($storyID, array('type' => 'linkProject', 'objectID' => $executionID));
         }
 
         if(!isset($output['laneID']) or !isset($output['columnID'])) $this->kanban->updateLane($executionID);
@@ -3164,10 +3247,10 @@ class executionModel extends model
      */
     public function afterUnlinkStory(object $execution, int $storyID): bool
     {
-        $this->loadModel('story')->setStage($storyID);
         $this->unlinkCases($execution->id, $storyID);
         $actionType = $execution->type == 'project' ? 'unlinkedFromProject' : 'unlinkedFromExecution';
         if($execution->multiple || $execution->type == 'project') $this->loadModel('action')->create('story', $storyID, $actionType, '', $execution->id);
+        $this->loadModel('story')->setStage($storyID, array('type' => 'unlinkProject', 'objectID' => $execution->id));
 
         /* 从迭代中移除该需求，并记录日志。*/
         if(empty($execution->multiple) && $execution->type != 'project')
@@ -3919,6 +4002,8 @@ class executionModel extends model
         $orderBy = str_replace('t1.`storyTitle`', 't2.title', implode(',', $orderBy));
         $orderBy = str_replace(array('t1.pri_', 't1.`pri'), array('priOrder_', '`priOrder_'), $orderBy);
         $orderBy = preg_replace('/t1\.`?beginDate`?/', 'beginDate', $orderBy);
+        $orderBy = str_replace(array('t1.`executionName`', 't1.executionName'), 't1.execution', $orderBy);
+        $orderBy = str_replace(array('t1.`projectName`', 't1.projectName'), 't1.project', $orderBy);
 
         if(strpos($condition, 't1.') === false)
         {
@@ -3927,19 +4012,18 @@ class executionModel extends model
         $condition = str_replace("AND deleted = '0'", '', $condition);
 
         $tasks = $this->dao->select('DISTINCT t1.*,
-            t2.id AS storyID,
-            t2.title AS storyTitle,
+            t2.id AS `storyID`,
+            t2.title AS `storyTitle`,
             t2.product,
             t2.branch,
-            t2.version AS latestStoryVersion,
-            t2.status AS storyStatus,
-            t3.realname AS assignedToRealName,
-            IF(t1.`pri` = 0, 999, t1.`pri`) as priOrder,
-            IF(t1.`estStarted` IS NULL, t4.`begin`, t1.`estStarted`) as beginDate')
+            t2.version AS `latestStoryVersion`,
+            t2.status AS `storyStatus`,
+            t3.realname AS `assignedToRealName`,
+            IF(t1.`pri` = 0, 999, t1.`pri`) as `priOrder`,
+            t1.`estStarted` as `beginDate`')
             ->from(TABLE_TASK)->alias('t1')
             ->leftJoin(TABLE_STORY)->alias('t2')->on('t1.story = t2.id')
             ->leftJoin(TABLE_USER)->alias('t3')->on('t1.`assignedTo` = t3.account')
-            ->leftJoin(TABLE_EXECUTION)->alias('t4')->on('t1.execution = t4.id')
             ->where('t1.deleted')->eq(0)
             ->andWhere($condition)
             ->filterTpl(false)
@@ -5079,6 +5163,7 @@ class executionModel extends model
             $execution->hasChild    = !empty($execution->isParent);
             $execution->isParent    = !empty($execution->isParent) or !empty($execution->tasks);
             $execution->actions     = array();
+            $execution->progress    = (float)$execution->progress;
 
             if(isset($this->config->project->execution->dtable->actionsRule[$execution->projectModel]))
             {

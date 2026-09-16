@@ -16,6 +16,7 @@ $lang->artifact->deleteArtifact      = 'Delete Artifact';
 $lang->artifact->batchDeleteArtifact = 'Batch Delete Artifacts';
 $lang->artifact->copyCMD             = 'Copy Command';
 $lang->artifact->copied              = 'Copied Successfully';
+$lang->artifact->copyFail            = 'Copy failed, please copy manually';
 
 $lang->artifact->name          = 'Name';
 $lang->artifact->code          = 'Code';
@@ -70,8 +71,8 @@ $lang->artifact->notice = new stdclass();
 $lang->artifact->notice->deleteConfirm         = 'Are you sure to delete this Artifact Repository?';
 $lang->artifact->notice->noArtifact            = 'No Artifact Repository';
 $lang->artifact->notice->emptyAsset            = 'No Artifact';
-$lang->artifact->notice->nameNotSupportChinese = 'Name only supports English, numbers, underscores (_), dashes (-), and periods (.).';
-$lang->artifact->notice->dirNameFormatError    = 'Name only supports Chinese, English, numbers, underscores (_), dashes (-).';
+$lang->artifact->notice->nameNotSupportChinese = 'Name only supports small English, numbers, underscores (_), dashes (-), and periods (.).';
+$lang->artifact->notice->dirNameFormatError    = 'Name only supports Chinese, English, numbers, underscores (_), dashes (-), and periods (.).';
 $lang->artifact->notice->assetNameFormatError  = 'The name cannot contain \/:*?"<>|';
 $lang->artifact->notice->confirmDelete         = 'Delete after the file will be in the recycle bin for 30 days. After the timeout, the file will be unable to be restored.';
 $lang->artifact->notice->confirmDeleteDir      = 'Delete directory and all sub directories and files. Are you sure to delete it?';
@@ -92,3 +93,10 @@ $lang->artifact->formatList['container'] = 'Image Repository';
 //$lang->artifact->formatList['helm']      = 'Helm Repository';
 //$lang->artifact->formatList['maven']     = 'Maven Repository';
 //$lang->artifact->formatList['npm']       = 'NPM Repository';
+
+$lang->artifact->pushImageNotice = 'How to push an image';
+
+$lang->artifact->pushImageTip   = array();
+$lang->artifact->pushImageTip[] = array('title' => '1. Login to the registry',                                   'content' => 'docker login GITFOXURL');
+$lang->artifact->pushImageTip[] = array('title' => '2. Tag the image(replace the local image name and version)', 'content' => 'docker tag image-name:tag GITFOXURL/TYPECODE/LIBCODE/{image-name:tag}');
+$lang->artifact->pushImageTip[] = array('title' => '3. Push the image',                                          'content' => 'docker push GITFOXURL/TYPECODE/LIBCODE/{image-name:tag}');

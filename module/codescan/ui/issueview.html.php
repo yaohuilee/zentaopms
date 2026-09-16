@@ -40,8 +40,8 @@ if(!empty($fileIssueList))
                     (
                         label(setClass('ml-1 mr-2 size-sm rounded'), $fileIssue->id),
                         setClass('text-md my-2 line-clamp-2'),
-                        set::title($fileIssue->content),
-                        html($fileIssue->content)
+                        set::title($fileIssue->title),
+                        html($fileIssue->title)
                     )
                 )
             )
@@ -74,7 +74,7 @@ detailHeader
         entityLabel
         (
             set::level(1),
-            set::text($issue->content)
+            set::text($issue->title)
         ),
     )
 );

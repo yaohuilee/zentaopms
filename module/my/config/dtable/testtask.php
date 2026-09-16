@@ -19,11 +19,18 @@ $config->my->testtask->dtable->fieldList['pri']['title'] = $lang->priAB;
 $config->my->testtask->dtable->fieldList['pri']['type']  = 'pri';
 $config->my->testtask->dtable->fieldList['pri']['show']  = true;
 
-$config->my->testtask->dtable->fieldList['productName']['name']  = 'productName';
-$config->my->testtask->dtable->fieldList['productName']['title'] = $lang->testtask->product;
-$config->my->testtask->dtable->fieldList['productName']['type']  = 'text';
-$config->my->testtask->dtable->fieldList['productName']['group'] = 'text';
-$config->my->testtask->dtable->fieldList['productName']['show']  = true;
+$config->my->testtask->dtable->fieldList['type']['name']  = 'type';
+$config->my->testtask->dtable->fieldList['type']['title'] = $lang->testtask->type;
+$config->my->testtask->dtable->fieldList['type']['type']  = 'category';
+$config->my->testtask->dtable->fieldList['type']['map']   = $lang->testtask->typeList;
+$config->my->testtask->dtable->fieldList['type']['show']  = true;
+
+$config->my->testtask->dtable->fieldList['status']['name']      = 'status';
+$config->my->testtask->dtable->fieldList['status']['title']     = $lang->testtask->status;
+$config->my->testtask->dtable->fieldList['status']['type']      = 'status';
+$config->my->testtask->dtable->fieldList['status']['statusMap'] = $lang->testtask->statusList;
+$config->my->testtask->dtable->fieldList['status']['group']     = 'status';
+$config->my->testtask->dtable->fieldList['status']['show']      = true;
 
 $config->my->testtask->dtable->fieldList['buildName']['name']     = 'buildName';
 $config->my->testtask->dtable->fieldList['buildName']['title']    = $lang->testtask->build;
@@ -32,6 +39,12 @@ $config->my->testtask->dtable->fieldList['buildName']['link']     = array('modul
 $config->my->testtask->dtable->fieldList['buildName']['data-app'] = 'project';
 $config->my->testtask->dtable->fieldList['buildName']['group']    = 'text';
 $config->my->testtask->dtable->fieldList['buildName']['show']     = true;
+
+$config->my->testtask->dtable->fieldList['productName']['name']  = 'productName';
+$config->my->testtask->dtable->fieldList['productName']['title'] = $lang->testtask->product;
+$config->my->testtask->dtable->fieldList['productName']['type']  = 'text';
+$config->my->testtask->dtable->fieldList['productName']['group'] = 'text';
+$config->my->testtask->dtable->fieldList['productName']['show']  = true;
 
 $config->my->testtask->dtable->fieldList['executionName']['name']  = 'executionName';
 $config->my->testtask->dtable->fieldList['executionName']['title'] = $lang->testtask->execution;
@@ -63,11 +76,17 @@ $config->my->testtask->dtable->fieldList['end']['type']  = 'date';
 $config->my->testtask->dtable->fieldList['end']['group'] = 'user';
 $config->my->testtask->dtable->fieldList['end']['show']  = true;
 
-$config->my->testtask->dtable->fieldList['status']['name']      = 'status';
-$config->my->testtask->dtable->fieldList['status']['title']     = $lang->testtask->status;
-$config->my->testtask->dtable->fieldList['status']['type']      = 'status';
-$config->my->testtask->dtable->fieldList['status']['statusMap'] = $lang->testtask->statusList;
-$config->my->testtask->dtable->fieldList['status']['group']     = 'status';
+$config->my->testtask->dtable->fieldList['realBegan']['name']  = 'realBegan';
+$config->my->testtask->dtable->fieldList['realBegan']['title'] = $lang->testtask->realBegan;
+$config->my->testtask->dtable->fieldList['realBegan']['type']  = 'date';
+$config->my->testtask->dtable->fieldList['realBegan']['group'] = 'user';
+$config->my->testtask->dtable->fieldList['realBegan']['show']  = true;
+
+$config->my->testtask->dtable->fieldList['realFinishedDate']['name']  = 'realFinishedDate';
+$config->my->testtask->dtable->fieldList['realFinishedDate']['title'] = $lang->testtask->realFinishedDate;
+$config->my->testtask->dtable->fieldList['realFinishedDate']['type']  = 'date';
+$config->my->testtask->dtable->fieldList['realFinishedDate']['group'] = 'user';
+$config->my->testtask->dtable->fieldList['realFinishedDate']['show']  = true;
 
 $config->my->testtask->dtable->fieldList['actions']['name']     = 'actions';
 $config->my->testtask->dtable->fieldList['actions']['title']    = $lang->actions;

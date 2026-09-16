@@ -710,7 +710,7 @@ class pipeline extends control
                 $task->name  = $plugin->name;
                 $task->type  = $plugin->kind;
                 $task->alias = $plugin->alias;
-                $task->icon  = 'code';
+                $task->image = $this->config->webRoot . 'static/svg/pipeline-' . $plugin->name . '.svg';
                 $tasks[] = $task;
             }
             $object->tasks = $tasks;
@@ -728,7 +728,7 @@ class pipeline extends control
      * @access public
      * @return void
      */
-    public function ajaxGetStepSchema(string $stepName)
+    public function ajaxGetStepSchema(string $stepName, int $pipelineID = 0, string $params = '')
     {
         $stepSchema = $this->pipeline->getStepSchema($stepName);
         if(dao::isError())
@@ -736,6 +736,26 @@ class pipeline extends control
             $error = dao::getError();
             return $this->sendError(zget($error, 'apiMessage', 'api error'));
         }
+
+        $pipeline = $this->pipeline->fetchByID($pipelineID);
+        $renderSchemaKeywords = $this->pipelineZen->renderSchemaKeywords($pipeline, $params);
+
+        foreach($renderSchemaKeywords as $key => $link)
+        {
+            $stepSchema = str_replace('%%' . $key . '%%', $link, $stepSchema);
+        }
+
+
+        $schemaArtifactTypes = array('dockerArtifactLibTree' => 'container', 'fileArtifactLibTree' => 'file');
+        foreach($schemaArtifactTypes as $mark => $type)
+        {
+            $token = '%%' . $mark . '%%';
+            if(strpos($stepSchema, $token) === false) continue;
+
+            $artifactLibItems = $this->pipelineZen->buildArtifactLibSchemaItems('space,repo', $type);
+            $stepSchema       = str_replace('"' . $token . '"', json_encode($artifactLibItems), $stepSchema);
+        }
+
         $this->send(array('result' => 'success', 'data' => $stepSchema));
     }
 
@@ -1163,5 +1183,102 @@ class pipeline extends control
         $this->view->logs      = $execution->logs ? $logs : '';
 
         $this->display();
+    }
+
+    /**
+     * 获取运行器。
+     * Get runner.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxGetRunners()
+    {
+        $runners = $this->loadModel('runner')->getList();
+
+        $runnerList = array();
+        if(empty($runners)) return $runnerList;
+
+        foreach($runners as $runner)
+        {
+            if(empty($runner->runtime)) continue;
+
+            $runner->runtimeAction = $runner->runtime == 'Docker' ? $runner->runtime : $runner->os . ' ' . $runner->runtime;
+            $runnerList[] = $runner;
+        }
+        $this->send(array('result' => 'success', 'data' => $runnerList));
+    }
+
+    /**
+     * 编排一个流水线。
+     * Arrange a pipeline.
+     *
+     * @param  int    $pipelineID
+     * @access public
+     * @return void
+     */
+    public function arrange(int $id, int $space = 0, int $repoID = 0, $type = 'space')
+    {
+        $this->commonAction($space);
+        if($repoID)
+        {
+            $this->checkRepoEmpty();
+            $repoID = $this->loadModel('repo')->saveState($repoID);
+
+            /* Set session. */
+            $this->loadModel('ci')->setMenu($repoID);
+        }
+        else
+        {
+            $this->session->set('repoID', '');
+        }
+
+        $this->view->title    = $this->lang->pipeline->pipeline . $this->lang->hyphen . $this->lang->pipeline->edit;
+        $this->view->pipeline = $this->pipeline->getByID($id);
+        $this->view->repoID   = $repoID;
+        $this->view->type     = $type;
+        $this->view->repo     = $this->loadModel('repo')->getByID($repoID);
+
+        $this->display();
+    }
+
+    /**
+     * 获取代码库列表。
+     * Get repo list.
+     *
+     * @param  int $spaceID
+     * @access public
+     * @return void
+     */
+    public function ajaxGetRepos(int $spaceID = 0)
+    {
+        $repos = $this->loadModel('gitfox')->apiGetRepos();
+        foreach($repos as $repo)
+        {
+            if($repo->scmType != 'git' || $repo->mirror) continue;
+            if($spaceID && $repo->spaceID != $spaceID) continue;
+
+            $repoList[] = array('value' => $repo->gitURL, 'text' => $repo->name, 'key' => $repo->name);
+        }
+
+        echo json_encode($repoList);
+    }
+
+    /**
+     * 获取当前用户可访问的制品库树。
+     * Get artifact lib picker tree items for step schema.
+     *
+     * 下拉数据源：以 空间/仓库 两级容器分组展示制品库，不含全局级(global)库。
+     * The picker tree groups artifact libs by space/repo, excludes global libs.
+     *
+     * @param  string $scope 制品库作用域，逗号分隔，取值 space/repo，空为不限
+     * @param  string $type  制品类型过滤，如 container(docker)/file，空为不限
+     * @access public
+     * @return void
+     */
+    public function ajaxGetArtifactLibs(string $scope = 'space,repo', string $type = 'container')
+    {
+        $items = $this->pipelineZen->buildArtifactLibSchemaItems($scope, $type);
+        echo json_encode($items);
     }
 }

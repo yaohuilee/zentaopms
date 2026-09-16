@@ -1,5 +1,14 @@
 <?php
 $config->upgrade = new stdclass();
+
+/* 升级完成后数据处理页的步骤配置，左侧步骤列表按此渲染，后续需要可追加（如文档升级、项目报告升级）。*/
+/* Data process steps after upgrade, the left step list is rendered by this config and can be extended later (e.g. docs, project reports). */
+$config->upgrade->dataProcessSteps = ['tableEngine', 'charset', 'dbView'];
+
+/* 升级数据处理流程自动执行时跳过的数据大表，残留检测与后台页面仍会处理。*/
+/* Large tables skipped during the automatic data process, which can still be handled by the residual check and admin pages. */
+$config->upgrade->dataProcessSkipTables = [TABLE_ACTION, TABLE_HISTORY, TABLE_METRICLIB];
+
 $config->upgrade->maxVersion = array();
 $config->upgrade->maxVersion['max2_0_rc1']     = '15_0_rc3';
 $config->upgrade->maxVersion['max2_0']         = '15_0';
@@ -83,7 +92,8 @@ $config->upgrade->maxVersion['max8_1']         = '22_1';
 $config->upgrade->maxVersion['max8_2']         = '22_2';
 $config->upgrade->maxVersion['max8_3']         = '22_3';
 $config->upgrade->maxVersion['max8_4']         = '22_4';
-$config->upgrade->maxVersion['max8_5']         = '22_5'; // max insert position.
+$config->upgrade->maxVersion['max8_5']         = '22_5';
+$config->upgrade->maxVersion['max8_6']         = '22_6'; // max insert position.
 
 $config->upgrade->bizVersion = array();
 $config->upgrade->bizVersion['biz1_0']          = '9_5_1';
@@ -204,8 +214,9 @@ $config->upgrade->bizVersion['biz13_0']         = '22_0';
 $config->upgrade->bizVersion['biz13_1']         = '22_1';
 $config->upgrade->bizVersion['biz13_2']         = '22_2';
 $config->upgrade->bizVersion['biz13_3']         = '22_3';
-$config->upgrade->bizVersion['biz13_4']         = '22_4'; // biz insert position.
-$config->upgrade->bizVersion['biz13_5']         = '22_5'; // biz insert position.
+$config->upgrade->bizVersion['biz13_4']         = '22_4';
+$config->upgrade->bizVersion['biz13_5']         = '22_5';
+$config->upgrade->bizVersion['biz13_6']         = '22_6'; // biz insert position.
 
 $config->upgrade->proVersion = array();
 $config->upgrade->proVersion['pro1_0']        = '3_1';
@@ -363,7 +374,8 @@ $config->upgrade->ipdVersion['ipd5_1']         = '22_1';
 $config->upgrade->ipdVersion['ipd5_2']         = '22_2';
 $config->upgrade->ipdVersion['ipd5_3']         = '22_3';
 $config->upgrade->ipdVersion['ipd5_4']         = '22_4';
-$config->upgrade->ipdVersion['ipd5_5']         = '22_5'; // ipd insert position.
+$config->upgrade->ipdVersion['ipd5_5']         = '22_5';
+$config->upgrade->ipdVersion['ipd5_6']         = '22_6'; // ipd insert position.
 
 $config->upgrade->lowerTables = array();
 $config->upgrade->lowerTables[$config->db->prefix . 'caseStep']       = $config->db->prefix . 'casestep';
@@ -412,7 +424,7 @@ $config->upgrade->discardedBugTypes['zh-tw']['designchange'] = '設計變更';
 $config->upgrade->discardedBugTypes['zh-tw']['newfeature']   = "新增需求";
 $config->upgrade->discardedBugTypes['zh-tw']['trackthings']  = '事務跟蹤';
 
-$config->upgrade->openModules  = array('action', 'admin', 'ai', 'bi', 'aiapp', 'api', 'automation', 'backup', 'block', 'branch', 'budget', 'bug', 'build', 'cache', 'caselib', 'chart', 'ci', 'client', 'common', 'company', 'compile', 'convert', 'cron', 'custom', 'datatable', 'dataview', 'dept', 'design', 'dev', 'dimension', 'doc', 'durationestimation', 'entry', 'execution', 'extension', 'file', 'git', 'gitlab', 'group', 'holiday', 'im', 'index', 'index.html', 'install', 'issue', 'jenkins', 'job', 'kanban', 'license', 'mail', 'message', 'metric', 'misc', 'mr', 'my', 'personnel', 'pipeline', 'product', 'productplan', 'productset', 'program', 'programplan', 'project', 'projectbuild', 'projectplan', 'projectrelease', 'projectstory', 'pivot', 'qa', 'release', 'repo', 'report', 'risk', 'score', 'screen', 'search', 'setting', 'sonarqube', 'sso', 'stage', 'stakeholder', 'story', 'subject', 'svn', 'task', 'testcase', 'testreport', 'testsuite', 'testtask', 'todo', 'tree', 'tutorial', 'upgrade', 'user', 'webhook', 'weekly', 'workestimation', 'gitea', 'gogs', 'transfer', 'zahost', 'zanode', 'editor', 'charter', 'roadmap', 'account', 'cne', 'host', 'instance', 'ops', 'serverroom', 'space', 'store', 'system', 'solution', 'demand', 'gitfox', 'epic', 'requirement', 'mark', 'zai', 'codescan', 'ppm', 'repobranchtype', 'repobranchrule', 'reporeviewflow', 'artifact', 'provider');
+$config->upgrade->openModules  = array('action', 'admin', 'ai', 'bi', 'aiapp', 'api', 'automation', 'backup', 'block', 'branch', 'budget', 'bug', 'build', 'cache', 'caselib', 'chart', 'ci', 'client', 'common', 'company', 'compile', 'convert', 'cron', 'custom', 'datatable', 'dataview', 'dept', 'design', 'dev', 'dimension', 'doc', 'durationestimation', 'entry', 'execution', 'extension', 'file', 'git', 'gitlab', 'group', 'holiday', 'im', 'index', 'index.html', 'install', 'issue', 'jenkins', 'job', 'kanban', 'license', 'mail', 'message', 'metric', 'misc', 'mr', 'my', 'personnel', 'pipeline', 'product', 'productplan', 'productset', 'program', 'programplan', 'project', 'projectbuild', 'projectplan', 'projectrelease', 'projectstory', 'pivot', 'qa', 'release', 'repo', 'report', 'risk', 'score', 'screen', 'search', 'setting', 'sonarqube', 'sso', 'stage', 'stakeholder', 'story', 'subject', 'svn', 'task', 'testcase', 'testreport', 'testsuite', 'testtask', 'todo', 'tree', 'tutorial', 'upgrade', 'user', 'webhook', 'weekly', 'workestimation', 'gitea', 'gogs', 'transfer', 'zahost', 'zanode', 'editor', 'charter', 'roadmap', 'account', 'cne', 'host', 'instance', 'ops', 'serverroom', 'space', 'store', 'system', 'solution', 'demand', 'gitfox', 'epic', 'requirement', 'mark', 'zai', 'codescan', 'ppm', 'repobranchtype', 'repobranchrule', 'reporeviewflow', 'artifact', 'provider', 'runner', 'errorlog');
 $config->upgrade->unsetModules = array('design', 'program', 'programplan', 'projectbuild', 'projectrelease', 'stage', 'stakeholder', 'product', 'branch', 'productplan', 'release', 'build', 'qa', 'bug', 'testcase', 'testtask', 'testreport', 'testsuite', 'caselib', 'automation', 'repo', 'ci', 'compile', 'jenkins', 'job', 'svn', 'gitlab', 'sonarqube', 'mr', 'git', 'report', 'sqlbuilder', 'feedback', 'faq', 'holiday', 'ops', 'host', 'serverroom', 'account', 'domain', 'service', 'deploy', 'conference', 'traincourse', 'pssp', 'baseline', 'classify', 'cm', 'cmcl', 'auditcl', 'reviewcl', 'process', 'activity', 'zoutput', 'auditplan', 'nc', 'subject', 'weekly', 'workestimation', 'issue', 'durationestimation', 'risk', 'opportunity', 'trainplan', 'gapanalysis', 'researchplan', 'researchreport', 'meeting', 'meetingroom', 'budget', 'reviewissue', 'reviewsetting', 'review', 'milestone', 'measurement', 'measrecord', 'assetlib', 'setting', 'im', 'client', 'ldap', 'dev', 'api', 'gitea', 'gogs', 'zanode', 'zahost');
 
 global $lang;

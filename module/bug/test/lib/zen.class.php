@@ -415,6 +415,8 @@ class bugZenTest extends baseTest
             'resultFilesCount'      => !empty($instance->view->resultFiles) ? count($instance->view->resultFiles) : 0,
             'plansCount'            => !empty($instance->view->plans) ? count($instance->view->plans) : 0,
             'casesCount'            => !empty($instance->view->cases) ? count($instance->view->cases) : 0,
+            'storiesCount'          => !empty($instance->view->bug->stories) ? count($instance->view->bug->stories) : 0,
+            'releasedBuildsCount'   => !empty($instance->view->releasedBuilds) ? count($instance->view->releasedBuilds) : 0,
         );
     }
 
@@ -1267,4 +1269,30 @@ class bugZenTest extends baseTest
             'executionOpenedBuilds' => !empty($instance->view->executionOpenedBuilds) ? count($instance->view->executionOpenedBuilds) : 0
         );
     }
+
+    /**
+     * Test getBranchOptions method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function getBranchOptionsTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('getBranchOptions', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }

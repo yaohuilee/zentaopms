@@ -139,7 +139,8 @@ class detail extends wg
         .ai-task-status .status-doing {color: #FAAE1A;}
         .ai-task-status .status-done {color: #3883FA;}
         .ai-task-status .status-cancel, .ai-task-status .status-closed {color: #9EA3B0;}
-        .detail-actions > div {margin-inline: auto; }
+        .detail-actions {pointer-events: none}
+        .detail-actions > div {margin-inline: auto; pointer-events: auto}
 CSS;
     }
 
@@ -228,11 +229,11 @@ CSS;
             set::id($objectID),
             set::object($object),
             set::title($title),
-            set::titleClass('text-lg text-clip font-bold'),
+            set::titleClass('text-lg font-bold'),
             set::titleProps(array('title' => empty($titleProps) ? $title : $titleProps)),
             set::type($objectType),
             set::color($color),
-            set::parentTitleClass('text-lg text-clip font-bold'),
+            set::parentTitleClass('text-lg font-bold'),
             set::parent($parent),
             set::parentID($parentID),
             set::parentUrl($parentUrl),
@@ -464,7 +465,8 @@ CSS;
     {
         global $config;
 
-        $mainSections = $this->buildMainSections();
+        $mainSections    = $this->buildMainSections();
+        $enableProcedure = !empty($config->enableAITeammate) && $config->edition != 'open';
         return div
         (
             setClass('detail-main flex-auto col gap-2 min-w-0'),
@@ -478,6 +480,14 @@ CSS;
             $this->block('sections'),
             !empty($config->enableAITeammate) && hasPriv('aitask', 'browse') ? $this->buildAITasks() : null,
             $this->children(),
+            $enableProcedure ? createWg
+            (
+                'aiprocedureentry',
+                [
+                    set::objectType($this->prop('objectType')),
+                    set::objectID((int)$this->prop('objectID'))
+                ]
+            ) : null,
             $this->buildHistory(),
             $this->buildActions()
         );

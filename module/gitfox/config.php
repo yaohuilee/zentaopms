@@ -133,14 +133,14 @@ $config->gitfox->downloadGitfoxURL['win']['arm']   = 'https://pkg.zentao.net/git
 $config->gitfox->installGitfox = array();
 $config->gitfox->installGitfox['linux'] = <<<EOT
 #!/bin/bash
-INSTALL_DIR="%s"
+INSTALL_DIR="{{INSTALL_DIR}}"
 if [ ! -d "\${INSTALL_DIR}" ]; then
     mkdir -p "\${INSTALL_DIR}"
 fi
 cd "\${INSTALL_DIR}" || { echo "Error: cd \${INSTALL_DIR} failed"; exit 1; }
 
 GITFOX_ZIP="gitfox_latest.zip"
-GITFOX_URL="%s"
+GITFOX_URL="{{GITFOX_URL}}"
 
 if command -v wget >/dev/null 2>&1; then
     wget --no-check-certificate -O "\${GITFOX_ZIP}" "\${GITFOX_URL}"
@@ -178,7 +178,7 @@ $config->gitfox->installGitfox['win'] = <<<EOT
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-set "INSTALL_DIR=%s"
+set "INSTALL_DIR={{INSTALL_DIR}}"
 if not exist "%INSTALL_DIR%" (
     mkdir "%INSTALL_DIR%"
 )
@@ -189,7 +189,7 @@ cd /d "%INSTALL_DIR%" || (
 )
 
 set "GITFOX_ZIP=gitfox_latest.zip"
-set "GITFOX_URL=%s"
+set "GITFOX_URL={{GITFOX_URL}}"
 
 where certutil >nul 2>&1
 if %errorlevel% equ 0 (
@@ -213,4 +213,89 @@ cscript //nologo "%temp%\unzip.vbs"
 del /f /q "%GITFOX_ZIP%"
 
 "%INSTALL_DIR%\gitfox.exe" install
+EOT;
+
+$config->gitfox->upgradeGitfox = array();
+$config->gitfox->upgradeGitfox['linux'] = <<<EOT
+#!/bin/bash
+INSTALL_DIR="{{INSTALL_DIR}}"
+if [ ! -d "\${INSTALL_DIR}" ]; then
+    mkdir -p "\${INSTALL_DIR}"
+fi
+cd "\${INSTALL_DIR}" || { echo "Error: cd \${INSTALL_DIR} failed"; exit 1; }
+
+GITFOX_ZIP="gitfox_latest.zip"
+GITFOX_URL="{{GITFOX_URL}}"
+
+if command -v wget >/dev/null 2>&1; then
+    wget --no-check-certificate -O "\${GITFOX_ZIP}" "\${GITFOX_URL}"
+elif command -v curl >/dev/null 2>&1; then
+    curl -k -L -o "\${GITFOX_ZIP}" "\${GITFOX_URL}"
+else
+    echo "Error: wget or curl is required"
+    exit 1
+fi
+
+if command -v unzip >/dev/null 2>&1; then
+    unzip -j -o "\${GITFOX_ZIP}" -d "\${INSTALL_DIR}"
+else
+    if command -v apt >/dev/null 2>&1; then
+        apt update && apt install -y unzip
+    elif command -v yum >/dev/null 2>&1; then
+        yum install -y unzip
+    elif command -v brew >/dev/null 2>&1; then
+        brew install unzip
+    else
+        echo "Error: unzip is required"
+        exit 1
+    fi
+    unzip -j -o "\${GITFOX_ZIP}" -d "\${INSTALL_DIR}"
+fi
+
+rm -f "\${GITFOX_ZIP}"
+
+chmod +x "\${INSTALL_DIR}/gitfox"
+GITFOX_LANG={$setLang} "\${INSTALL_DIR}/gitfox" upgrade
+EOT;
+
+$config->gitfox->upgradeGitfox['win'] = <<<EOT
+@echo off
+chcp 65001 >nul
+setlocal enabledelayedexpansion
+
+set "INSTALL_DIR={{INSTALL_DIR}}"
+if not exist "%INSTALL_DIR%" (
+    mkdir "%INSTALL_DIR%"
+)
+cd /d "%INSTALL_DIR%" || (
+    echo Error: cd "%INSTALL_DIR%" failed
+    pause
+    exit /b 1
+)
+
+set "GITFOX_ZIP=gitfox_latest.zip"
+set "GITFOX_URL={{GITFOX_URL}}"
+
+where certutil >nul 2>&1
+if %errorlevel% equ 0 (
+    certutil -urlcache -split -f "%GITFOX_URL%" "%GITFOX_ZIP%"
+) else (
+    bitsadmin /transfer "GitFoxInstall" "%GITFOX_URL%" "%cd%\%GITFOX_ZIP%"
+)
+
+if not exist "%GITFOX_ZIP%" (
+    echo Error: wget or curl is required
+    pause
+    exit /b 1
+)
+
+echo Set objShell = CreateObject("Shell.Application") > "%temp%\unzip.vbs"
+echo Set objSource = objShell.NameSpace("%cd%\%GITFOX_ZIP%") >> "%temp%\unzip.vbs"
+echo Set objTarget = objShell.NameSpace("%cd%") >> "%temp%\unzip.vbs"
+echo objTarget.CopyHere objSource.Items, 20 >> "%temp%\unzip.vbs"
+cscript //nologo "%temp%\unzip.vbs"
+
+del /f /q "%GITFOX_ZIP%"
+
+"%INSTALL_DIR%\gitfox.exe" upgrade
 EOT;

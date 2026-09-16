@@ -146,8 +146,9 @@ class testsuite extends control
             $this->file->updateObjectID($this->post->uid, $suiteID, 'testsuite');
             $message = $this->executeHooks($suiteID) ? : $this->lang->testsuite->successSaved;
 
-            if($this->viewType == 'json') return $this->send(array('result' => 'success', 'message' => $message, 'id' => $suiteID));
-            return $this->send(array('result' => 'success', 'message' => $message, 'locate' => $this->inlink('browse', "productID=$productID")));
+            $objectChanges = array('type' => 'add', 'objectType' => 'testsuite', 'objectList' => array($suiteID));
+            if($this->viewType == 'json') return $this->send(array('result' => 'success', 'message' => $message, 'id' => $suiteID, 'changes' => $objectChanges));
+            return $this->send(array('result' => 'success', 'message' => $message, 'locate' => $this->inlink('browse', "productID=$productID"), 'changes' => $objectChanges));
         }
 
         /* 设置1.5级导航。 */
@@ -336,7 +337,7 @@ class testsuite extends control
         unset($this->config->testcase->search['fields']['branch']);
         unset($this->config->testcase->search['params']['branch']);
 
-        if(!$this->config->testcase->needReview) unset($this->config->testcase->search['params']['status']['values']['wait']);
+        if(!$this->config->testcase->needReview && empty($this->config->testcase->forceReview)) unset($this->config->testcase->search['params']['status']['values']['wait']);
         $this->loadModel('search')->setSearchParams($this->config->testcase->search);
 
         $this->view->title      = $suite->name . $this->lang->hyphen . $this->lang->testsuite->linkCase;

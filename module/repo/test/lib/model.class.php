@@ -409,7 +409,7 @@ class repoModelTest extends baseTest
 
         if(dao::isError()) return dao::getError();
 
-        return $objects;
+        return $objects['product'];
     }
 
     public function getRepoGroupItemsTest(string $type, int $projectID = 0, int $index = 0)
@@ -438,6 +438,85 @@ class repoModelTest extends baseTest
         $entry = zendata('entry')->loadYaml('entry', true, 2);
         $entry->key->range($key);
         $entry->gen(1);
+    }
+
+    /**
+     * 通过 GitFox 接口创建测试空间。
+     * Create a test space by GitFox api.
+     *
+     * @access public
+     * @return object
+     */
+    public function createGitFoxSpaceTest(): object
+    {
+        $suffix = date('YmdHis') . mt_rand(1000, 9999);
+        $space  = $this->instance->loadModel('gitfox')->apiCreateSpace((object)array(
+            'name'      => "ut-repo-space-{$suffix}",
+            'code'      => "utrepospace{$suffix}",
+            'desc'      => 'repo unit test space',
+            'acl'       => 'open',
+            'auth'      => 'extend',
+            'createdBy' => $this->instance->app->user->account,
+        ));
+
+        dao::$errors = array();
+        if(!empty($space->id)) return $space;
+
+        $result       = new stdclass();
+        $result->id   = 0;
+        $result->name = '';
+        return $result;
+    }
+
+    /**
+     * 判断测试空间是否创建成功。
+     * Check whether the test space is created successfully.
+     *
+     * @param  object $space
+     * @access public
+     * @return string
+     */
+    public function hasGitFoxSpaceTest(object $space): string
+    {
+        return empty($space->id) ? '0' : '1';
+    }
+
+    /**
+     * 通过 GitFox 接口删除测试空间。
+     * Delete the test space by GitFox api, and remove the repo records of the space.
+     *
+     * @param  int $spaceID
+     * @access public
+     * @return bool
+     */
+    public function deleteGitFoxSpaceTest(int $spaceID): bool
+    {
+        /* GitFox 判断空间是否可删除时，会检查空间下的代码库记录和制品库记录，即使代码库已被删除也会阻止空间删除，因此这里需要物理删除测试产生的记录。 */
+        $this->instance->dao->delete()->from(TABLE_REPO)->where('spaceID')->eq($spaceID)->exec();
+        $this->instance->dao->delete()->from(TABLE_ARTIFACT)->where('spaceID')->eq($spaceID)->exec();
+
+        $result = $this->instance->loadModel('gitfox')->apiDeleteSpace($spaceID);
+        dao::$errors = array();
+        return (bool)$result;
+    }
+
+    /**
+     * 删除 GitFox 服务上的仓库，用于清理测试产生的数据。
+     * Delete repo on GitFox server, used to clean the data created by test.
+     *
+     * @param  int $repoID
+     * @access public
+     * @return bool
+     */
+    public function deleteGitFoxRepoTest(int $repoID): bool
+    {
+        $gitfox  = $this->instance->loadModel('gitfox');
+        $apiRoot = $gitfox->getApiRoot();
+        $url     = sprintf($apiRoot->url, "/repos/{$repoID}/");
+        $result  = json_decode(common::http($url, null, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $apiRoot->header, 'json', 'DELETE'));
+        dao::$errors = array();
+
+        return !empty($result->code) && $result->code == 'success';
     }
 
     public function getRepoByIDTest($repoID)
@@ -2708,6 +2787,32 @@ SQL);
     }
 
     /**
+     * Test backfillGitFoxWebhookSecret method.
+     *
+     * @access public
+     * @return object
+     */
+    public function backfillGitFoxWebhookSecretTest(): object
+    {
+        $result          = new stdclass();
+        $result->result  = $this->instance->backfillGitFoxWebhookSecret();
+        if(dao::isError()) return dao::getError();
+
+        $result->updatedCount = $this->instance->dao->select('COUNT(*) AS count')->from(TABLE_OPSWEBHOOK)
+            ->where('authMethod')->eq('token')
+            ->andWhere('authHeader')->eq('X-Gitfox-Token')
+            ->fetch('count');
+        $result->hook1 = $this->instance->dao->select('*')->from(TABLE_OPSWEBHOOK)->where('id')->eq(1)->fetch();
+        $result->hook2 = $this->instance->dao->select('*')->from(TABLE_OPSWEBHOOK)->where('id')->eq(2)->fetch();
+        $result->hook3 = $this->instance->dao->select('*')->from(TABLE_OPSWEBHOOK)->where('id')->eq(3)->fetch();
+        $result->hook4 = $this->instance->dao->select('*')->from(TABLE_OPSWEBHOOK)->where('id')->eq(4)->fetch();
+        $result->hook5 = $this->instance->dao->select('*')->from(TABLE_OPSWEBHOOK)->where('id')->eq(5)->fetch();
+        $result->hook8 = $this->instance->dao->select('*')->from(TABLE_OPSWEBHOOK)->where('id')->eq(8)->fetch();
+
+        return $result;
+    }
+
+    /**
      * Test parseRepoAcl method.
      *
      * @param  string $aclJson
@@ -3107,4 +3212,30 @@ SQL);
         if(dao::isError()) return dao::getError();
         return $result;
     }
+
+    /**
+     * Test loadMaintainSpacePrivs method.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function loadMaintainSpacePrivsTest(...$args)
+    {
+        try
+        {
+            ob_start();
+            $result = $this->invokeArgs('loadMaintainSpacePrivs', $args);
+            $echoed = ob_get_clean();
+            if($echoed !== '') return 'echo_yes';
+            if(dao::isError()) return 'daoError:' . json_encode(dao::getError(), JSON_UNESCAPED_UNICODE);
+            return $result;
+        }
+        catch(Throwable $e)
+        {
+            if(ob_get_level()) ob_end_clean();
+            if($e instanceof EndResponseException) return 0;
+            return 'error:' . get_class($e);
+        }
+    }
+
 }
