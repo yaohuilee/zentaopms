@@ -1803,7 +1803,7 @@ class my extends control
      */
     public function ajaxSaveVisionTips()
     {
-        $this->loadModel('setting')->setItem("{$this->app->user->account}.common.global.hideVisionTips", 1);
+        if(isset($this->app->user->account)) $this->loadModel('setting')->setItem("{$this->app->user->account}.common.global.hideVisionTips", 1);
         return $this->send(array('result' => 'success', 'load' => helper::createLink('index', 'index')));
     }
 
