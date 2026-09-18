@@ -1374,6 +1374,7 @@ class api extends router
     protected function prepareV2Module()
     {
         $this->setParams();
+        $this->validateProductBugBrowseType();
         $this->validateProjectBrowseType();
         $this->validateProjectReviewFilter();
 
@@ -1416,6 +1417,24 @@ class api extends router
             $required = $this->params['browseType'] == 'review' ? array('reviewers', 'reviewstatus') : array('reviewedby');
             foreach($required as $field) if(!isset($fields[$field])) $this->sendV2Error('当前版本不支持项目评审筛选。');
         }
+    }
+
+    /** 产品 Bug 列表兼容公开参数拼写，未知值不得伪装成成功空结果。 */
+    protected function validateProductBugBrowseType(): void
+    {
+        if($this->apiVersion != 'v2' || $this->action != 'get' || $this->moduleName != 'bug' || $this->methodName != 'browse') return;
+        if(!array_key_exists('browseType', $this->params)) return;
+        if(!isset($this->config->bug->browseTypeList)) $this->loadConfig('bug');
+        $allowed = $this->config->bug->browseTypeList;
+        $value   = $this->params['browseType'];
+        if(is_string($value)) $value = strtolower($value);
+        if($value === 'assignedtome') $value = 'assigntome';
+        if(!is_string($value) || !in_array($value, $allowed, true))
+        {
+            $display = is_scalar($value) ? substr((string)$value, 0, 80) : gettype($value);
+            $this->sendV2Error('不支持 browseType=' . $display . '。此接口允许的值：' . implode(', ', $allowed) . '；assignedtome 为 assigntome 的兼容别名。');
+        }
+        $this->params['browseType'] = $value;
     }
 
     /** 项目相关列表拒绝未知筛选值，不将模型猜测解释为查询无结果。 */
