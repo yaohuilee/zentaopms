@@ -226,9 +226,9 @@ class programModel extends model
             ->beginIF($status == 'unclosed')->andWhere('status')->ne('closed')->fi()
             ->beginIF($status == 'delayed')->andWhere('end')->gt('1970-1-1')->andWhere('end')->lt(date(DT_DATE1))->andWhere('status')->notin('done,closed,suspended')->fi()
             ->beginIF($this->app->rawMethod == 'browse' && $type === 'top')->andWhere('parent')->eq(0)->fi()
+            ->beginIF($this->app->rawMethod == 'browse' && $type === 'top' && !empty($topIdList))->andWhere('id')->in($topIdList)->fi()
             ->beginIF($this->app->rawMethod == 'browse' && ($type === 'child' or !$this->app->user->admin))->andWhere('id')->in($objectIdList)->fi()
             ->beginIF(!$this->app->user->admin && $this->app->rawMethod != 'browse')->andWhere('id')->in($userViewIdList)->fi()
-            ->beginIF(helper::isApiRequest() && !$this->cookie->showClosed)->andWhere('status')->ne('closed')->fi()
             ->orderBy($orderBy)
             ->page($pager)
             ->fetchAll('id');

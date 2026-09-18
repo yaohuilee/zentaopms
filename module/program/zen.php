@@ -127,8 +127,23 @@ class programZen extends program
         }
         else
         {
-            /* Get top programs and projects. */
-            $topObjects = $this->program->getList($status == 'unclosed' ? 'doing,suspended,wait' : $status, $orderBy, 'top', array(), $pager);
+            /* API 按包含匹配节点的顶层分支分页，父节点状态不应遮蔽匹配的子节点。 */
+            if(helper::isApiRequest() && $status != 'all')
+            {
+                $matches = $this->program->getList($status, $orderBy);
+                $topIDs  = array();
+                foreach($matches as $match)
+                {
+                    $topID = $this->program->getTopByPath($match->path);
+                    if($topID) $topIDs[$topID] = $topID;
+                }
+                $topObjects = $this->program->getList('all', $orderBy, 'top', $topIDs ? array_values($topIDs) : array(0), $pager);
+            }
+            else
+            {
+                /* Get top programs and projects. */
+                $topObjects = $this->program->getList($status == 'unclosed' ? 'doing,suspended,wait' : $status, $orderBy, 'top', array(), $pager);
+            }
             if(!$topObjects) $topObjects = array(0);
 
             $programs = $this->program->getList($status, $orderBy, 'child', array_keys($topObjects));
