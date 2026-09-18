@@ -1238,6 +1238,9 @@ class api extends router
         }
 
         $params = array_merge($this->params, $_POST);
+        /* The program controller's UI fallback must not substitute an API resource ID. */
+        $programProjects = $this->apiVersion == 'v2' && $this->action == 'get' && $this->moduleName == 'program' && $this->methodName == 'project';
+        if($programProjects && empty($params['programID'])) return $this->control->sendError('Program does not exist.');
         foreach($params as $key => $value)
         {
             if(!isset($objectMap[$key]) || !$value) continue;
@@ -1249,6 +1252,7 @@ class api extends router
 
             foreach($result as $object)
             {
+                if($programProjects && $key == 'programID' && $object->type != 'program') return $this->control->sendError('Program does not exist.');
                 if(!$this->checkObjectPriv($object, $table)) return $this->control->sendError(ucfirst(str_replace('ID', '', $key)) . ' is not allowed.');
             }
         }
