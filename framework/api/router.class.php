@@ -1509,6 +1509,14 @@ class api extends router
             }
         }
 
+        /* Preserve an omitted task story before edit-form defaults can unlink it. */
+        if($this->apiVersion == 'v2' && $this->action == 'put' && $this->control->moduleName == 'task' && $this->methodName == 'edit' && !array_key_exists('story', $postData))
+        {
+            $currentTask = $this->control->loadModel('task')->getByID((int)$this->params['taskID']);
+            if(!$currentTask) throw new Exception('Cannot preserve task story: task not found.');
+            $_POST['story'] = $currentTask->story;
+        }
+
         $this->mergeWorkflowFields();
     }
 
