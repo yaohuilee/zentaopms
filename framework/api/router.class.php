@@ -1374,6 +1374,7 @@ class api extends router
     protected function prepareV2Module()
     {
         $this->setParams();
+        $this->validateProjectBrowseType();
         $this->validateProjectReviewFilter();
 
         if(in_array($this->action, array('post', 'put', 'delete')))
@@ -1415,6 +1416,27 @@ class api extends router
             $required = $this->params['browseType'] == 'review' ? array('reviewers', 'reviewstatus') : array('reviewedby');
             foreach($required as $field) if(!isset($fields[$field])) $this->sendV2Error('当前版本不支持项目评审筛选。');
         }
+    }
+
+    /** 项目相关列表拒绝未知筛选值，不将模型猜测解释为查询无结果。 */
+    protected function validateProjectBrowseType(): void
+    {
+        if($this->apiVersion != 'v2' || $this->action != 'get') return;
+        $projectList = ($this->moduleName == 'project' && $this->methodName == 'browse') || ($this->moduleName == 'program' && $this->methodName == 'project');
+        $programList = $this->moduleName == 'program' && $this->methodName == 'browse';
+        if(!$projectList && !$programList) return;
+        if(!array_key_exists('browseType', $this->params)) return;
+
+        $allowed = $projectList
+            ? array('all', 'undone', 'unclosed', 'wait', 'doing', 'suspended', 'closed', 'delayed', 'involved', 'bysearch', 'review', 'reviewedby')
+            : array('all', 'unclosed', 'wait', 'doing', 'suspended', 'closed', 'delayed', 'bysearch');
+        $value = $this->params['browseType'];
+        if(!is_string($value) || !in_array(strtolower($value), $allowed, true))
+        {
+            $display = is_scalar($value) ? substr((string)$value, 0, 80) : gettype($value);
+            $this->sendV2Error('不支持 browseType=' . $display . '。此接口允许的值：' . implode(', ', $allowed) . '。');
+        }
+        $this->params['browseType'] = strtolower($value);
     }
 
     /**
