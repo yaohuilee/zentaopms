@@ -835,6 +835,7 @@ class api extends router
 
         $this->setModuleName($moduleName);
         $this->setMethodName($methodName);
+        $this->validateAPIAvailability();
         $this->setControlFile();
         $this->prepareRedirectParams();
 
@@ -955,8 +956,19 @@ class api extends router
      */
     protected function resolveDefaultParams(): array
     {
+        $this->validateAPIAvailability();
         if($this->resolvedDefaultParams !== null) return $this->resolvedDefaultParams;
         return $this->resolvedDefaultParams = $this->getDefaultParams();
+    }
+
+    /** 缺失的可选模块应返回 API 错误，不进入控制器加载异常。 */
+    protected function validateAPIAvailability(): void
+    {
+        if($this->apiVersion == 'v2' && in_array($this->moduleName, array('ticket', 'feedback'), true))
+        {
+            $modulePath = $this->getModulePath();
+            if(!is_file($modulePath . 'control.php')) $this->sendV2Error('当前版本未提供此功能。');
+        }
     }
 
     /**
@@ -1252,6 +1264,10 @@ class api extends router
 
             foreach($result as $object)
             {
+                if($this->apiVersion == 'v2' && $this->action == 'get' && $this->moduleName == 'bug' && $this->methodName == 'view' && $key == 'bugID')
+                {
+                    if(!empty($object->execution) && !$this->loadModel('execution')->checkPriv((int)$object->execution)) $this->sendV2Error('无权访问该 Bug 所属的执行。');
+                }
                 if($programProjects && $key == 'programID' && $object->type != 'program') return $this->control->sendError('Program does not exist.');
                 if(!$this->checkObjectPriv($object, $table)) return $this->control->sendError(ucfirst(str_replace('ID', '', $key)) . ' is not allowed.');
             }
@@ -1358,6 +1374,7 @@ class api extends router
     protected function prepareV2Module()
     {
         $this->setParams();
+        $this->validateProjectReviewFilter();
 
         if(in_array($this->action, array('post', 'put', 'delete')))
         {
@@ -1389,6 +1406,17 @@ class api extends router
         return $this->transformer;
     }
 
+    /** 开源版没有评审字段时，在执行查询前明确拒绝该筛选。 */
+    protected function validateProjectReviewFilter(): void
+    {
+        if($this->action == 'get' && (($this->moduleName == 'project' && $this->methodName == 'browse') || ($this->moduleName == 'program' && $this->methodName == 'project')) && in_array($this->params['browseType'] ?? '', array('review', 'reviewedby'), true))
+        {
+            $fields = $this->dao->descTable(TABLE_PROJECT);
+            $required = $this->params['browseType'] == 'review' ? array('reviewers', 'reviewstatus') : array('reviewedby');
+            foreach($required as $field) if(!isset($fields[$field])) $this->sendV2Error('当前版本不支持项目评审筛选。');
+        }
+    }
+
     /**
      * 根据路由 transform 参数转换请求。
      * Transform request by the route transform parameter.
@@ -1413,7 +1441,56 @@ class api extends router
     protected function applyRouteResponseTransform(string $output): string
     {
         $name = zget($this->originRouteInfo, 'transform', '');
-        return $this->getTransformer()->transformResponse($name, $output);
+        return $this->appendManagerIdentity($this->getTransformer()->transformResponse($name, $output));
+    }
+
+    /** 为已授权返回的项目和项目集补充统一身份字段，不改变原 PM。 */
+    protected function appendManagerIdentity(string $output): string
+    {
+        if($this->apiVersion != 'v2' || $this->action != 'get' || !in_array($this->moduleName, array('program', 'project'), true)) return $output;
+        $data = json_decode($output);
+        if(!is_object($data) || ($data->status ?? '') != 'success') return $output;
+
+        $records = array();
+        foreach(array('projects', 'programs', 'project', 'program') as $key)
+        {
+            if(!isset($data->$key)) continue;
+            $items = in_array($key, array('project', 'program'), true) ? array($data->$key) : $data->$key;
+            if(!is_array($items) && !is_object($items)) continue;
+            foreach($items as $item)
+            {
+                if(is_object($item) && !empty($item->id) && property_exists($item, 'PM')) $records[] = $item;
+            }
+        }
+        if(!$records) return $output;
+
+        $ids = array();
+        foreach($records as $record) $ids[] = (int)$record->id;
+        $identities = $this->getManagerIdentities(array_values(array_unique($ids)));
+        foreach($records as $record)
+        {
+            if(!isset($identities[$record->id])) continue;
+            foreach($identities[$record->id] as $key => $value) $record->$key = $value;
+        }
+        $encoded = json_encode($data, JSON_UNESCAPED_UNICODE);
+        return $encoded === false ? $output : $encoded;
+    }
+
+    /** 仅查询响应中已有对象的负责人，批量查询，避免逐行访问数据库。 */
+    protected function getManagerIdentities(array $ids): array
+    {
+        if(!$ids) return array();
+        $projects = $this->dao->select('id,PM')->from(TABLE_PROJECT)->where('id')->in($ids)->andWhere('type')->in('program,project')->andWhere('deleted')->eq(0)->fetchAll('id');
+        $accounts = array();
+        foreach($projects as $project) if($project->PM !== '') $accounts[] = $project->PM;
+        $users = $accounts ? $this->dao->select('id,account,realname')->from(TABLE_USER)->where('account')->in(array_unique($accounts))->fetchAll('account') : array();
+        $result = array();
+        foreach($projects as $project)
+        {
+            $user = $users[$project->PM] ?? null;
+            $result[$project->id] = array('PMAccount' => (string)$project->PM, 'PMName' => $user ? (string)($user->realname ?: $project->PM) : (string)$project->PM, 'PMUserID' => $user ? (int)$user->id : 0);
+        }
+        return $result;
     }
 
     /**
