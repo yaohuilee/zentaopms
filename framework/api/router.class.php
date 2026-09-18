@@ -1469,6 +1469,7 @@ class api extends router
         $this->checkAccess();
 
         /* 其他方法不需要从GET页面获取post data。Other request directly. */
+        $this->normalizeTestcaseStepInput();
         if(!in_array($this->methodName, ['create', 'edit', 'change'])) return;
 
         /* 更新操作的表单需要拼接原始的值。 Merge original values. */
@@ -1510,6 +1511,55 @@ class api extends router
         }
 
         $this->mergeWorkflowFields();
+    }
+
+    /**
+     * Normalize API v2 testcase step arrays before any model writes.
+     * Omitted types are ordinary steps; explicit parallel arrays must align.
+     */
+    protected function normalizeTestcaseStepInput(): void
+    {
+        if($this->apiVersion != 'v2' || $this->control->moduleName != 'testcase') return;
+        if(!(($this->action == 'put' && $this->methodName == 'edit') || ($this->action == 'post' && $this->methodName == 'create'))) return;
+        if(!array_key_exists('steps', $_POST))
+        {
+            if($this->action != 'put') return;
+            if(array_key_exists('expects', $_POST) || array_key_exists('stepType', $_POST))
+                $this->sendV2Error('steps is required when expects or stepType is supplied.');
+
+            /* Preserve omitted steps, including group hierarchy, before form defaults. */
+            $currentCase = $this->control->loadModel('testcase')->getByID((int)$this->params['caseID']);
+            if(!$currentCase) $this->sendV2Error('Testcase not found.');
+            $_POST['steps'] = $_POST['expects'] = $_POST['stepType'] = array();
+            foreach($currentCase->steps as $step)
+            {
+                $key = $step->name;
+                $_POST['steps'][$key] = $step->desc;
+                $_POST['expects'][$key] = $step->expect;
+                $_POST['stepType'][$key] = $step->type;
+            }
+            return;
+        }
+        if(!is_array($_POST['steps'])) $this->sendV2Error('steps must be an array.');
+
+        $keys = array_keys($_POST['steps']);
+        foreach(array('stepType', 'expects') as $field)
+        {
+            if(!array_key_exists($field, $_POST))
+            {
+                $_POST[$field] = array_fill_keys($keys, $field == 'stepType' ? 'step' : '');
+                continue;
+            }
+            if(!is_array($_POST[$field]) || count($_POST[$field]) != count($keys) || array_diff_key($_POST['steps'], $_POST[$field]) || array_diff_key($_POST[$field], $_POST['steps']))
+                $this->sendV2Error($field . ' must have the same keys and length as steps.');
+        }
+        foreach($keys as $key)
+        {
+            if(!is_string($_POST['steps'][$key]) || !is_string($_POST['expects'][$key]))
+                $this->sendV2Error('Step descriptions and expectations must be strings.');
+            if(!in_array($_POST['stepType'][$key], array('step', 'group', 'item'), true))
+                $this->sendV2Error('Invalid stepType: expected step, group or item.');
+        }
     }
 
     /**
