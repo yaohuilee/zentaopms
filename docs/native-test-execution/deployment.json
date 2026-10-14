@@ -1,0 +1,71 @@
+{
+  "status": "deployed",
+  "task": 65277,
+  "bug": 22130,
+  "apiVersion": "22.6 scoped native execution patch",
+  "mcpTools": 125,
+  "health": [
+    "healthy",
+    "healthy"
+  ],
+  "unchangedOtherContainers": 20,
+  "databaseSchemaUnchanged": true,
+  "backupVerified": true,
+  "rollback": "scope files/schema/old MCP compose; no automatic DB restore after user writes",
+  "files": [
+    {
+      "path": "api/v1/entries/testresults.php",
+      "sha256": "b89bf022a2988848fff5fec5aaee9ff1451f3dcd059b28191b6635bc55b3e8bb",
+      "baseSha256": "a69b0787af9970aaf02c57a5bef183ad1daf5455e0436caa66f1e06716d83b91",
+      "runtimeOverlay": false
+    },
+    {
+      "path": "framework/api/router.class.php",
+      "sha256": "89e88045aa29fbb58194a94c4f16f1ebbf7c44f47b06ec067dbf620ca6b95956",
+      "baseSha256": "f5dbe7342fa0cdcce1029490e2601504502b0acf6b1d2321fe824cbff51a0030",
+      "runtimeOverlay": true
+    },
+    {
+      "path": "config/apiv1.php",
+      "sha256": "228ada7f1245d8e8828eddb799eacb736071072d3a9b3302e694ab71f0a4b8a6",
+      "baseSha256": "dff0a5c62868ee03aad2c0bf6ebaea5b329bea2e2abe8dac499f858899dc0546",
+      "runtimeOverlay": false
+    },
+    {
+      "path": "config/apiv2.php",
+      "sha256": "93eadd3da2db7d13d22b45de0a1c0712b8c7be6b232ec32fc1b8a75eac170616",
+      "baseSha256": "ae798b7662b91306b8ce5781b9e180fd3cfc60cdcb826078301ccac438210a48",
+      "runtimeOverlay": false
+    },
+    {
+      "path": "api/v1/entries/testtaskexecution.php",
+      "sha256": "3ec2f2b056728bfa57cba9da29fbe7ea951fbf707ea6ce963650c849f9c6cfed",
+      "baseSha256": null,
+      "runtimeOverlay": false
+    },
+    {
+      "path": "api/v1/entries/testtaskcases.php",
+      "sha256": "8218dfe16d929b893be0d7b8834d973d3b12dabfde93ddcacf2485ea73a929ad",
+      "baseSha256": null,
+      "runtimeOverlay": false
+    },
+    {
+      "path": "api/v1/entries/testtaskresults.php",
+      "sha256": "8b2ecfbc25f770b77a59d7d40e4646262f8cec91167b2176306f6d3e80663a63",
+      "baseSha256": null,
+      "runtimeOverlay": false
+    },
+    {
+      "path": "module/testtask/model.php",
+      "sha256": "ee7b57645d7871a642fd2d57a55ff9977d763188006f682f5c33c7ac5d178b12",
+      "baseSha256": "675a8d081592b324d1c3221d73bd05d451ae49abf41a3ad22ca169d3b4db857d",
+      "runtimeOverlay": true
+    }
+  ],
+  "mcpImage": {
+    "baseImageID": "sha256:0db06fd4ec44c4aa3c4bfcadf95146c9c2bc1f66f4929839ffad67111e1902e7",
+    "candidateImageID": "sha256:74518c06291f1313781382d9970099790b956fb10791801d6da823fa3300de0a"
+  },
+  "exactInsertedResultIDCapturedByModel": true,
+  "schemaSha256": "bd15884054fcf9e4a95837ea2b3bd53e5692bb0a0819e7283e56051559768a4c"
+}

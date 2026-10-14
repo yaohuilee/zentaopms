@@ -1,0 +1,10 @@
+{
+  "runtimeBase": "existing deployed source, reproduced old binary in 20261003 record",
+  "scopedGoChange": [
+    "internal/service/tool/logging.go"
+  ],
+  "schemaSha256": "bd15884054fcf9e4a95837ea2b3bd53e5692bb0a0819e7283e56051559768a4c",
+  "binarySha256": "ccb4363a3894f007c8c9f070c33ae01a074f64e6ffb8459fd9ff0a87d9a051fa",
+  "healthBindingPreserved": true,
+  "tests": "go test ./... on exact runtime source passed"
+}

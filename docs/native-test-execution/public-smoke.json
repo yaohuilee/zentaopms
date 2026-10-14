@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "name": "get_products_productID",
+      "passed": true
+    },
+    {
+      "name": "get_executions_executionID",
+      "passed": true
+    },
+    {
+      "name": "get_tasks_taskID",
+      "passed": true
+    },
+    {
+      "name": "get_testtasks_id_cases",
+      "passed": true
+    },
+    {
+      "name": "/zt/",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "/gogs/",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "REST native result readback",
+      "passed": true
+    },
+    {
+      "name": "no-token MCP denied",
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "resultID": 32765,
+  "runID": 27909
+}

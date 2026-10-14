@@ -1,0 +1,202 @@
+{
+  "zentao-native-preview-20261014": [
+    {
+      "name": "native-list-before",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "native-link",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "unlinked-result-denied",
+      "status": 409,
+      "passed": true
+    },
+    {
+      "name": "invalid-case-id",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "name": "wrong-version",
+      "status": 409,
+      "passed": true
+    },
+    {
+      "name": "missing-step",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "name": "native-result-write",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "native-result-read",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "link-idempotent-after-result",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "invalid-token-denied",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "name": "v1-read-compatible",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "json-body-task-result",
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "app-zentao": [
+    {
+      "name": "native-list-before",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "native-link",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "unlinked-result-denied",
+      "status": 409,
+      "passed": true
+    },
+    {
+      "name": "invalid-case-id",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "name": "wrong-version",
+      "status": 409,
+      "passed": true
+    },
+    {
+      "name": "missing-step",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "name": "native-result-write",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "native-result-read",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "link-idempotent-after-result",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "invalid-token-denied",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "name": "v1-read-compatible",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "json-body-task-result",
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "zentao-mcp-native-preview-20261014": [
+    {
+      "tool": "get_testtasks_id_cases",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "post_testtasks_id_cases",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "post_testtasks_id_cases_caseID_results",
+      "readWriteVerified": true,
+      "runID": 27909,
+      "resultID": 32743
+    },
+    {
+      "tool": "get_testtasks_id_cases_caseID_results",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "get_testcases_id_results",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "post_testcases_id_results",
+      "readWriteVerified": true,
+      "runID": 27909,
+      "resultID": 32744
+    }
+  ],
+  "app-zentao-mcp": [
+    {
+      "tool": "get_testtasks_id_cases",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "post_testtasks_id_cases",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "post_testtasks_id_cases_caseID_results",
+      "readWriteVerified": true,
+      "runID": 27909,
+      "resultID": 32763
+    },
+    {
+      "tool": "get_testtasks_id_cases_caseID_results",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "get_testcases_id_results",
+      "readWriteVerified": true,
+      "runID": null,
+      "resultID": null
+    },
+    {
+      "tool": "post_testcases_id_results",
+      "readWriteVerified": true,
+      "runID": 27909,
+      "resultID": 32764
+    }
+  ]
+}

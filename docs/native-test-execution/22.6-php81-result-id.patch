@@ -1,0 +1,6 @@
+--- a/module/testtask/model.php
++++ b/module/testtask/model.php
+@@ -15,0 +16 @@
++    public $lastCreatedResultID = 0;
+@@ -1490,0 +1492 @@
++        $this->lastCreatedResultID = (int)$resultID;
